@@ -4,28 +4,23 @@ import {
   Text,
   View,
   PermissionsAndroid,
-  TextInput,
   Image,
   Dimensions,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 // import Geolocation from '@react-native-community/geolocation';
 import { COLORS, FONTS, SIZES, icons, images } from '../../constants';
-import { nearbyList } from '../../globals/data';
-import MapPlaces from './MapPlaces';
 import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
 import { useDispatch, useSelector } from 'react-redux';
-import { SET_MAP_LOCATION } from '../../redux/actions/type';
 import { getShops } from '../../redux/actions/data.actions';
 
 Geocoder.init('AIzaSyD5ibcRV6uhLjLQgcSpt6GySfrzsXZkVkE'); // use a valid API key
 
 //Components
 export default function Map({ navigation, route }) {
-  const { address } = route.params
+  const { address, navType, basket } = route.params
   const dispatch = useDispatch();
   const { shops } = useSelector(({ data }) => data);
   const { width, height } = Dimensions.get('window');
@@ -38,10 +33,8 @@ export default function Map({ navigation, route }) {
     longitude: 125.0024682,
     latitudeDelta: 0.01,
     longitudeDelta: 0.01,
-    address: '',
   });
   const [isDrag, setIsDrag] = useState(false);
-  const [location, setLocation] = useState({});
 
   const mapRef = useRef();
 
@@ -62,7 +55,14 @@ export default function Map({ navigation, route }) {
   function renderHeader() {
     return (
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => {
+          if (navType === 'checkout') {
+            navigation.navigate('AddressLocationForm', { address, navType, basket });
+          } else {
+            navigation.goBack()
+
+          }
+        }}>
           <Image
             source={icons.back}
             style={{
@@ -140,14 +140,16 @@ export default function Map({ navigation, route }) {
   };
 
   const handleSave = () => {
-    const { latitude, longitude } = region;
 
     let newAddress = { ...address, ...region }
     // dispatch({
     //   type: SET_MAP_LOCATION,
     //   payload: newAddress,
     // });
-    navigation.navigate('AddressLocationForm', { address: newAddress });
+    console.log('newAd')
+    console.log(newAddress)
+    console.log(basket)
+    navigation.navigate('AddressLocationForm', { address: newAddress, navType, basket });
 
     //GEOCODER
     // Geocoder.from(latitude, longitude)
@@ -223,7 +225,8 @@ export default function Map({ navigation, route }) {
     );
   });
 
-
+  console.log('MP')
+  console.log(basket)
   return (
     <View style={styles.container}>
       {/* HEADER */}

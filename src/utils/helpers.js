@@ -69,9 +69,8 @@ export const totalOrders = (data) => {
   for (let shop of data) {
     let totalOrder = 0;
 
-    console.log("DLLL")
-    console.log(shop.deliveryOption)
-    let deliveryOpt = constants.deliveryOptions.find(a => a.id === shop.deliveryOption)
+    let delivery = constants.deliveryOptions.find(a => a.id === shop.deliveryOption)
+    let deliveryOpt = delivery ? delivery : { price: 0 }
 
 
     for (let order of shop.data) {
@@ -117,8 +116,6 @@ export const totalOrders = (data) => {
       }
 
 
-      console.log('orr')
-      console.log(order)
 
     }
     grandTotal += totalOrder + deliveryOpt.price;

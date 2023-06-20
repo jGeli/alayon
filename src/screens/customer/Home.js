@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getShops } from '../../redux/actions/data.actions';
 import moment from 'moment/moment';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { SET_LAUNDRY_SHOPS } from '../../redux/actions/type';
+import { SET_LAUNDRY_SHOPS, SET_SELECTED_SHOP } from '../../redux/actions/type';
 
 const varEnv = constants.varEnv;
 
@@ -26,6 +26,7 @@ export default function Home({ navigation }) {
   const onShopSelect = item => {
     if (item.services && item.services.length !== 0) {
       navigation.navigate('ShopServices', { shopId: item._id });
+      dispatch({ type: SET_SELECTED_SHOP, payload: item })
     }
   };
 
@@ -37,6 +38,7 @@ export default function Home({ navigation }) {
     return (
       <View style={styles.headerContainer}>
         <TouchableOpacity
+          disabled={true}
           onPress={() => navigation.navigate('AddressLocationScreen', { locations })}
           style={{
             flexDirection: 'row',
@@ -143,8 +145,6 @@ export default function Home({ navigation }) {
               alignItems: 'flex-start',
               justifyContent: 'flex-end',
               marginRight: SIZES.padding * 1,
-              // borderColor: COLORS.black,
-              // borderWidth: 1
             }}
           // onPress={() => onSelectCategory(item)}
           ></TouchableOpacity>
@@ -424,7 +424,7 @@ export default function Home({ navigation }) {
     return () => {
       dispatch({ type: SET_LAUNDRY_SHOPS, payload: [] });
     };
-  }, [dispatch]);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

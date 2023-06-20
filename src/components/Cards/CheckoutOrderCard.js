@@ -1,50 +1,18 @@
 //import liraries
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 import { TextInput } from 'react-native';
+import { useSelector } from 'react-redux';
 
 // create a component
-const CheckoutOrderCard = ({ navigation, shop }) => {
-    const { shop_name, data, deliveryOption } = shop;
+const CheckoutOrderCard = ({ navigation, shopData, param }) => {
+    const { errors } = useSelector(({ ui }) => ui);
+    const [shop, setShop] = useState({})
     let totalOrder = 0;
 
-    // const orderService = shop.services.find(a => a.service === service);
-    // let totalService = 0;
-    // let totalAddons = 0;
-    // let price = 0
-    // if (orderService) {
-    //     let service = shop.services.find(a => a.service === order.service);
+    let { shop_name, data } = shop;
 
-    //     if (pricing === 'Kilo') {
-    //         price = (service.priceKilo
-    //             ? service.priceKilo
-    //             : service.cloths[0].priceKilo)
-    //         totalService += price * order.qty;
-
-    //     }
-    //     if (pricing === 'Batch') {
-    //         price = (service.priceBatch
-    //             ? service.priceBatch
-    //             : service.cloths[0].priceBatch)
-    //         totalService +=
-    //             (service.priceBatch
-    //                 ? service.priceBatch
-    //                 : service.cloths[0].priceBatch) * order.qty;
-    //     }
-
-    //     if (pricing === 'Piece') {
-    //         order.cloths.map((a, index) => {
-    //             price = `${a.pricePiece} and ${index} Others`;
-    //             totalService += a.pricePiece * a.qty;
-    //         });
-    //     }
-
-    //     order.addons.map((a, index) => {
-    //         totalAddons += a.price * a.qty;
-    //     });
-
-    // }
 
 
     function renderAddOns(order) {
@@ -151,7 +119,6 @@ const CheckoutOrderCard = ({ navigation, shop }) => {
 
 
         const orderService = shop.services.find(a => a.service === service);
-
         let price = 0
         if (orderService) {
             let service = shop.services.find(a => a.service === order.service);
@@ -285,16 +252,15 @@ const CheckoutOrderCard = ({ navigation, shop }) => {
     }
 
 
-    function handleDeliveryType() {
+    function handleDeliveryType(shop) {
+        const { deliveryOption } = shopData;
         const { deliveryOptions } = constants;
 
-        let deliveryOpt = deliveryOptions.find(a => a.id === deliveryOption)
-        console.log('DL')
-        console.log(deliveryOption)
+        let deliveryOpt = deliveryOption ? deliveryOptions.find(a => a.id === deliveryOption) : { price: 0, name: 'Select', description: 'No Delivery Option Selected' }
         totalOrder += deliveryOpt.price;
         return (
             <TouchableOpacity
-                onPress={() => navigation.navigate('DeliveryOptionScreen', { shop, selectedOption: deliveryOption })}
+                onPress={() => navigation.navigate('DeliveryOptionScreen', { shop: shopData, selectedOption: deliveryOption, ...param })}
                 style={{
                     width: '100%',
                     flexDirection: 'column',
@@ -321,7 +287,7 @@ const CheckoutOrderCard = ({ navigation, shop }) => {
                 >
                     <Text style={{ ...FONTS.body3, color: COLORS.darkBlue }}>Delivery Option</Text>
                     <View style={{ flexDirection: 'row' }}>
-                        <Text style={{ ...FONTS.body3, color: COLORS.black, fontWeight: '600' }}>{deliveryOpt.name}</Text>
+                        <Text style={{ ...FONTS.body3, color: errors.deliveryOption ? COLORS.redTransparent : COLORS.black, fontWeight: '600' }}>{deliveryOpt.name}</Text>
                         <Image
                             source={icons.arrow_right}
                             style={{ height: 25, width: 25, tintColor: COLORS.darkGray }}
@@ -355,8 +321,8 @@ const CheckoutOrderCard = ({ navigation, shop }) => {
                         alignItems: 'center'
                     }}
                 >
-                    <Text style={{ ...FONTS.body4, color: COLORS.black }}>{deliveryOpt.description}</Text>
-                    <Text style={{ ...FONTS.body3, color: COLORS.black }}>₱ {deliveryOpt.price}</Text>
+                    <Text style={{ ...FONTS.body4, color: errors.deliveryOption ? COLORS.red : COLORS.black }}>{deliveryOpt.description}</Text>
+                    <Text style={{ ...FONTS.body3, color: COLORS.black }}>{deliveryOpt.price ? `₱ ${deliveryOpt.price}` : ''}</Text>
 
 
                 </View>
@@ -365,8 +331,10 @@ const CheckoutOrderCard = ({ navigation, shop }) => {
         )
     }
 
+    useEffect(() => {
+        setShop(shopData)
+    }, [shopData, errors])
 
-    // const price = pricing ==
     return (
         <View style={styles.container}>
             {/* HEADER */}
@@ -407,11 +375,11 @@ const CheckoutOrderCard = ({ navigation, shop }) => {
                 }}
             >
 
-                {data.map(a => {
+                {data && data.map(a => {
                     return renderServiceItems(a)
                 })}
                 <View style={{ marginTop: 5 }}>
-                    {handleDeliveryType()}
+                    {handleDeliveryType(shopData)}
 
 
                     <View
@@ -433,7 +401,7 @@ const CheckoutOrderCard = ({ navigation, shop }) => {
                         {/* DELIVERY SERVICE OPTION */}
 
                         {/* ORDER TOTAL */}
-                        <Text style={{ ...FONTS.body3, color: COLORS.black }}>Order Total ({data.length} Items)</Text>
+                        <Text style={{ ...FONTS.body3, color: COLORS.black }}>Order Total ({data && data.length} Items)</Text>
                         <Text style={{ ...FONTS.body3, color: COLORS.black, fontWeight: 'bold' }}>₱ {totalOrder}</Text>
 
                     </View>

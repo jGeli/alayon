@@ -331,8 +331,8 @@ const CustomerAddOns = ({ active, onClose }) => {
           <View
             style={{
               flex: 1,
-              borderBottomColor: COLORS.gray,
-              borderBottomWidth: 1,
+              // borderBottomColor: COLORS.gray,
+              // borderBottomWidth: 1,
               padding: 5,
               flexDirection: 'column',
             }}>
@@ -344,7 +344,7 @@ const CustomerAddOns = ({ active, onClose }) => {
               style={{
                 // flex: 1,
                 height: 50,
-                backgroundColor: COLORS.lightGray3,
+                // backgroundColor: COLORS.lightGray3,
                 borderBottomColor: COLORS.gray,
                 borderBottomWidth: 1,
                 alignItems: 'center',
@@ -366,27 +366,27 @@ const CustomerAddOns = ({ active, onClose }) => {
                     borderWidth: 1,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    height: 25,
+                    height: 30,
                     paddingLeft: SIZES.padding,
                     paddingRight: SIZES.padding,
                   }}
                   onPress={() => handleCounter(selected, 'less')}>
                   <Image
                     source={icons.minus1}
-                    style={{ height: 10, width: 10, tintColor: COLORS.primary }}
+                    style={{ height: 15, width: 15, tintColor: COLORS.blue }}
                   />
                 </TouchableOpacity>
                 <View
                   style={{
-                    borderColor: COLORS.black,
-                    borderWidth: 1,
+                    // borderColor: COLORS.black,
+                    // borderWidth: 1,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    height: 25,
+                    height: 30,
                     paddingLeft: SIZES.padding,
                     paddingRight: SIZES.padding,
                   }}>
-                  <Text style={{ fontWeight: 'bold', color: COLORS.black }}>
+                  <Text style={{ fontWeight: 'bold', color: COLORS.darkBlue }}>
                     {selectedCount ? selectedCount.qty : 0}
                   </Text>
                 </View>
@@ -397,14 +397,14 @@ const CustomerAddOns = ({ active, onClose }) => {
                     borderWidth: 1,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    height: 25,
+                    height: 30,
                     paddingLeft: SIZES.padding,
                     paddingRight: SIZES.padding,
                   }}
                   onPress={() => handleCounter(selected, 'add')}>
                   <Image
                     source={icons.plus}
-                    style={{ height: 10, width: 10, tintColor: COLORS.primary }}
+                    style={{ height: 15, width: 15, tintColor: COLORS.blue }}
                   />
                 </TouchableOpacity>
               </View>

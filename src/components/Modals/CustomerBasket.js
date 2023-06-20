@@ -12,6 +12,7 @@ import {
   TextInput,
   SafeAreaView,
   FlatList,
+  ScrollView,
   Dimensions,
 } from 'react-native';
 import { COLORS, FONTS, SIZES, icons, styles } from '../../constants';
@@ -27,13 +28,15 @@ import {
   SET_CUSTOMER_BASKET,
   SET_CUSTOMER_ORDER,
 } from '../../redux/actions/type';
-import { ScrollView } from 'react-native-gesture-handler';
+import { getCustomerLocations, setCustomerBasket } from '../../utils/AsyncStorage';
 
 const PRICING = ['Piece', 'Kilo', 'Batch'];
 
 // create a component
 const CustomerBasket = ({ active, onClose }) => {
-  const { shop, order, basket } = useSelector(({ customer }) => customer);
+  const { shop, order, basket, customer: { locations } } = useSelector(({ customer }) => customer);
+  const { isAuthenticated } = useSelector(({ auth }) => auth);
+
   const modalAnimatedValue = useRef(new Animated.Value(0)).current;
   const dispatch = useDispatch();
   const [selected, setSelected] = useState('Piece');
@@ -56,16 +59,26 @@ const CustomerBasket = ({ active, onClose }) => {
     dispatch({ type: SET_CUSTOMER_ORDER, payload: { qty: 1, pricing: item } });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     let { orders } = basket;
+    let pickupAddress = null;
+    if (locations) {
+      pickupAddress = locations.find(a => { return a.isDefault });
+    }
     orders.push({
       ...order,
       shop,
-      deliveryOption: 0
     });
+
+    let newBasket = { ...basket, orders, orderItems: orders.length, pickupAddress };
+
+    if (!isAuthenticated) {
+      await setCustomerBasket(newBasket)
+    }
+    dispatch({ type: SET_CUSTOMER_BASKET, payload: newBasket });
+    onClose(newBasket);
     dispatch({ type: CLEAR_CUSTOMER_ORDER });
-    dispatch({ type: SET_CUSTOMER_BASKET, payload: { orders, orderItems: orders.length } });
-    onClose('save');
+
   };
 
   useEffect(() => {
@@ -294,7 +307,7 @@ const CustomerBasket = ({ active, onClose }) => {
                   borderWidth: 1,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  height: 25,
+                  height: 30,
                   paddingLeft: SIZES.padding,
                   paddingRight: SIZES.padding,
                 }}
@@ -302,23 +315,23 @@ const CustomerBasket = ({ active, onClose }) => {
                 <Image
                   source={icons.minus1}
                   style={{
-                    height: 10,
-                    width: 10,
-                    tintColor: COLORS.primary,
+                    height: 15,
+                    width: 15,
+                    tintColor: COLORS.blue,
                   }}
                 />
               </TouchableOpacity>
               <View
                 style={{
-                  borderColor: COLORS.black,
-                  borderWidth: 1,
+                  // borderColor: COLORS.black,
+                  // borderWidth: 1,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  height: 25,
+                  height: 30,
                   paddingLeft: SIZES.padding,
                   paddingRight: SIZES.padding,
                 }}>
-                <Text style={{ fontWeight: 'bold', color: COLORS.black }}>
+                <Text style={{ fontWeight: 'bold', color: COLORS.darkBlue }}>
                   {order.qty}
                 </Text>
               </View>
@@ -329,7 +342,7 @@ const CustomerBasket = ({ active, onClose }) => {
                   borderWidth: 1,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  height: 25,
+                  height: 30,
                   paddingLeft: SIZES.padding,
                   paddingRight: SIZES.padding,
                 }}
@@ -337,9 +350,9 @@ const CustomerBasket = ({ active, onClose }) => {
                 <Image
                   source={icons.plus}
                   style={{
-                    height: 10,
-                    width: 10,
-                    tintColor: COLORS.primary,
+                    height: 15,
+                    width: 15,
+                    tintColor: COLORS.blue,
                   }}
                 />
               </TouchableOpacity>
@@ -350,47 +363,6 @@ const CustomerBasket = ({ active, onClose }) => {
     );
   }
 
-  function renderSummary() {
-    return (
-      <View
-        style={{
-          justifyContent: 'center',
-          alignItems: 'flex-start',
-          height: 50,
-        }}>
-        {PRICING.map(item => {
-          <TouchableOpacity
-            style={{
-              borderWidth: 1,
-              borderColor: COLORS.primary,
-              backgroundColor:
-                selected === item ? COLORS.primary : COLORS.white,
-              borderRadius: SIZES.semiRadius,
-              paddingLeft: SIZES.radius,
-              paddingRight: SIZES.radius,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: 35,
-              elevation: 5,
-            }}
-            onPress={() => {
-              handleSelect(item);
-            }}>
-            <Text
-              style={{
-                // ...FONTS.h3,
-                fontSize: SIZES.h4,
-                fontWeight: 'bold',
-                color: selected === item ? COLORS.white : COLORS.black,
-              }}>
-              {item}
-            </Text>
-          </TouchableOpacity>;
-        })}
-      </View>
-    );
-  }
 
   function renderOrderItems() {
     let service = shop.services.find(a => a.service === order.service);

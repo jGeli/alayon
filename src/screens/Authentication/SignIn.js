@@ -32,8 +32,7 @@ import { getFormattedPhone, validatePhone } from '../../utils/helpers.js';
 import { getToken } from '../../redux/auth-header';
 
 const SignIn = ({ navigation, route }) => {
-  const { redirection } = route.params ? route.params : {};
-  const { userType } = useSelector(({ auth }) => auth);
+  const { redirection, param } = route.params ? route.params : {};
   const dispatch = useDispatch();
 
   const [phone, setPhone] = React.useState('');
@@ -52,20 +51,34 @@ const SignIn = ({ navigation, route }) => {
         {
           providerId: phone,
           provider: 'SMS',
-          type: userType,
+          type: 'customer',
           hash,
         },
-        navigation,
-        redirection
+        navigation, route.params
       ),
     );
   };
 
   const handleAuthUser = async () => {
     let token = await getToken();
-    dispatch(getAuthUser(navigation));
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    if (token) {
+      console.log('TOKKSS')
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      dispatch(getAuthUser(navigation));
+    }
+    console.log("TT")
+    console.log(token)
   };
+
+  const handleHome = () => {
+    console.log('SET HOME')
+    if (redirection === 'CustomerAccount') {
+      navigation.navigate('MainCustomer', {})
+    } else {
+      navigation.navigate(redirection, param ? param : {})
+    }
+
+  }
 
   useEffect(() => {
     handleAuthUser();
@@ -85,19 +98,25 @@ const SignIn = ({ navigation, route }) => {
       <View
         style={{
           width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          padding: SIZES.padding
         }}>
         <TouchableOpacity
           style={{
-            position: 'absolute',
-            top: 10,
-            right: 10,
+            // position: 'absolute',
+            // top: 10,
+            // right: 30,
+            zIndex: 10
           }}
-          onPress={() => navigation.navigate('Main', {})}>
+          onPress={() => handleHome()}>
           <Image
-            source={icons.home}
+            source={icons.back}
             style={{ height: 25, width: 25, tintColor: COLORS.primary }}
           />
         </TouchableOpacity>
+
       </View>
       <View
         style={{ alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}>

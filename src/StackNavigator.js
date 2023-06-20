@@ -12,32 +12,28 @@ import axios from 'axios';
 import HomeScreen from './screens/customer/Home';
 import MyOrderScreen from './screens/customer/MyOrders';
 import NotificationScreen from './screens/Notifications';
-// import RecentSearch from './screens/customer/RecentSearch';
-// import Filter from './screens/customer/Filter';
-// import AddressLocation from './screens/customer/AddressLocation';
-// import MapScreen from './components/Map/Map';
-// import CurrentLocation from './components/Map/CurrentLocation';
+import RecentSearch from './screens/customer/RecentSearch';
+import Filter from './screens/customer/Filter';
+import AddressLocation from './screens/customer/AddressLocation';
+import MapScreen from './components/Map/Map';
 import MyAccount from './screens/customer/MyAccount';
 
 import OnBoarding from './screens/OnBoarding/OnBoarding';
 import SignIn from './screens/Authentication/SignIn';
 // import ForgotPassword from './screens/Authentication/ForgotPassword';
 import Otp from './screens/Authentication/Otp';
-// import SchedulePickup from './screens/customer/SchedulePickup';
-// import OtpScreen from './screens/Authentication/OtpAutoComplete';
-// import OrderSummary from './screens/customer/OrderSummary';
-// import ShopServices from './screens/customer/ShopServices';
-// import SendSms from './components/SendSms';
-// import DashLine from './components/DashedLine';
+import SchedulePickup from './screens/customer/SchedulePickup';
+import OrderSummary from './screens/customer/OrderSummary';
+import ShopServices from './screens/customer/ShopServices';
 import LoadingScreen from './screens/LoadingScreen';
-// import DeliveryOptionScreen from './screens/customer/DeliveryOptions';
-// import AddOnsScreen from './screens/customer/AddOnsScreen';
-// import AddressLocationScreen from './screens/customer/AddressLocationScreen';
-// import ChatList from './screens/ChatSupport/ChatList';
+import DeliveryOptionScreen from './screens/customer/DeliveryOptions';
+import AddOnsScreen from './screens/customer/AddOnsScreen';
+import AddressLocationScreen from './screens/customer/AddressLocationScreen';
+import ChatList from './screens/ChatSupport/ChatList';
 // import Conversation from './screens/ChatSupport/Conversation';
-// import AddressLocationForm from './screens/customer/AddressLocationForm';
-// import SelectRegion from './screens/customer/SelectRegion';
-// import AddressDetails from './screens/customer/AddressDetails';
+import AddressLocationForm from './screens/customer/AddressLocationForm';
+import SelectRegion from './screens/customer/SelectRegion';
+import AddressDetails from './screens/customer/AddressDetails';
 
 
 
@@ -45,6 +41,8 @@ import LoadingScreen from './screens/LoadingScreen';
 import { icons, COLORS } from './constants';
 import { getAuthUser } from './redux/actions/auth.actions';
 import { useDispatch, useSelector } from 'react-redux';
+import { getCustomerBasket, getCustomerLocations } from './utils/AsyncStorage';
+import { SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA } from './redux/actions/type';
 
 
 const StackNavigator = () => {
@@ -52,14 +50,17 @@ const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector(({ auth }) => auth);
+
   const [mainScreen, setMainScreen] = useState(null);
   const [loading, setLoading] = useState(true)
   // getting data
   const getUserData = async () => {
     try {
-      const userData = JSON.parse(await AsyncStorage.getItem('user'));
       const userToken = JSON.parse(await AsyncStorage.getItem('token'));
       const onBoarded = await AsyncStorage.getItem('onBoarded');
+      const basket = await getCustomerBasket();
+      const locations = await getCustomerLocations();
+
 
       if (onBoarded) {
         setMainScreen('MainCustomer');
@@ -72,13 +73,24 @@ const StackNavigator = () => {
         axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
       }
 
-      dispatch(getAuthUser())
+
+
+      if (basket && !isAuthenticated) {
+        dispatch({ type: SET_CUSTOMER_BASKET, payload: basket });
+      }
+
+
+      if (locations && !isAuthenticated) {
+        dispatch({ type: SET_CUSTOMER_DATA, payload: { locations } });
+      }
+
+      dispatch(getAuthUser());
     } catch (error) {
       console.log(error);
     }
   };
 
-  function CustomerBottomTabs({ navigation }) {
+  function CustomerBottomTabs({ navigation, route }) {
     return (
       <Tab.Navigator>
         <Tab.Screen
@@ -128,8 +140,7 @@ const StackNavigator = () => {
                   style={{
                     height: 25,
                     width: 25,
-                    color: 'black',
-                    tintColor: '#003580',
+                    tintColor: COLORS.primary,
                   }}
                 />
               ) : (
@@ -139,7 +150,7 @@ const StackNavigator = () => {
                   style={{
                     height: 25,
                     width: 25,
-                    color: 'black',
+                    tintColor: COLORS.black,
                   }}
                 />
               ),
@@ -151,7 +162,7 @@ const StackNavigator = () => {
           component={NotificationScreen}
           options={{
             tabBarLabel: 'Notifications',
-            headerShown: true,
+            headerShown: false,
             tabBarShowLabel: true,
             tabBarIcon: ({ focused }) =>
               focused ? (
@@ -218,7 +229,7 @@ const StackNavigator = () => {
 
   useEffect(() => {
     getUserData();
-  }, []);
+  }, [isAuthenticated]);
 
 
   return (
@@ -272,34 +283,18 @@ const StackNavigator = () => {
               component={CustomerBottomTabs}
               options={{ headerShown: false }}
             />
-            {/*   <Stack.Screen
-              name="Search"
-              component={RecentSearch}
+            <Stack.Screen
+              name="ShopServices"
+              component={ShopServices}
               options={{ headerShown: false }}
             />
-          <Stack.Screen
-                        name="OtpScreen"
-                        component={OtpScreen}
-                        options={{ headerShown: false }}
-                      />
-           <Stack.Screen
-                      name="SchedulePickup"
-                      component={SchedulePickup}
-                      options={{ headerShown: false }}
-                    /> 
-
-            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
 
             <Stack.Screen
               name="Filter"
               component={Filter}
               options={{ headerShown: false }}
             />
-            <Stack.Screen
-              name="ShopServices"
-              component={ShopServices}
-              options={{ headerShown: false }}
-            />
+
             <Stack.Screen
               name="OrderSummary"
               component={OrderSummary}
@@ -336,6 +331,30 @@ const StackNavigator = () => {
               options={{ headerShown: false }}
             />
             <Stack.Screen
+              name="Map"
+              component={MapScreen}
+              options={{ headerShown: false }}
+            />
+            {/*   <Stack.Screen
+              name="Search"
+              component={RecentSearch}
+              options={{ headerShown: false }}
+            />
+          <Stack.Screen
+                        name="OtpScreen"
+                        component={OtpScreen}
+                        options={{ headerShown: false }}
+                      />
+           <Stack.Screen
+                      name="SchedulePickup"
+                      component={SchedulePickup}
+                      options={{ headerShown: false }}
+                    /> 
+
+            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+
+         
+            <Stack.Screen
               name="AddressLocation"
               component={AddressLocation}
               options={{ headerShown: false }}
@@ -346,11 +365,7 @@ const StackNavigator = () => {
               options={{ headerShown: false }}
             />
 
-            <Stack.Screen
-              name="Map"
-              component={MapScreen}
-              options={{ headerShown: false }}
-            />
+  
             <Stack.Screen
               name="SendSms"
               component={SendSms}

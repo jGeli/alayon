@@ -24,6 +24,7 @@ import { FlatList } from 'react-native';
 import { clothTypes } from '../../globals/data';
 import { getShopById } from '../../redux/actions/merchant.actions';
 import {
+  CLEAR_CUSTOMER_BASKET,
   CLOSE_MODALS,
   OPEN_BASKET_MODAL,
   OPEN_CUSTOMER_ADDONS_MODAL,
@@ -35,11 +36,14 @@ import CustomerAddOns from '../../components/Modals/CustomerAddOns';
 import CustomerBasket from '../../components/Modals/CustomerBasket';
 import { userData5 } from '../../globals/data';
 import { getCustomerShopById } from '../../redux/actions/customer.actions';
+import Reviews from '../../components/Reviews';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // create a component
 export default ShopServices = ({ navigation, route }) => {
   const { shopId } = route.params;
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector(({ auth }) => auth);
   const { shop, order, basket } = useSelector(({ customer }) => customer);
   const { customerAddOns, basketModal } = useSelector(({ ui }) => ui);
   const [cloths, setCloths] = useState();
@@ -48,6 +52,11 @@ export default ShopServices = ({ navigation, route }) => {
   const [isAddonEnabled, setAddonEnabled] = useState(false);
   const [tab, setTab] = useState('services');
 
+  const handleChat = async () => {
+    await AsyncStorage.removeItem('basket')
+    dispatch({ type: CLEAR_CUSTOMER_BASKET })
+  }
+
   const toggleSwitch = () => {
     dispatch({
       type: SET_CUSTOMER_ORDER,
@@ -55,17 +64,34 @@ export default ShopServices = ({ navigation, route }) => {
         hasAddons: order.addons.length === 0 ? false : !order.hasAddons,
       },
     });
+
+    if (order.addons && order.addons.length === 0 && !customerAddOns) {
+      dispatch({ type: OPEN_CUSTOMER_ADDONS_MODAL })
+    }
     // setAddonEnabled(previousState => !previousState)
   };
 
-  const handleCheckout = () => {
-    let { orders } = basket;
+
+
+  const handleCheckout = (val) => {
+    let { orders } = val;
+
+
     if (orders.length !== 0) {
-      navigation.navigate('OrderSummary', { basket });
+      navigation.navigate('OrderSummary', { basket: val, shopId, rnd: Math.random() });
     } else {
       dispatch({ type: OPEN_BASKET_MODAL, payload: 'checkout_basket' });
     }
   };
+
+
+  const handleAddToBasket = () => {
+
+
+
+    dispatch({ type: OPEN_BASKET_MODAL, payload: 'addbasket' });
+
+  }
 
   const handleShop = async () => {
     let shopData = await dispatch(getCustomerShopById(shopId));
@@ -128,7 +154,7 @@ export default ShopServices = ({ navigation, route }) => {
 
   const handleChangeService = val => {
     // setSelectedServiceType(val);
-    dispatch({ type: SET_CUSTOMER_ORDER, payload: { service: val.service } });
+    dispatch({ type: SET_CUSTOMER_ORDER, payload: { service: val } });
     if (val) {
       setCloths(val.cloths);
     }
@@ -171,6 +197,8 @@ export default ShopServices = ({ navigation, route }) => {
       });
     };
   }, [shopId]);
+
+
 
   function renderHeader() {
     return (
@@ -230,9 +258,9 @@ export default ShopServices = ({ navigation, route }) => {
                 height: 40,
                 width: 40,
               }}
-            // onPress={() => navigation.goBack()}
-            onPress={() => 
-              navigation.navigate('Conversation', {shop})}
+              // onPress={() => navigation.goBack()}
+              onPress={() =>
+                navigation.navigate('Conversation', { shop })}
 
             >
               <Image
@@ -512,53 +540,7 @@ export default ShopServices = ({ navigation, route }) => {
     );
   }
 
-  function renderServiceType() {
-    let { servicePricing } = constants;
 
-    return (
-      <View
-        style={{
-          margin: SIZES.padding,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <View style={{ ...style.buttonSelectContainer, elevation: 5 }}>
-          <TouchableOpacity
-            style={[
-              style.buttonSelect,
-              deliveryType === 'standard' ? style.selectedButton : {},
-            ]}
-            onPress={() => setDeliveryType('standard')}>
-            <Text
-              style={{
-                ...FONTS.body4,
-                color:
-                  deliveryType === 'standard' ? COLORS.white : COLORS.black,
-                fontWeight: '700',
-              }}>
-              STANDARD( +₱{servicePricing.standard} )
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              style.buttonSelect,
-              deliveryType === 'express' ? style.selectedButton : {},
-            ]}
-            onPress={() => setDeliveryType('express')}>
-            <Text
-              style={{
-                ...FONTS.body4,
-                color: deliveryType === 'express' ? COLORS.white : COLORS.black,
-                fontWeight: '700',
-              }}>
-              EXPRESS( +₱{servicePricing.express} )
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
   function renderAddons() {
     return (
       <View
@@ -660,100 +642,6 @@ export default ShopServices = ({ navigation, route }) => {
   let totalItem = 0;
   order.cloths.map(a => (totalItem += a.qty));
 
-  function renderClothPricing() {
-    return (
-      <View
-        style={{
-          flexDirection: 'column',
-          backgroundColor: COLORS.lightGray4,
-          padding: 8,
-          marginTop: SIZES.padding,
-          marginBottom: 5,
-          justifyContent: 'flex-start',
-          alignItems: 'flex-start',
-          elevation: 5,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            borderBottomColor: COLORS.gray,
-            borderBottomWidth: 1,
-            marginBottom: 5,
-          }}>
-          <View
-            style={{
-              flexGrow: 1,
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-              marginBottom: 5,
-            }}>
-            <Image
-              source={icons.pricing}
-              style={{ height: 25, width: 25, tintColor: COLORS.gold }}
-            />
-            <Text
-              style={{
-                ...FONTS.body3,
-                color: COLORS.black,
-                marginLeft: 5,
-              }}>
-              PRICING
-            </Text>
-          </View>
-          <View
-            style={{
-              flexGrow: 1,
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-              marginBottom: 5,
-            }}>
-            <Text
-              style={{
-                ...FONTS.body3,
-                color: COLORS.black,
-                marginLeft: 5,
-                marginRight: SIZES.padding,
-              }}>
-              (4) ITEMS
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            width: '100%',
-          }}>
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-            }}>
-            <Text
-              style={{
-                ...FONTS.body3,
-                color: COLORS.black,
-                marginLeft: 5,
-              }}>
-              Select
-            </Text>
-
-            <Image
-              source={icons.arrow_right}
-              style={{ height: 25, width: 25, tintColor: COLORS.darkGray }}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
-
   function renderFooter() {
     return (
       <View
@@ -770,7 +658,10 @@ export default ShopServices = ({ navigation, route }) => {
             justifyContent: 'center',
             alignItems: 'center',
             flexBasis: '25%',
-          }}>
+          }}
+          onPress={() => handleChat(
+          )}
+        >
           <Image
             source={icons.chat}
             resizeMode="contain"
@@ -789,10 +680,7 @@ export default ShopServices = ({ navigation, route }) => {
             borderLeftWidth: 1,
             // padding: 3,
           }}
-          onPress={() => {
-            dispatch({ type: OPEN_BASKET_MODAL, payload: 'addbasket' });
-          }
-          }>
+          onPress={() => handleAddToBasket()}>
           <Image
             source={icons.addBasket}
             resizeMode="contain"
@@ -818,7 +706,7 @@ export default ShopServices = ({ navigation, route }) => {
             borderLeftWidth: 1,
             height: '100%',
           }}
-          onPress={() => handleCheckout()}>
+          onPress={() => handleCheckout(basket)}>
           <Text
             style={{
               ...FONTS.body3,
@@ -835,7 +723,6 @@ export default ShopServices = ({ navigation, route }) => {
 
   return (
     <Fragment>
-      <SafeAreaView style={{ flex: 0, backgroundColor: 'red' }} />
       <SafeAreaView
         style={{
           flex: 1,
@@ -847,8 +734,9 @@ export default ShopServices = ({ navigation, route }) => {
           }
           onClose={e => {
             dispatch({ type: CLOSE_MODALS });
-            if (basketModal === 'checkout_basket' && e === 'save') {
-              navigation.navigate('OrderSummary', { basket });
+
+            if (basketModal === 'checkout_basket' && e) {
+              handleCheckout(e)
             }
           }}
         />
@@ -892,177 +780,7 @@ export default ShopServices = ({ navigation, route }) => {
           </>
         ) : (
 
-          <View
-            style={styles.container}>
-
-            <View style={{ flexDirection: 'column', alignItems: 'flex-start', borderWidth: 1, borderColor: COLORS.lightGray, margin: SIZES.padding2 }}>
-
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Image
-                  source={userData5.imageUrl}
-                  resizeMode="contain"
-                  style={{
-                    height: 40,
-                    width: 40,
-                    borderRadius: 200,
-                    marginRight: 10,
-
-                  }}
-                />
-                <View style={{ flexDirection: 'row', alignItems: 'center', width: '80%' }}>
-                  <View style={{ flexDirection: 'column', flex: 1, }}>
-                    <Text style={{
-                      fontSize: SIZES.base * 2,
-                      fontWeight: 'bold',
-                      color: COLORS.black
-                    }}
-                    >
-                      {userData5.firstName + ' ' + userData5.lastName}
-                    </Text>
-
-                    <Image
-                      source={icons.stars}
-                      resizeMode='contain'
-                      style={{
-                        height: 20,
-                        width: 80
-                      }}
-                    />
-
-                  </View>
-
-                  <Image
-                    source={icons.likes}
-                    resizeMode='contain'
-                    style={{
-
-                      height: 25,
-                      width: 25
-                    }}
-                  />
-                  <Image
-                    source={icons.dotsetting}
-                    resizeMode='contain'
-                    style={{
-
-                      height: 25,
-                      width: 25
-                    }}
-                  />
-
-                </View>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', margin: SIZES.padding2 }}>
-                <View style={{ flexDirection: 'column', flex: 1, alignItems: 'center' }}>
-                  <Text style={{
-                    fontSize: SIZES.base * 2,
-                    fontWeight: '600',
-                    color: COLORS.black
-                  }}
-                  >
-                    {userData5.review}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={{ flexDirection: 'row', margin: SIZES.padding2, alignItems: 'center' }}>
-                <View style={{ flexDirection: 'column', flex: 1 }}>
-                  <Image
-                    source={images.shop4}
-                    resizeMode='contain'
-                    style={{
-                      height: 100,
-                      width: 100
-                    }}
-                  />
-                </View>
-              </View>
-            </View>
-            <View style={{ flexDirection: 'column', alignItems: 'flex-start', borderWidth: 1, borderColor: COLORS.lightGray, margin: SIZES.padding2 }}>
-
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Image
-                  source={userData5.imageUrl}
-                  resizeMode="contain"
-                  style={{
-                    height: 40,
-                    width: 40,
-                    borderRadius: 200,
-                    marginRight: 10,
-
-                  }}
-                />
-                <View style={{ flexDirection: 'row', alignItems: 'center', width: '80%' }}>
-                  <View style={{ flexDirection: 'column', flex: 1, }}>
-                    <Text style={{
-                      fontSize: SIZES.base * 2,
-                      fontWeight: 'bold',
-                      color: COLORS.black
-                    }}
-                    >
-                      {userData5.firstName + ' ' + userData5.lastName}
-                    </Text>
-
-                    <Image
-                      source={icons.stars}
-                      resizeMode='contain'
-                      style={{
-                        height: 20,
-                        width: 80
-                      }}
-                    />
-
-                  </View>
-
-                  <Image
-                    source={icons.likes}
-                    resizeMode='contain'
-                    style={{
-
-                      height: 25,
-                      width: 25
-                    }}
-                  />
-                  <Image
-                    source={icons.dotsetting}
-                    resizeMode='contain'
-                    style={{
-
-                      height: 25,
-                      width: 25
-                    }}
-                  />
-
-                </View>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', margin: SIZES.padding2 }}>
-                <View style={{ flexDirection: 'column', flex: 1, alignItems: 'center' }}>
-                  <Text style={{
-                    fontSize: SIZES.base * 2,
-                    fontWeight: '600',
-                    color: COLORS.black
-                  }}
-                  >
-                    {userData5.review}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={{ flexDirection: 'row', margin: SIZES.padding2, alignItems: 'center' }}>
-                <View style={{ flexDirection: 'column', flex: 1 }}>
-                  <Image
-                    source={images.shop7}
-                    resizeMode='contain'
-                    style={{
-                      height: 100,
-                      width: 100
-                    }}
-                  />
-                </View>
-              </View>
-            </View>
-          </View>
-
+          <Reviews />
 
         )}
 

@@ -1,5 +1,5 @@
 //import liraries
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 
@@ -8,13 +8,10 @@ const { addressLocations, addressLabels } = constants;
 
 // create a component
 const AddressLocationScreen = ({ navigation, route }) => {
-    const { basket, locations, navType } = route.params;
+    const { basket, locations, navType, rnd } = route.params;
 
-    const selectedAddress = basket && basket.pickupAddress ? basket.pickupAddress._id : null;
     // const locations = [];
-    console.log('MELC')
-    console.log(navType)
-    const [selected, setSelected] = useState(!selectedAddress ? locations.length !== 0 ? locations.find(a => { return a.isDefault })._id : null : selectedAddress)
+    const [selected, setSelected] = useState(null)
 
     const handleBack = () => {
 
@@ -151,6 +148,22 @@ const AddressLocationScreen = ({ navigation, route }) => {
         )
     }
 
+    useEffect(() => {
+
+        if (!basket.pickupAddress) {
+            setSelected(locations.length !== 0 ? locations.find(a => { return a.isDefault })._id : null)
+
+        } else {
+            const selectedAddress = basket && basket.pickupAddress ? basket.pickupAddress._id : null;
+            setSelected(selectedAddress)
+
+
+        }
+
+
+
+    }, [basket, locations, rnd])
+
 
     return (
         <SafeAreaView style={styles.container}>
@@ -158,7 +171,7 @@ const AddressLocationScreen = ({ navigation, route }) => {
             {renderAddresses()}
             <TouchableOpacity
                 style={styles.textButton}
-                onPress={() => navigation.navigate('AddressLocationForm', { navType })}
+                onPress={() => navigation.navigate('AddressLocationForm', { basket, navType })}
 
             >
                 <Image

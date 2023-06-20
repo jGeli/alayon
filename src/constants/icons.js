@@ -1,28 +1,16 @@
 export const back = require('../assets/icons/back.png');
 export const add = require('../assets/icons/add.png');
-export const car = require('../assets/icons/car.png');
-export const cutlery = require('../assets/icons/cutlery.png');
-export const donut = require('../assets/icons/donut.png');
-export const drink = require('../assets/icons/drink.png');
-export const fire = require('../assets/icons/fire.png');
-export const fries = require('../assets/icons/fries.png');
-export const hamburger = require('../assets/icons/hamburger.png');
-export const hotdog = require('../assets/icons/hotdog.png');
 export const like = require('../assets/icons/like.png');
 export const list = require('../assets/icons/list.png');
 export const location = require('../assets/icons/location.png');
+export const myLiveTracking = require('../assets/icons/location.png');
 export const master_card = require('../assets/icons/mastercard.png');
 export const nearby = require('../assets/icons/nearby.png');
-export const noodle = require('../assets/icons/noodle.png');
 export const pin = require('../assets/icons/pin.png');
-export const pizza = require('../assets/icons/pizza.png');
 export const red_pin = require('../assets/icons/red-pin.png');
-export const rice_bowl = require('../assets/icons/rice-bowl.png');
-export const salad = require('../assets/icons/salad.png');
 export const search = require('../assets/icons/search.png');
 export const basket = require('../assets/icons/shopping-basket.png');
 export const star = require('../assets/icons/star.png');
-export const sushi = require('../assets/icons/sushi.png');
 export const user = require('../assets/icons/user.png');
 export const home = require('../assets/icons/home.png');
 export const homeSharp = require('../assets/icons/home-sharp.png');
@@ -48,11 +36,7 @@ export const cart = require('../assets/icons/cart.png');
 export const menu = require('../assets/icons/menu.png');
 export const down_arrow = require('../assets/icons/down_arrow.png');
 export const favourite = require('../assets/icons/favourite.png');
-export const burger = require('../assets/icons/burger.png');
-export const cherry = require('../assets/icons/cherry.png');
-export const rice = require('../assets/icons/rice.png');
 export const love = require('../assets/icons/love.png');
-export const calories = require('../assets/icons/calories.png');
 export const logout = require('../assets/icons/logout.png');
 export const profile = require('../assets/icons/profile.png');
 export const setting = require('../assets/icons/setting.png');
@@ -60,7 +44,6 @@ export const wallet = require('../assets/icons/wallet.png');
 export const help = require('../assets/icons/help.png');
 export const pinIcon = require('../assets/icons/pin-icon.png');
 export const washingMachinePin = require('../assets/icons/washing-machine-pin.png');
-export const myLiveTracking = require('../assets/icons/cycling.png');
 export const myLocation = require('../assets/icons/myLocation.png');
 export const myLogout = require('../assets/icons/myLogout.png');
 export const tnc = require('../assets/icons/tnc.png');
@@ -89,10 +72,8 @@ export const onBoardingBackground_03 = require('../assets/icons/OnboardBackgroun
 export const onBoardingBackground_04 = require('../assets/icons/OnboardBackground-04.png');
 export const laundry_store = require('../assets/icons/laundry-store.png');
 export const more_vertical = require('../assets/icons/morevert.png');
-export const emojis = require('../assets/icons/emoticons.png');
 
 export default {
-  emojis,
   more_vertical,
   laundry_store,
   onBoardingBackground_01,
@@ -119,31 +100,18 @@ export default {
   back,
   add,
   clock,
-  car,
   camera,
   washing,
-  cutlery,
-  donut,
-  drink,
-  fire,
-  fries,
-  hamburger,
-  hotdog,
   like,
   list,
   location,
   master_card,
   nearby,
-  noodle,
   pin,
-  pizza,
   red_pin,
-  rice_bowl,
-  salad,
   search,
   basket,
   star,
-  sushi,
   user,
   account,
   home,
@@ -164,11 +132,7 @@ export default {
   filter,
   down_arrow,
   favourite,
-  burger,
-  cherry,
-  rice,
   love,
-  calories,
   logout,
   profile,
   setting,

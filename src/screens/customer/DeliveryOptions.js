@@ -12,56 +12,74 @@ import {
 } from 'react-native';
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
-import { SET_CUSTOMER_BASKET } from '../../redux/actions/type';
+import { CLEAR_ERROR, SET_CUSTOMER_BASKET } from '../../redux/actions/type';
 import { useEffect } from 'react';
+import { setCustomerBasket } from '../../utils/AsyncStorage';
 
 // create a component
 const DeliveryOptionScreen = ({ navigation, route }) => {
-    const { shop, selectedOption } = route.params;
+    const { shop: { _id } } = useSelector(({ customer }) => customer);
+    const { basket, shop, selectedOption } = route.params;
     const dispatch = useDispatch()
-    const { basket } = useSelector(({ customer }) => customer);
-    const [selected, setSelected] = useState(0)
+    const [selected, setSelected] = useState(null)
+    const [rnd, setRnd] = useState(null)
+    const [newBasket, setNewBasket] = useState({});
+    const handleBack = async () => {
+
+        if (selected) {
+            dispatch({ type: CLEAR_ERROR });
+        }
+
+        await setCustomerBasket({ ...newBasket, orderItems: newBasket.orders.length });
+        dispatch({ type: SET_CUSTOMER_BASKET, payload: { ...newBasket, orderItems: newBasket.orders.length } })
+        let basketData = newBasket;
+        basketData.deliveryOption = selected;
+        console.log(basketData, 'new basket')
+        navigation.navigate('OrderSummary', { basket: basketData, rnd: Math.random(), shopId: _id })
+    }
 
 
-    const handleSelect = (val) => {
-        let { orders } = basket;
-        console.log(shop)
+    const handleSelect = async (val) => {
+        let { orders } = newBasket;
 
         let newOrders = [];
+        let newVal = val;
         orders.map(a => {
             let newObj = {};
             newObj = a;
             if (shop._id === a.shop._id) {
-
-                console.log('SAMMEE')
-                newObj.deliveryOption = val
+                newVal = newObj.deliveryOption === val ? null : val
+                newObj.deliveryOption = newObj.deliveryOption === val ? null : val;
+                newOrders.push(newObj)
+            } else {
+                newOrders.push(newObj)
             }
-
-            console.log(newObj.deliveryOption)
-            newOrders.push(newObj)
         })
 
 
-        console.log('SELLL')
-        console.log(newOrders)
-        setSelected(val)
-        dispatch({ type: SET_CUSTOMER_BASKET, payload: { orders: newOrders } })
-        console.log(newOrders)
-        // navigation.goBack()
+        setSelected(newVal);
+        setNewBasket({ ...newBasket, orders: newOrders })
+
+
+
+
+
+        // setRnd(Math.random())
+
     }
 
 
-    const handleConfirm = () => {
-        dispatch({ type: SET_CUSTOMER_BASKET, payload: basket })
-        navigation.navigate('OrderSummary', { basket, rnd: Math.random() })
-    }
 
     useEffect(() => {
         setSelected(selectedOption)
-    }, [selectedOption])
+        setNewBasket(basket)
+        return () => {
+            setSelected(null);
+            setNewBasket({})
+        }
+    }, [selectedOption, rnd, basket])
 
-
-    function renderHeader() {
+    const renderHeader = () => {
         return (
             <View
                 style={{
@@ -74,8 +92,7 @@ const DeliveryOptionScreen = ({ navigation, route }) => {
                 }}>
                 <TouchableOpacity
                     style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
-                    onPress={() => navigation.navigate('OrderSummary', { basket, rnd: Math.random() })
-                    }>
+                    onPress={() => handleBack()}>
                     <Image
                         source={icons.back}
                         style={{ height: 20, width: 20, tintColor: COLORS.primary }}
@@ -134,14 +151,6 @@ const DeliveryOptionScreen = ({ navigation, route }) => {
                 })}
                 { }
 
-            </View>
-            <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', height: 70 }}>
-                <TouchableOpacity
-                    style={{ borderRadius: SIZES.radius, backgroundColor: COLORS.primary, width: 180, height: 50, justifyContent: 'center', alignItems: 'center' }}
-                    onPress={() => handleConfirm()}
-                ><Text
-                    style={{ ...FONTS.h4, color: COLORS.white }}
-                >CONFIRM</Text></TouchableOpacity>
             </View>
         </SafeAreaView>
     );

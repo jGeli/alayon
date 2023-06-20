@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { constants } from '../../constants';
 import {
+  CLEAR_CUSTOMER_DATA,
   CLEAR_MERCHANT_PROFILE,
   CLEAR_USER,
   SET_AUTHENTICATED,
@@ -12,21 +13,14 @@ import {
 } from './type';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  authHeader,
-  clearData,
-  getData,
-  storeData,
   storeToken,
-  storeUser,
 } from '../auth-header';
+import { clearData } from '../../utils/AsyncStorage';
 
 const varEnv = constants.varEnv;
 
-const setAuthToken = async token => {
-  await storeData('token', token);
-};
 
-export const requestSignin = (data, navigation, redirection) => dispatch => {
+export const requestSignin = (data, navigation, params) => dispatch => {
   axios
     .post(`${varEnv.apiUrl}/auth/request`, data)
     .then(res => {
@@ -34,11 +28,12 @@ export const requestSignin = (data, navigation, redirection) => dispatch => {
       console.log(res.data);
       console.log(res.data, 'Text');
       console.log(res.data, 'RES DATA INE');
-      storeData('user', user);
       dispatch({ type: SET_USER, payload: { ...user, ...data } });
       dispatch({ type: SET_USERTYPE, payload: userType });
 
-      navigation.navigate('Otp', { ...res.data, redirection });
+      console.log('OTP PARAMS')
+      console.log(params)
+      navigation.navigate('Otp', { ...res.data, ...params });
     })
     .catch(err => {
       console.log(err.response);
@@ -72,20 +67,11 @@ export const getAuthUser = navigation => dispatch => {
   axios
     .get(`${varEnv.apiUrl}/auth`)
     .then(res => {
-      console.log('AUTH USER');
-      console.log(res.data);
       const { screen, user } = res.data;
-      if (user && user.type === 'merchant') {
-        dispatch({ type: SET_MERCHANT_PROFILE, payload: { mobile: user.providerId } });
-        dispatch(getAuthMerchant(navigation));
-        navigation && navigation.navigate(screen, {});
-        return;
-      }
-
-      storeUser(user);
-
       dispatch({ type: SET_USER, payload: user });
       dispatch({ type: SET_AUTHENTICATED });
+      console.log('AUTH USER')
+      console.log(res.data)
 
       navigation && navigation.navigate(screen, {});
     })
@@ -96,22 +82,6 @@ export const getAuthUser = navigation => dispatch => {
     });
 };
 
-export const getAuthMerchant = navigation => dispatch => {
-  console.log('GET AUTH MERCHANT');
-  axios
-    .get(`${varEnv.apiUrl}/auth/merchant`)
-    .then(res => {
-      console.log('MERCHANT DATA');
-      let { merchant, screen } = res.data;
-      console.log(res.data);
-      dispatch({ type: SET_MERCHANT_PROFILE, payload: merchant });
-      navigation && navigation.navigate(screen, {});
-    })
-    .catch(err => {
-      console.log(err.response.data);
-      navigation && navigation.navigate('LaundryProfile', {});
-    });
-};
 
 export const updateAuthUser = data => dispatch => {
   console.log('Update Auth');
@@ -129,7 +99,8 @@ export const logoutUser = navigation => dispatch => {
   clearData();
   axios.defaults.headers.common['Authorization'] = null;
   dispatch({ type: CLEAR_USER });
+  dispatch({ type: CLEAR_CUSTOMER_DATA });
   dispatch({ type: SET_UNAUTHENTICATED });
   dispatch({ type: CLEAR_MERCHANT_PROFILE });
-  navigation.navigate('Main', {});
+  navigation.navigate('CustomerHome', {});
 };

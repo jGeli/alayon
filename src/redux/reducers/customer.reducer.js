@@ -1,8 +1,11 @@
 import { selectedShop } from '../../globals/data';
 import {
+  CLEAR_CUSTOMER_BASKET,
+  CLEAR_CUSTOMER_DATA,
   CLEAR_CUSTOMER_ORDER,
   CLEAR_SELECTED_SHOP,
   SET_CUSTOMER_BASKET,
+  SET_CUSTOMER_DATA,
   SET_CUSTOMER_ORDER,
   SET_SELECTED_SHOP,
   SET_USER,
@@ -21,11 +24,18 @@ const initialOrder = {
 };
 
 const initialState = {
-  name: null,
-  imgUrl: null,
   shop: {
     services: [],
     addons: [],
+  },
+  customer: {
+    name: null,
+    imgUrl: null,
+    locations: [],
+    shop: {
+      services: [],
+      addons: [],
+    },
   },
   order: {
     qty: 1,
@@ -37,15 +47,41 @@ const initialState = {
     cloths: [],
     addons: [],
     hasAddons: false,
-    deliveryOption: 0
   },
   basket: {
     orders: [],
+    pickupAddress: null,
+    returnLocation: null
   },
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case SET_CUSTOMER_DATA:
+      return {
+        ...state,
+        customer: { ...state.customer, ...action.payload },
+      };
+
+    case CLEAR_CUSTOMER_DATA:
+      return {
+        ...state,
+        customer: {
+          name: null,
+          imgUrl: null,
+          locations: [],
+
+        },
+      }
+    case CLEAR_CUSTOMER_BASKET:
+      return {
+        ...state,
+        basket: {
+          orders: [],
+          pickupAddress: null,
+          returnLocation: null
+        },
+      }
     case SET_CUSTOMER_BASKET:
       return {
         ...state,

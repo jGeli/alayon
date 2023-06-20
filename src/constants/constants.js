@@ -54,13 +54,13 @@ const onboarding_screens = [
 
 const deliveryOptions = [
   {
-    id: 0,
+    id: 1,
     name: "STANDARD",
-    description: "1-2 Days Normal Pick-up and Return.",
+    description: "1 Day Normal Pick-up and Return.",
     price: 50
   },
   {
-    id: 1,
+    id: 2,
     name: "EXPRESS",
     description: "3-5 Hours High Priority Pick-up and Return.",
     price: 100
@@ -70,15 +70,15 @@ const deliveryOptions = [
 const varEnv = {
   //API URLS
   //Local
-  apiUrl: 'http://192.168.1.100:42005/api/v1',
-  defaultToken:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0N2Q0MmExZGZlMmRkMTJlOGFhYjAwMSIsImlhdCI6MTY4NjE3OTM5MiwiZXhwIjoxNjg4NzcxMzkyfQ.KIO6Op_ce3cwzzpUxgvmCBLAqIcibZRXnxTI94nP3jk',
-  shopId: '647d4319dfe2dd12e8aab00c',
-  //Live
-  // apiUrl: 'https://alayon.bugtech.solutions/api/v1',
+  // apiUrl: 'http://192.168.1.100:42005/api/v1',
   // defaultToken:
-  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0N2QyM2I3NzNiMzFhNTRkNDczOGE4OCIsImlhdCI6MTY4NjE3ODExNywiZXhwIjoxNjg4NzcwMTE3fQ.hCKBMQy8zHRYlopXIUyzKK9p1bvywp31iZFXMTlls6s',
-  // shopId: '647d23d973b31a54d4738a93',
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0N2Q0MmExZGZlMmRkMTJlOGFhYjAwMSIsImlhdCI6MTY4NjE3OTM5MiwiZXhwIjoxNjg4NzcxMzkyfQ.KIO6Op_ce3cwzzpUxgvmCBLAqIcibZRXnxTI94nP3jk',
+  // shopId: '647d4319dfe2dd12e8aab00c',
+  //Live
+  apiUrl: 'https://alayon.bugtech.solutions/api/v1',
+  defaultToken:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0N2QyM2I3NzNiMzFhNTRkNDczOGE4OCIsImlhdCI6MTY4NjE3ODExNywiZXhwIjoxNjg4NzcwMTE3fQ.hCKBMQy8zHRYlopXIUyzKK9p1bvywp31iZFXMTlls6s',
+  shopId: '647d23d973b31a54d4738a93',
   //STATIC FILES URL
 };
 

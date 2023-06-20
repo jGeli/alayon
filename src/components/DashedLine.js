@@ -1,34 +1,37 @@
 //import liraries
-import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 
-import DashedLine from 'react-native-dashed-line';
 import { COLORS, SIZES } from '../constants';
 
-const Triangle = props => {
-  return <View style={[styles.triangle, props.style]} />;
-};
-
-const TriangleDown = props => {
-  return <Triangle style={[styles.triangleDown, props.style]} />;
-};
-
-const TriangleUp = props => {
-  return <Triangle style={[styles.parallelogramRight, props.style]} />;
-};
-
-const Parallelogram = () => {
-  return (
-    <View style={styles.parallelogram}>
-      <TriangleUp style={styles.parallelogramLeft} />
-      <View style={styles.parallelogramInner} />
-      <TriangleDown style={styles.parallelogramRight} />
-    </View>
-  );
-};
 
 // create a component
-const DashLine = () => {
+const DashLine = ({ color }) => {
+
+  const Triangle = props => {
+    return <View style={[styles.triangle, props.style, { borderBottomColor: color }]} />;
+  };
+
+  const TriangleDown = props => {
+    return <Triangle style={[styles.triangleDown, props.style]} />;
+  };
+
+  const TriangleUp = props => {
+    return <Triangle style={[styles.parallelogramRight, props.style]} />;
+  };
+
+  const Parallelogram = () => {
+    return (
+      <View style={styles.parallelogram}>
+        <TriangleUp style={styles.parallelogramLeft} />
+        <View style={[styles.parallelogramInner, { backgroundColor: color }]} />
+        <TriangleDown style={styles.parallelogramRight} />
+      </View>
+    );
+  };
+
+
+
   return (
     <View
       style={{
@@ -36,10 +39,9 @@ const DashLine = () => {
         flexDirection: 'row',
         justifyContent: 'space-around',
         // overflow: 'hidden',
-        backgroundColor: COLORS.white,
       }}>
-      {Array.apply(null, { length: 12 }).map(a => {
-        return <Parallelogram />;
+      {Array.apply(null, { length: 12 }).map((a, index) => {
+        return <View key={index}><Parallelogram /></View>;
       })}
     </View>
   );

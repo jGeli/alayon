@@ -4,19 +4,21 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, Switch }
 import { COLORS, FONTS, SIZES, icons, constants, images } from '../../constants';
 import { TextInput } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { SET_USER } from '../../redux/actions/type';
+import { SET_CUSTOMER_DATA, SET_USER } from '../../redux/actions/type';
 import { updateUserById } from '../../redux/actions/user.actions';
+import { setCustomerBasket, setCustomerLocations } from '../../utils/AsyncStorage';
 
 const labels = constants.addressLabels;
 
 // create a component
 const AddressLocationForm = ({ navigation, route }) => {
-    const { address, navType } = route.params;
+    const { address, navType, basket } = route.params;
     const dispatch = useDispatch();
-    const { user } = useSelector(({ user }) => user);
-    let { locations } = user;
+    const { customer: { locations } } = useSelector(({ customer }) => customer);
+    const { user, isAuthenticated } = useSelector(({ auth }) => auth);
+
     const [values, setValues] = useState({
-        isDefault: locations.length !== 0 ? false : true, label: null, mobile: null, name: null
+        isDefault: locations.length === 0 ? true : false, label: null, mobile: null, name: null
     })
 
     const handleChange = prop => e => {
@@ -26,8 +28,6 @@ const AddressLocationForm = ({ navigation, route }) => {
 
     const handleSetDefault = e => {
 
-        console.log(locations)
-        console.log(e)
         setValues({ ...values, isDefault: e })
     }
 
@@ -35,15 +35,16 @@ const AddressLocationForm = ({ navigation, route }) => {
 
         let newLocations = locations.filter(a => { return a._id !== id });
         dispatch({ type: SET_USER, payload: { locations: newLocations } });
-        navigation.navigate('AddressLocationScreen', { locations: newLocations, navType })
+        navigation.navigate('AddressLocationScreen', { locations: newLocations, navType, rnd: Math.random() })
     }
 
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         let newLocations = [];
+        let newVal = values;
+
         if (!values._id) {
             newLocations = locations;
-            let newVal = values;
             newVal._id = Math.random();
             newLocations.push(newVal);
         } else {
@@ -57,11 +58,23 @@ const AddressLocationForm = ({ navigation, route }) => {
         }
 
 
-        dispatch(updateUserById(user._id, { locations: newLocations }))
-            .then(() => {
-                navigation.navigate('AddressLocationScreen', { locations: newLocations, navType })
-            })
-            ;
+        console.log('NEW LOCA')
+        console.log(newLocations)
+        console.log(basket)
+        console.log(isAuthenticated)
+
+        if (isAuthenticated) {
+            dispatch(updateUserById(user._id, { locations: newLocations }))
+                .then(() => {
+
+                    navigation.navigate('AddressLocationScreen', { basket, locations: newLocations, navType, rnd: Math.random() })
+                });
+        } else {
+            await setCustomerLocations(newLocations);
+            navigation.navigate('AddressLocationScreen', { basket, locations: newLocations, navType, rnd: Math.random() })
+            dispatch({ type: SET_CUSTOMER_DATA, payload: { locations: newLocations } })
+        }
+
 
     }
 
@@ -69,10 +82,16 @@ const AddressLocationForm = ({ navigation, route }) => {
 
     useEffect(() => {
         if (address) {
-            setValues(address)
+            setValues({ ...values, ...address, isDefault: locations.length === 0 ? true : address.isDefault })
         }
-    }, [address])
 
+
+    }, [address, locations])
+
+
+    console.log('ADDRESS')
+    console.log(address)
+    console.log(basket)
 
     function renderHeader() {
         return (
@@ -80,7 +99,7 @@ const AddressLocationForm = ({ navigation, route }) => {
                 style={styles.header}>
                 <TouchableOpacity
                     style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
-                    onPress={() => navigation.navigate('AddressLocationScreen', { locations: locations, navType })
+                    onPress={() => navigation.navigate('AddressLocationScreen', { basket, locations: locations, navType })
                     }>
                     <Image
                         source={icons.back}
@@ -94,7 +113,7 @@ const AddressLocationForm = ({ navigation, route }) => {
                         flexGrow: 1
                         // fontWeight: 'bold',
                     }}>
-                    {address ? "Edit Address" : "New Address"}
+                    {address?._id ? "Edit Address" : "New Address"}
                 </Text>
                 {/* <TouchableOpacity
                     onPress={() => handleDelete(address._id)}
@@ -131,6 +150,7 @@ const AddressLocationForm = ({ navigation, route }) => {
                         style={styles.textInput}
                         value={values.mobile}
                         maxLength={10}
+                        keyboardType='numeric'
                         onChangeText={handleChange('mobile')}
                     />
                 </View>
@@ -160,7 +180,7 @@ const AddressLocationForm = ({ navigation, route }) => {
                         onChangeText={handleChange('postalCode')}
                     />
                 </View> */}
-                <TouchableOpacity style={{ ...styles.textInputContainer, flexDirection: 'row', justifyContent: 'space-between', padding: SIZES.padding, paddingLeft: SIZES.padding }} onPress={() => navigation.navigate('AddressDetails', { address: values })}>
+                <TouchableOpacity style={{ ...styles.textInputContainer, flexDirection: 'row', justifyContent: 'space-between', padding: SIZES.padding, paddingLeft: SIZES.padding }} onPress={() => navigation.navigate('AddressDetails', { address: values, navType, basket })}>
                     <Text style={{ color: COLORS.gray2 }}>{values.address ? values.address : 'Street Name, Building, House No.'}</Text>
                     <Image
                         source={icons.arrow_right}

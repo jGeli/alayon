@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  TextInput,
+  ScrollView,
   Button,
 } from 'react-native';
 import {
@@ -18,43 +20,49 @@ import {
   constants,
   styles,
 } from '../../constants';
-import { ScrollView, TextInput } from 'react-native-gesture-handler';
 import Clipboard from '@react-native-clipboard/clipboard';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import LabeledText from '../../components/LabeledText';
-import Tooltip from 'react-native-walkthrough-tooltip';
 import DashLine from '../../components/DashedLine';
 import CheckoutOrderCard from '../../components/Cards/CheckoutOrderCard';
 import { groupShopOrders, totalOrders } from '../../utils/helpers';
+import { CLEAR_ERROR, SET_ERROR } from '../../redux/actions/type';
 
 
 const { addressLabels } = constants;
 
 
 export default function OrderSummary({ navigation, route }) {
-  const { basket, rnd } = route.params;
-  const { pickupAddress } = basket;
-  const { user: { locations } } = useSelector(({ user }) => user)
-  const [toolTip, setToolTip] = useState(false);
+  const dispatch = useDispatch();
+  const { basket, shopId, rnd } = route.params;
+  const { isAuthenticated } = useSelector(({ auth }) => auth)
+  const { errors } = useSelector(({ ui }) => ui)
+  const { customer: { locations } } = useSelector(({ customer }) => customer)
   const [checkoutItems, setCheckoutItems] = useState([]);
-
   let newOrders = groupShopOrders(basket.orders)
 
 
-  const handleOpenToolTip = () => {
-    setToolTip(true);
-  };
+  const handleBookNow = (val) => {
 
-  const handleCloseTooltip = () => {
-    setToolTip(false);
-    // setToolTip(false)
-  };
-
-  const handleBookNow = () => {
     console.log('ORDERS')
+    console.log(val)
+    console.log(!val.deliveryOption)
+    console.log(val.deliveryOption)
+    console.log(newOrders)
+    if (!val.pickupAddress) {
+      dispatch({ type: SET_ERROR, payload: { locations: 'Set Pickup and Delivery Address' } })
+      return;
+    }
 
-    Clipboard.setString(JSON.stringify(basket.orders));
+    if (!val.deliveryOption) {
+      dispatch({ type: SET_ERROR, payload: { deliveryOption: 'Set Pickup and Delivery Address' } })
+      return;
+    }
+
+
+    navigation.navigate(isAuthenticated ? 'CustomerOrders' : 'OrderSummary', { basket, shopId })
+    // Clipboard.setString(JSON.stringify(basket.orders));
   }
 
   function renderHeader() {
@@ -70,7 +78,7 @@ export default function OrderSummary({ navigation, route }) {
         }}>
         <TouchableOpacity
           style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
-          onPress={() => navigation.goBack()}>
+          onPress={() => navigation.navigate('ShopServices', { shopId })}>
           <Image
             source={icons.back}
             style={{ height: 20, width: 20, tintColor: COLORS.primary }}
@@ -89,8 +97,11 @@ export default function OrderSummary({ navigation, route }) {
     );
   }
 
+
   function customerDetails() {
     let label = null;
+    let { pickupAddress } = basket;
+
 
     if (pickupAddress && pickupAddress.label) {
       label = addressLabels.find(ab => ab._id === pickupAddress.label);
@@ -116,7 +127,11 @@ export default function OrderSummary({ navigation, route }) {
             borderBottomWidth: 1,
             // elevation: 3
           }}
-          onPress={() => navigation.navigate('AddressLocationScreen', { basket, locations, navType: 'checkout' })}>
+          onPress={() => {
+            dispatch({ type: CLEAR_ERROR })
+            navigation.navigate('AddressLocationScreen', { basket, locations, navType: 'checkout' })
+          }}
+        >
           <View style={{ flexGrow: 1 }}>
             <View
               style={{
@@ -172,7 +187,7 @@ export default function OrderSummary({ navigation, route }) {
                 {pickupAddress.isDefault && <Text style={{ ...FONTS.body4, color: COLORS.primary, marginTop: 5, borderRadius: 5, borderColor: COLORS.primary, borderWidth: 1, paddingLeft: 5, paddingRight: 5, width: 60 }}>Default</Text>}
               </View>
               :
-              <Text style={{ ...FONTS.body3, color: COLORS.darkGray, marginLeft: SIZES.padding * 3 }}>No default address</Text>
+              <Text style={{ ...FONTS.body3, color: errors.locations ? COLORS.red : COLORS.darkGray, marginLeft: SIZES.padding * 3 }}>{errors.locations ? errors.locations : 'No default address'}</Text>
             }
           </View>
           <Image
@@ -190,7 +205,11 @@ export default function OrderSummary({ navigation, route }) {
               backgroundColor: COLORS.white3
               // borderBottomWidth: 1,
             }}
-            onPress={() => navigation.navigate('SchedulePickup')}>
+            onPress={() => {
+
+              navigation.navigate('AddressLocationScreen', { basket, locations, navType: 'checkout' })
+            }}
+          >
             <View
               style={{
                 flexGrow: 1,
@@ -230,9 +249,11 @@ export default function OrderSummary({ navigation, route }) {
           // paddingTop: SIZES.padding,
           paddingBottom: SIZES.padding,
         }}>
-        {newOrders.map((a, index) => {
+        {checkoutItems.map((a, index) => {
           return (
-            <CheckoutOrderCard shop={a} navigation={navigation} key={index} />
+            <View key={a._id}>
+              <CheckoutOrderCard shopData={a} navigation={navigation} key={a._id} param={{ shopId, basket }} />
+            </View>
           )
         })}
       </ScrollView>
@@ -242,7 +263,6 @@ export default function OrderSummary({ navigation, route }) {
   function renderFooter() {
 
     let total = totalOrders(newOrders);
-    console.log(total)
     return (
       <View
         style={{
@@ -264,47 +284,6 @@ export default function OrderSummary({ navigation, route }) {
           <View
             style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}
           >
-            <Tooltip
-              isVisible={toolTip}
-              content={
-                <LabeledText
-                  label={'NOTE:'}
-                  labelStyle={{
-                    color: 'red',
-                  }}
-                  textValue={
-                    'Appraisal rate is just estimated amount, Actual Amounts payable will be provided after Merchant confirmation.'
-                  }
-                  textStyle={{
-                    fontSize: SIZES.font,
-                    color: COLORS.black,
-                  }}
-                />
-              }
-              // onClose={() => {setToolTip}}
-              onClose={handleCloseTooltip}>
-              <TouchableOpacity
-                style={{
-                  // padding: SIZES.base,
-                  height: SIZES.padding,
-                  // marginLeft: SIZES.base,
-                  paddingLeft: SIZES.base,
-                  flexGrow: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-                onPress={() => handleOpenToolTip()}>
-                <Image
-                  source={icons.info}
-                  resizeMode="contain"
-                  style={{
-                    height: 15,
-                    width: 15,
-                    // bottom: 10,
-                  }}
-                />
-              </TouchableOpacity>
-            </Tooltip>
             <Text
               style={{ ...FONTS.body2, marginLeft: SIZES.padding }}
             >Total Payment</Text>
@@ -326,12 +305,13 @@ export default function OrderSummary({ navigation, route }) {
             justifyContent: 'center',
             alignItems: 'center',
             flexBasis: '35%',
+            opacity: errors.locations || errors.deliveryOption ? .5 : 1,
             backgroundColor: COLORS.primary,
             borderLeftColor: COLORS.gray,
             borderLeftWidth: 1,
             height: '100%',
           }}
-          onPress={() => handleBookNow()}>
+          onPress={() => handleBookNow(basket)}>
           <Text
             style={{
               ...FONTS.body3,
@@ -355,14 +335,17 @@ export default function OrderSummary({ navigation, route }) {
     );
   }
 
+
+
   useEffect(() => {
 
-    let newOrders = groupShopOrders(basket.orders)
-    console.log('New Orders')
-    console.log(newOrders)
+    let newOrders = groupShopOrders(basket.orders);
+    console.log("ITEMSS")
+    console.log(newOrders[0].data)
     setCheckoutItems(newOrders)
 
   }, [basket, rnd])
+
 
 
   return (
@@ -381,7 +364,7 @@ export default function OrderSummary({ navigation, route }) {
           // paddingBottom: 1,
         }}>
         {customerDetails()}
-        <DashLine />
+        <DashLine color={errors.locations ? COLORS.redTransparent : COLORS.primary} />
       </View>
 
 

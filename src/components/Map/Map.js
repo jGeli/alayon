@@ -16,7 +16,7 @@ import Geocoder from 'react-native-geocoding';
 import { useDispatch, useSelector } from 'react-redux';
 import { getShops } from '../../redux/actions/data.actions';
 
-Geocoder.init('AIzaSyD5ibcRV6uhLjLQgcSpt6GySfrzsXZkVkE'); // use a valid API key
+// Geocoder.init(''); // use a valid API key
 
 //Components
 export default function Map({ navigation, route }) {

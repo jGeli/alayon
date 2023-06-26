@@ -71,7 +71,10 @@ const CustomerBasket = ({ active, onClose }) => {
     });
 
     let newBasket = { ...basket, orders, orderItems: orders.length, pickupAddress };
-
+    console.log('BASKET', {
+      ...order,
+      shop,
+    })
     if (!isAuthenticated) {
       await setCustomerBasket(newBasket)
     }

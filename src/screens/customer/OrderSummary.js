@@ -50,18 +50,21 @@ export default function OrderSummary({ navigation, route }) {
     console.log(!val.deliveryOption)
     console.log(val.deliveryOption)
     console.log(newOrders)
-    if (!val.pickupAddress) {
-      dispatch({ type: SET_ERROR, payload: { locations: 'Set Pickup and Delivery Address' } })
-      return;
-    }
+    // if (!val.pickupAddress) {
+    //   dispatch({ type: SET_ERROR, payload: { locations: 'Set Pickup and Delivery Address' } })
+    //   return;
+    // }
 
-    if (!val.deliveryOption) {
-      dispatch({ type: SET_ERROR, payload: { deliveryOption: 'Set Pickup and Delivery Address' } })
-      return;
-    }
+    // if (!val.deliveryOption) {
+    //   dispatch({ type: SET_ERROR, payload: { deliveryOption: 'Set Pickup and Delivery Address' } })
+    //   return;
+    // }
 
 
-    navigation.navigate(isAuthenticated ? 'CustomerOrders' : 'OrderSummary', { basket, shopId })
+
+    navigation.navigate('OrderStatus', {})
+
+    // navigation.navigate(isAuthenticated ? 'CustomerOrders' : 'OrderSummary', { basket, shopId })
     // Clipboard.setString(JSON.stringify(basket.orders));
   }
 
@@ -129,7 +132,7 @@ export default function OrderSummary({ navigation, route }) {
           }}
           onPress={() => {
             dispatch({ type: CLEAR_ERROR })
-            navigation.navigate('AddressLocationScreen', { basket, locations, navType: 'checkout' })
+            navigation.navigate('AddressLocationScreen', { basket, locations, navType: 'checkout', shopId })
           }}
         >
           <View style={{ flexGrow: 1 }}>
@@ -343,7 +346,7 @@ export default function OrderSummary({ navigation, route }) {
     console.log("ITEMSS")
     console.log(newOrders[0].data)
     setCheckoutItems(newOrders)
-
+    console.log('SHOP ID', shopId)
   }, [basket, rnd])
 
 

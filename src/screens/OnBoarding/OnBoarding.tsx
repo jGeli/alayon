@@ -66,16 +66,7 @@ const OnBoarding = ({ navigation }) => {
             extraPolate: 'clamp',
           });
 
-          const dotWidth = dotPosition.interpolate({
-            // const width = scrollX.interpolate({
-            // inputRange: [index - 1, index, index + 1],
-            inputRange: [
-              windowWidth * (index - 1),
-              windowWidth * index,
-              windowWidth * (index + 1)],
-            outputRange: [8, 16, 8],
-            extraPolate: 'clamp',
-          });
+
           return (
             <Animated.View
               key={index}
@@ -296,7 +287,7 @@ const OnBoarding = ({ navigation }) => {
 
                 }}
               >
-                <Image
+                {/* <Image
                   source={item.backgroundIcon}
                   resizeMode="contain"
                   style={{
@@ -306,7 +297,7 @@ const OnBoarding = ({ navigation }) => {
                     marginBottom: -SIZES.padding,
                     opacity: .7
                   }}
-                />
+                /> */}
               </View>
             </View>
           );

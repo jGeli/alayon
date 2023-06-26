@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  PermissionsAndroid,
+
 } from 'react-native';
 import { icons, SIZES, COLORS, FONTS, constants } from '../../constants';
 import { cutString } from '../../utils/helpers';
@@ -21,7 +23,36 @@ const varEnv = constants.varEnv;
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
   const { user: { locations } } = useSelector(({ auth }) => auth);
-  const { shops } = useSelector(({ data }) => data);
+  const { shops, location } = useSelector(({ data }) => data);
+  const [useLocation, setUseLocation] = useState(false);
+
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Geolocation Permission',
+          message: 'Can we access your location?',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      console.log('granted', granted);
+      if (granted === 'granted') {
+        console.log('You can use Geolocation');
+        setUseLocation(false)
+        return true;
+      } else {
+        setUseLocation(true)
+        console.log('You cannot use Geolocation');
+        return false;
+      }
+    } catch (err) {
+      return false;
+    }
+  };
+
 
   const onShopSelect = item => {
     if (item.services && item.services.length !== 0) {
@@ -33,13 +64,13 @@ export default function Home({ navigation }) {
 
   let defaultLoaction = locations && locations.find(a => a.isDefault);
 
-
+  console.log(useLocation)
   function renderHeader() {
     return (
       <View style={styles.headerContainer}>
         <TouchableOpacity
-          disabled={true}
-          onPress={() => navigation.navigate('AddressLocationScreen', { locations })}
+          disabled={useLocation}
+          onPress={() => navigation.navigate('Map', { navType: 'findLocation' })}
           style={{
             flexDirection: 'row',
             flex: 1,
@@ -75,7 +106,7 @@ export default function Home({ navigation }) {
                 color: COLORS.primary,
                 // fontWeight: 'bold',
               }}>
-              {defaultLoaction && defaultLoaction.address ? cutString(defaultLoaction.address) : 'Find your location?'}
+              {location && location.address ? cutString(location.address, 25) : 'Find your location?'}
             </Text>
           </View>
         </TouchableOpacity>
@@ -420,7 +451,7 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     dispatch(getShops());
-
+    requestLocationPermission()
     return () => {
       dispatch({ type: SET_LAUNDRY_SHOPS, payload: [] });
     };

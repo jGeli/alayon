@@ -15,8 +15,11 @@ import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
 import { useDispatch, useSelector } from 'react-redux';
 import { getShops } from '../../redux/actions/data.actions';
+import MapPlaces from './MapPlaces';
+import { SET_MAP_LOCATION } from '../../redux/actions/type';
+import { gapikey } from '../../globals/env';
 
-// Geocoder.init(''); // use a valid API key
+Geocoder.init(gapikey); // use a valid API key
 
 //Components
 export default function Map({ navigation, route }) {
@@ -43,6 +46,19 @@ export default function Map({ navigation, route }) {
     setRegion(val);
   };
 
+  const handlePlace = ({ lat, lng }) => {
+    console.log(lat, lng)
+    setRegion({
+      latitude: lat,
+      longitude: lng,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+    })
+
+    onCenter(lat, lng);
+
+  }
+
   const onCenter = (latitude, longitude) => {
     mapRef.current.animateToRegion({
       latitude: latitude,
@@ -68,12 +84,24 @@ export default function Map({ navigation, route }) {
             style={{
               height: 20,
               width: 20,
-              margin: SIZES.padding,
-              color: COLORS.black,
+              margin: SIZES.padding
             }}
           />
         </TouchableOpacity>
-
+        <View>
+        <TouchableOpacity onPress={() => {
+            navigation.navigate('Map2', {});
+        }}>
+          <Image
+            source={icons.myLocation}
+            style={{
+              height: 20,
+              width: 20,
+              margin: SIZES.padding
+            }}
+          />
+        </TouchableOpacity>
+        </View>
         {/* <Image source={icons.back} style={{height: 25, width: 25}} /> */}
       </View>
     );
@@ -82,33 +110,20 @@ export default function Map({ navigation, route }) {
   function renderSearch() {
     return (
       <View style={styles.searchContainer}>
-        <View
-          style={styles.addressContainer}
-        >
-          <Text
-            style={{ ...FONTS.body3, color: COLORS.black }}
+        {navType === 'checkout' ?
+          <View
+            style={styles.addressContainer}
           >
-            {address.address}
-          </Text>
-        </View>
-        {/* <MapPlaces handlePlace={handlePlace} /> */}
+            <Text
+              style={{ ...FONTS.body3, color: COLORS.black }}
+            >
+              {address.address}
+            </Text>
+          </View>
+          :
 
-        {/* <View style={styles.SectionStyle}>
-            <Image
-              source={icons.search} //Change your icon image here
-              style={styles.ImageStyle}
-          />
-          <TextInput
-            style={{
-              fontSize: 18,
-              flexGrow: 1,
-              color: COLORS.black
-              }}
-            placeholder="Search"
-            placeholderTextColor={"gray"}
-            underlineColorAndroid="transparent"
-          />
-          </View> */}
+          <MapPlaces handlePlace={handlePlace} />
+        }
       </View>
     );
   }
@@ -141,27 +156,28 @@ export default function Map({ navigation, route }) {
 
   const handleSave = () => {
 
-    let newAddress = { ...address, ...region }
     // dispatch({
     //   type: SET_MAP_LOCATION,
     //   payload: newAddress,
     // });
-    console.log('newAd')
-    console.log(newAddress)
-    console.log(basket)
-    navigation.navigate('AddressLocationForm', { address: newAddress, navType, basket });
-
-    //GEOCODER
-    // Geocoder.from(latitude, longitude)
-    //   .then(json => {
-    //     let newAddress = { ...address, ...region, address: address.address }
-    //     dispatch({
-    //       type: SET_MAP_LOCATION,
-    //       payload: newAddress,
-    //     });
-    //     navigation.navigate('AddressLocationForm', { address: newAddress });
-    //   })
-    //   .catch(error => console.warn(error));
+    if (navType === 'checkout') {
+      let newAddress = { ...address, ...region }
+      navigation.navigate('AddressLocationForm', { address: newAddress, navType, basket });
+    }
+    if (navType === 'findLocation') {
+      //GEOCODER
+      const { latitude, longitude } = region;
+      Geocoder.from(latitude, longitude)
+        .then(({ results }) => {
+          let newAddress = { ...region, address: results[0] ? results[0].formatted_address : address.address }
+          dispatch({
+            type: SET_MAP_LOCATION,
+            payload: newAddress,
+          });
+          navigation.navigate('CustomerHome', { address: newAddress });
+        })
+        .catch(error => console.warn(error));
+    }
   };
 
   // function to check permissions and get Location
@@ -225,8 +241,6 @@ export default function Map({ navigation, route }) {
     );
   });
 
-  console.log('MP')
-  console.log(basket)
   return (
     <View style={styles.container}>
       {/* HEADER */}
@@ -269,11 +283,11 @@ export default function Map({ navigation, route }) {
           SAVE
         </Text>
       </TouchableOpacity>
-      <Image
+      {/* <Image
         resizeMode="contain"
         source={images.logo}
         style={styles.alayonLogo}
-      />
+      /> */}
     </View>
   );
 }
@@ -354,8 +368,8 @@ const styles = StyleSheet.create({
   topContainer: {
     flex: 1,
     width: '100%',
-    position: 'absolute',
-    top: 10,
+    // position: 'absolute',
+    top: 0,
     padding: SIZES.padding,
     // left: 10
   },
@@ -363,6 +377,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     // backgroundColor: 'black',
     // flex: 1,
+    // paddingTop: SIZES.padding,
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
@@ -378,7 +393,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     flexDirection: 'row',
-    padding: SIZES.padding,
+    // padding: SIZES.padding,
     // marginVertical: SIZES.padding * 1,
     flex: 1,
   },
@@ -405,14 +420,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     // top: 130,
-    bottom: 100,
+    bottom: 50,
     backgroundColor: COLORS.white3,
     padding: 2,
     borderRadius: 50,
   },
   saveButton: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 10,
     backgroundColor: COLORS.primary,
     padding: SIZES.padding,
     height: 40,
@@ -425,7 +440,7 @@ const styles = StyleSheet.create({
     height: 30,
     width: '100%',
     position: 'absolute',
-    bottom: 0,
+    top: 0,
     left: 0,
     backgroundColor: COLORS.white,
     // margin: 50,

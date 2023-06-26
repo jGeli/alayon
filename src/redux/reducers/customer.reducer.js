@@ -13,7 +13,7 @@ import {
 
 const initialOrder = {
   qty: 1,
-  totalServices: 0,
+  totalService: 0,
   totalAddons: 0,
   pricing: 'Piece',
   service: null,
@@ -39,7 +39,7 @@ const initialState = {
   },
   order: {
     qty: 1,
-    totalServices: 0,
+    totalService: 0,
     totalAddons: 0,
     pricing: 'Piece',
     service: null,

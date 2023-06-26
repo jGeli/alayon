@@ -8,7 +8,7 @@ const { addressLocations, addressLabels } = constants;
 
 // create a component
 const AddressLocationScreen = ({ navigation, route }) => {
-    const { basket, locations, navType, rnd } = route.params;
+    const { basket, locations, navType, rnd, shopId } = route.params;
 
     // const locations = [];
     const [selected, setSelected] = useState(null)
@@ -21,7 +21,7 @@ const AddressLocationScreen = ({ navigation, route }) => {
             let newBasket = basket;
             newBasket.pickupAddress = address;
 
-            navigation.navigate('OrderSummary', { basket: newBasket })
+            navigation.navigate('OrderSummary', { basket: newBasket, shopId })
 
 
         } else {

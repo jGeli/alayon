@@ -68,6 +68,7 @@ export const getAuthUser = navigation => dispatch => {
     .get(`${varEnv.apiUrl}/auth`)
     .then(res => {
       const { screen, user } = res.data;
+      console.log(user)
       dispatch({ type: SET_USER, payload: user });
       dispatch({ type: SET_AUTHENTICATED });
       console.log('AUTH USER')

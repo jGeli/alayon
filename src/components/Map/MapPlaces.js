@@ -2,14 +2,14 @@ import React from 'react';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { COLORS } from '../../constants';
 
-const GooglePlacesInput = ({handlePlace}) => {
+const MapPlaces = ({ handlePlace }) => {
   return (
     <GooglePlacesAutocomplete
-        GooglePlacesDetailsQuery={{ fields: "geometry" }}
-        fetchDetails={true} // 
+      GooglePlacesDetailsQuery={{ fields: "geometry" }}
+      fetchDetails={true} // 
       placeholder='Search'
-    //   textInput={{color: COLORS.primary}}
-    //   listView={{color: COLORS.primary}}
+      //   textInput={{color: COLORS.primary}}
+      //   listView={{color: COLORS.primary}}
 
       onPress={(data, details = null) => {
         // 'details' is provided when fetchDetails = true
@@ -21,18 +21,18 @@ const GooglePlacesInput = ({handlePlace}) => {
         placeholderTextColor: COLORS.black,
         returnKeyType: "search"
       }}
-    //   currentLocation={true}
+      //   currentLocation={true}
       query={{
         key: 'AIzaSyD5ibcRV6uhLjLQgcSpt6GySfrzsXZkVkE',
         language: 'en',
       }}
       styles={{
         description: {
-            color: COLORS.black
-          },
+          color: COLORS.black
+        },
         textInputContainer: {
-        //   backgroundColor: 'grey',
-        color: COLORS.primary
+          //   backgroundColor: 'grey',
+          color: COLORS.primary
         },
         textInput: {
           height: 38,
@@ -44,4 +44,4 @@ const GooglePlacesInput = ({handlePlace}) => {
   );
 };
 
-export default GooglePlacesInput;
+export default MapPlaces;

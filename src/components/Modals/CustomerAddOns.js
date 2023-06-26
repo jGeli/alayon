@@ -41,7 +41,7 @@ const CustomerAddOns = ({ active, onClose }) => {
     if (type === 'less') {
       let ind = orderAddOns
         .map(a => {
-          return a._id;
+          return a.addOnsId;
         })
         .indexOf(item._id);
 
@@ -52,22 +52,26 @@ const CustomerAddOns = ({ active, onClose }) => {
           orderAddOns[ind].qty--;
           newAddOns = orderAddOns;
         } else {
-          newAddOns = orderAddOns.filter(a => a._id !== item._id);
+          newAddOns = orderAddOns.filter(a => a.addOnsId !== item._id);
         }
       }
     }
 
+
+
     if (type === 'add') {
-      let addons = orderAddOns.find(a => a._id === item._id);
+      let { description, name, price, _id } = item;
+      let addons = orderAddOns.find(a => a.addOnsId === item._id);
       if (!addons) {
         orderAddOns.push({
-          ...item,
+          addOnsId: _id,
+          name, description, price,
           qty: 1,
         });
         newAddOns = orderAddOns;
       } else {
         newAddOns = orderAddOns.map(a => {
-          if (a._id === item._id) {
+          if (a.addOnsId === item._id) {
             a.qty++;
             return a;
           }
@@ -138,7 +142,7 @@ const CustomerAddOns = ({ active, onClose }) => {
           keyExtractor={item => `${item._id}`}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item, index }) => {
-            let addons = adds.find(a => a._id === item._id);
+            let addons = adds.find(a => a.addOnsId === item._id);
 
             return (
               <TouchableOpacity
@@ -192,7 +196,7 @@ const CustomerAddOns = ({ active, onClose }) => {
     );
   }
 
-  let selectedCount = adds.find(a => a._id === selected._id);
+  let selectedCount = adds.find(a => a.addOnsId === selected._id);
 
   return (
     <Modal animationType="fade" transparent={true} visible={active}>

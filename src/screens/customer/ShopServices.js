@@ -47,8 +47,6 @@ export default ShopServices = ({ navigation, route }) => {
   const { shop, order, basket } = useSelector(({ customer }) => customer);
   const { customerAddOns, basketModal } = useSelector(({ ui }) => ui);
   const [cloths, setCloths] = useState();
-  const [deliveryType, setDeliveryType] = useState('standard');
-  const [pricing, setPricing] = useState('piece');
   const [isAddonEnabled, setAddonEnabled] = useState(false);
   const [tab, setTab] = useState('services');
 
@@ -154,7 +152,8 @@ export default ShopServices = ({ navigation, route }) => {
 
   const handleChangeService = val => {
     // setSelectedServiceType(val);
-    dispatch({ type: SET_CUSTOMER_ORDER, payload: { service: val } });
+    console.log(val)
+    dispatch({ type: SET_CUSTOMER_ORDER, payload: { service: val.service } });
     if (val) {
       setCloths(val.cloths);
     }
@@ -166,30 +165,26 @@ export default ShopServices = ({ navigation, route }) => {
       let service = services[0];
 
       if (service) {
-        setPricing(
-          service.isPerPiece
-            ? 'isPerPiece'
-            : service.isPerKilo
-              ? 'isPerKilo'
-              : service.isPerBatch
-                ? 'isPerBatch'
-                : null,
-        );
         setCloths(service.cloths);
       }
     }
+    console.log("USE1 init", shop._id)
 
     return () => {
+      console.log("USE1 exit")
       setCloths([]);
     };
   }, [shop, basket, basketModal, order]);
 
   useEffect(() => {
+    console.log("USE2 init", shopId)
+
     if (shopId) {
       handleShop();
     }
 
     return () => {
+      console.log("USE2 exit")
       setCloths([]);
       dispatch({
         type: SET_CUSTOMER_ORDER,
@@ -687,7 +682,6 @@ export default ShopServices = ({ navigation, route }) => {
             style={{
               height: 20,
               width: 20,
-              color: COLORS.primary,
               tintColor: COLORS.primary,
             }}
           />

@@ -21,7 +21,7 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
 
         return (
             <TouchableOpacity
-                onPress={() => navigation.navigate('AddOnsScreen', { order })}
+            // onPress={() => navigation.navigate('AddOnsScreen', { order })}
             >
                 <View
                     style={{
@@ -87,10 +87,10 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
                                             }`;
                                     })}
                                 </Text>
-                                <Image
+                                {/* <Image
                                     source={icons.arrow_right}
                                     style={{ height: 25, width: 25, tintColor: COLORS.darkGray }}
-                                />
+                                /> */}
                             </>
 
                             :
@@ -288,10 +288,10 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
                     <Text style={{ ...FONTS.body3, color: COLORS.darkBlue }}>Delivery Option</Text>
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={{ ...FONTS.body3, color: errors.deliveryOption ? COLORS.redTransparent : COLORS.black, fontWeight: '600' }}>{deliveryOpt.name}</Text>
-                        <Image
+                        {/* <Image
                             source={icons.arrow_right}
                             style={{ height: 25, width: 25, tintColor: COLORS.darkGray }}
-                        />
+                        /> */}
                     </View>
 
                 </View>

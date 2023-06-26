@@ -73,7 +73,66 @@ export const onBoardingBackground_04 = require('../assets/icons/OnboardBackgroun
 export const laundry_store = require('../assets/icons/laundry-store.png');
 export const more_vertical = require('../assets/icons/morevert.png');
 
+
+export const delivery_complete = require('../assets/icons/delivery_complete.png');
+export const delivery1 = require('../assets/icons/delivery1.png');
+export const delivery2 = require('../assets/icons/delivery2.png');
+export const delivery3 = require('../assets/icons/delivery3.png');
+export const delivery4 = require('../assets/icons/delivery4.png');
+
+export const hand_over = require('../assets/icons/hand_over.png');
+export const hand_over1 = require('../assets/icons/hand_over1.png');
+export const order_confirmed = require('../assets/icons/order_confirmed.png');
+export const order_confirmed1 = require('../assets/icons/order_confirmed1.png');
+
+export const order_ready = require('../assets/icons/order_ready.png');
+
+
+export const pickup = require('../assets/icons/pickup.png');
+export const rateus = require('../assets/icons/rateus.png');
+export const rateus1 = require('../assets/icons/rateus1.png');
+
+export const reorder = require('../assets/icons/reorder.jpg');
+export const reorder1 = require('../assets/icons/reorder1.jpg');
+export const reorder2 = require('../assets/icons/reorder2.png');
+
+
+export const edit_order = require('../assets/icons/edit_order.png');
+export const edit_order1 = require('../assets/icons/edit_order1.png');
+export const edit_order2 = require('../assets/icons/edit_order2.png');
+export const edit_order3 = require('../assets/icons/edit_order3.png');
+
+export const order_receive = require('../assets/icons/order_receive.png');
+
+
+export const shop_processing = require('../assets/icons/shop_processing.png');
+export const shop_processing1 = require('../assets/icons/shop_processing1.png');
+export const shop_processing2 = require('../assets/icons/shop_processing2.png');
+
+
+
+
 export default {
+  order_receive,
+  reorder,
+  reorder1,
+  reorder2,
+  delivery1,
+  delivery2,
+  delivery3,
+  delivery4,
+  hand_over,
+  hand_over1,
+  order_confirmed,
+  order_confirmed1,
+  order_ready,
+  pickup,
+  rateus,
+  rateus1,
+  shop_processing,
+  shop_processing1,
+  shop_processing2,
+  delivery_complete,
   more_vertical,
   laundry_store,
   onBoardingBackground_01,

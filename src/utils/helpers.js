@@ -11,7 +11,7 @@ export const cutString = (str, len) => {
   let newStr = '';
   if (str) {
     newStr = String(str).slice(0, len);
-    newStr + `${str.length > len ? '...' : ''}`;
+    newStr = newStr + `${str.length > len ? '..' : ''}`;
   }
 
   return newStr;

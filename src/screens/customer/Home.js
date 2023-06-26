@@ -64,7 +64,8 @@ export default function Home({ navigation }) {
 
   let defaultLoaction = locations && locations.find(a => a.isDefault);
 
-  console.log(useLocation)
+
+  console.log('location', location)
   function renderHeader() {
     return (
       <View style={styles.headerContainer}>
@@ -97,8 +98,10 @@ export default function Home({ navigation }) {
             style={{
               alignItems: 'flex-start',
               justifyContent: 'center',
-              // flex: 1,
-              width: '80%',
+              // backgroundColor: COLORS.black,
+              paddingRight: SIZES.padding,
+              flex: 1,
+              // width: '80%',
             }}>
             <Text
               style={{

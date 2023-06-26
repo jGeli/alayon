@@ -158,11 +158,9 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
         return (
             <View
                 style={{
-                    flex: 1,
                     flexDirection: 'column',
                     alignItems: 'flex-start',
                     justifyContent: 'space-between',
-                    borderBottomColor: COLORS.white,
                     borderBottomWidth: 1,
                     borderTopColor: COLORS.gray2,
                     borderTopWidth: 1,
@@ -174,6 +172,7 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
                 }
                 }
             >
+            
                 <View
                     style={{ padding: SIZES.padding, backgroundColor: COLORS.white }}
                 >
@@ -376,7 +375,21 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
             >
 
                 {data && data.map(a => {
-                    return renderServiceItems(a)
+                    return <View
+                    style={{
+                        flex: 1,
+                        borderBottomColor: COLORS.white,
+                        borderBottomWidth: 1,
+                        borderTopColor: COLORS.gray2,
+                        borderTopWidth: 1,
+                        width: '100%',
+                        // marginTop: 3,
+                        elevation: 1,
+                        backgroundColor: COLORS.white
+                        // height: '100%'
+                    }
+                    }
+                    >{renderServiceItems(a)}</View>
                 })}
                 <View style={{ marginTop: 5 }}>
                     {handleDeliveryType(shopData)}

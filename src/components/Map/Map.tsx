@@ -42,8 +42,12 @@ export default function Map({ navigation, route }) {
   const mapRef = useRef();
 
   const handleRegion = val => {
+  if(!isDrag){
     setIsDrag(true);
-    setRegion(val);
+  }
+  setRegion(val);
+  
+  
   };
 
   const handlePlace = ({ lat, lng }) => {
@@ -84,24 +88,24 @@ export default function Map({ navigation, route }) {
             style={{
               height: 20,
               width: 20,
-              margin: SIZES.padding
+              margin: SIZES.padding,
+              color: COLORS.black,
             }}
           />
         </TouchableOpacity>
-        <View>
         <TouchableOpacity onPress={() => {
-            navigation.navigate('Map2', {});
+            navigation.navigate('Map2', { address, navType, basket });
         }}>
           <Image
             source={icons.myLocation}
             style={{
               height: 20,
               width: 20,
-              margin: SIZES.padding
+              margin: SIZES.padding,
+              color: COLORS.black,
             }}
           />
         </TouchableOpacity>
-        </View>
         {/* <Image source={icons.back} style={{height: 25, width: 25}} /> */}
       </View>
     );
@@ -124,6 +128,22 @@ export default function Map({ navigation, route }) {
 
           <MapPlaces handlePlace={handlePlace} />
         }
+        {/* <View style={styles.SectionStyle}>
+            <Image
+              source={icons.search} //Change your icon image here
+              style={styles.ImageStyle}
+          />
+          <TextInput
+            style={{
+              fontSize: 18,
+              flexGrow: 1,
+              color: COLORS.black
+              }}
+            placeholder="Search"
+            placeholderTextColor={"gray"}
+            underlineColorAndroid="transparent"
+          />
+          </View> */}
       </View>
     );
   }
@@ -257,7 +277,7 @@ export default function Map({ navigation, route }) {
         }}
       // onPress={e => console.log(e)}
       >
-        <Marker
+        <Marker.Animated
           // draggable
           coordinate={{
             latitude: region.latitude,
@@ -270,7 +290,7 @@ export default function Map({ navigation, route }) {
           <View style={isDrag ? styles.markerDrag : styles.marker}>
             <Image source={icons.pinIcon} style={{ height: 35, width: 40 }} />
           </View>
-        </Marker>
+        </Marker.Animated>
         {renderMarker}
       </MapView>
       <View style={styles.topContainer}>
@@ -283,11 +303,15 @@ export default function Map({ navigation, route }) {
           SAVE
         </Text>
       </TouchableOpacity>
-      {/* <Image
+      <View
+         style={styles.alayonLogo}
+      >
+      <Image
         resizeMode="contain"
         source={images.logo}
-        style={styles.alayonLogo}
-      /> */}
+        style={{height: 40, width: 100}}
+      />
+      </View>
     </View>
   );
 }
@@ -366,11 +390,13 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   topContainer: {
-    flex: 1,
+    // flex: 1,
     width: '100%',
-    // position: 'absolute',
+    position: 'absolute',
     top: 0,
-    padding: SIZES.padding,
+    paddingRight: SIZES.padding,
+    paddingLeft: SIZES.padding,
+    // backgroundColor: COLORS.black
     // left: 10
   },
 
@@ -420,14 +446,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     // top: 130,
-    bottom: 50,
+    bottom: 120,
     backgroundColor: COLORS.white3,
     padding: 2,
     borderRadius: 50,
   },
   saveButton: {
     position: 'absolute',
-    bottom: 10,
+    bottom: 60,
     backgroundColor: COLORS.primary,
     padding: SIZES.padding,
     height: 40,
@@ -437,14 +463,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   alayonLogo: {
-    height: 30,
+    height: 50,
     width: '100%',
     position: 'absolute',
-    top: 0,
+    bottom: 0,
     left: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: COLORS.white,
     // margin: 50,
-    // padding: 50
+    padding: SIZES.padding
   },
   alayonBanner: {
     position: 'absolute',

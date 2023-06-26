@@ -70,7 +70,7 @@ const CustomerBasket = ({ active, onClose }) => {
       shop,
     });
 
-    let newBasket = { ...basket, orders, orderItems: orders.length, pickupAddress };
+    let newBasket = { ...basket, orders, orderItems: orders.length, pickupAddress, };
     console.log('BASKET', {
       ...order,
       shop,

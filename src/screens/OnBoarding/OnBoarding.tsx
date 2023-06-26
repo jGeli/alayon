@@ -287,7 +287,7 @@ const OnBoarding = ({ navigation }) => {
 
                 }}
               >
-                {/* <Image
+                <Image
                   source={item.backgroundIcon}
                   resizeMode="contain"
                   style={{
@@ -297,7 +297,7 @@ const OnBoarding = ({ navigation }) => {
                     marginBottom: -SIZES.padding,
                     opacity: .7
                   }}
-                /> */}
+                />
               </View>
             </View>
           );

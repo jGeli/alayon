@@ -74,7 +74,7 @@ export default ShopServices = ({ navigation, route }) => {
   const handleCheckout = (val) => {
     let { orders } = val;
 
-
+    console.log(val)
     if (orders.length !== 0) {
       navigation.navigate('OrderSummary', { basket: val, shopId, rnd: Math.random() });
     } else {
@@ -130,10 +130,21 @@ export default ShopServices = ({ navigation, route }) => {
     if (type === 'add') {
       let cloth = orderCloths.find(a => a.cloth === item.cloth);
       if (!cloth) {
+        let { service, cloth, batchQty,
+          batchUnit,
+          priceBatch,
+          priceKilo,
+          pricePiece } = item
         orderCloths.push({
-          ...item,
+          service,
+          cloth,
           name: item.name,
           qty: 1,
+          batchQty,
+          batchUnit,
+          priceBatch,
+          priceKilo,
+          pricePiece,
         });
         newCloths = orderCloths;
       } else {

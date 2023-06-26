@@ -254,7 +254,7 @@ export default function OrderSummary({ navigation, route }) {
         }}>
         {checkoutItems.map((a, index) => {
           return (
-            <View key={a._id}>
+            <View key={index}>
               <CheckoutOrderCard shopData={a} navigation={navigation} key={a._id} param={{ shopId, basket }} />
             </View>
           )

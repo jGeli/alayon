@@ -2,34 +2,30 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { SET_CUSTOMER_BASKET } from '../../redux/actions/type';
 
 const { addressLocations, addressLabels } = constants;
 
 
 // create a component
 const AddressLocationScreen = ({ navigation, route }) => {
-    const { basket, locations, navType, rnd, shopId } = route.params;
-
-    // const locations = [];
+    const { navType } = route.params;
+    const dispatch = useDispatch();
+    const { customer: { locations }, basket } = useSelector(({ customer }) => customer);
     const [selected, setSelected] = useState(null)
 
+
     const handleBack = () => {
-
-
-        if (navType === 'checkout') {
-            let address = locations.find(a => a._id === selected);
-            let newBasket = basket;
-            newBasket.pickupAddress = address;
-
-            navigation.navigate('OrderSummary', { basket: newBasket, shopId })
-
-
-        } else {
-            navigation.goBack()
-        }
-
+        navigation.goBack()
     }
 
+    const handleSelect = (val) => {
+
+
+        dispatch({ type: SET_CUSTOMER_BASKET, payload: { [navType]: selected === val._id ? null : val } })
+        setSelected(selected === val._id ? null : val._id)
+    }
 
     function renderHeader() {
         return (
@@ -95,7 +91,7 @@ const AddressLocationScreen = ({ navigation, route }) => {
                             >
                                 <TouchableOpacity
                                     style={styles.cardContentLeft}
-                                    onPress={() => setSelected(a._id)}
+                                    onPress={() => handleSelect(a)}
 
                                 >
                                     {index !== 0 && <View style={styles.cardTopBorder}></View>}
@@ -149,21 +145,14 @@ const AddressLocationScreen = ({ navigation, route }) => {
     }
 
     useEffect(() => {
-
-        if (!basket.pickupAddress) {
-            setSelected(locations.length !== 0 ? locations.find(a => { return a.isDefault })._id : null)
-
-        } else {
-            const selectedAddress = basket && basket.pickupAddress ? basket.pickupAddress._id : null;
-            setSelected(selectedAddress)
-
-
+        if (navType === 'pickupDelivery' || navType === 'returnDelivery') {
+            setSelected(basket[navType] ? basket[navType]._id : null)
         }
 
+    }, [navType, basket])
 
 
-    }, [basket, locations, rnd])
-
+    console.log('ADD',)
 
     return (
         <SafeAreaView style={styles.container}>
@@ -171,7 +160,7 @@ const AddressLocationScreen = ({ navigation, route }) => {
             {renderAddresses()}
             <TouchableOpacity
                 style={styles.textButton}
-                onPress={() => navigation.navigate('AddressLocationForm', { basket, navType })}
+                onPress={() => navigation.navigate('AddressLocationForm', { navType })}
 
             >
                 <Image

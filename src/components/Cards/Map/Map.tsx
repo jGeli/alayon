@@ -10,20 +10,20 @@ import {
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 // import Geolocation from '@react-native-community/geolocation';
-import { COLORS, FONTS, SIZES, icons, images } from '../../constants';
+import { COLORS, FONTS, SIZES, icons, images } from '../../../constants';
 import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
 import { useDispatch, useSelector } from 'react-redux';
-import { getShops } from '../../redux/actions/data.actions';
+import { getShops } from '../../../redux/actions/data.actions';
 import MapPlaces from './MapPlaces';
-import { SET_MAP_LOCATION } from '../../redux/actions/type';
-import { gapikey } from '../../globals/env';
+import { SET_MAP_LOCATION } from '../../../redux/actions/type';
+import { gapikey } from '../../../globals/env';
 
 Geocoder.init(gapikey); // use a valid API key
 
 //Components
 export default function Map({ navigation, route }) {
-  const { address, navType, basket } = route.params
+  const { address, navType } = route.params
   const dispatch = useDispatch();
   const { shops } = useSelector(({ data }) => data);
   const { width, height } = Dimensions.get('window');
@@ -76,8 +76,8 @@ export default function Map({ navigation, route }) {
     return (
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => {
-          if (navType === 'checkout') {
-            navigation.navigate('AddressLocationForm', { address, navType, basket });
+          if (navType === 'pickupDelivery' || navType === 'returnDelivery') {
+            navigation.navigate('AddressLocationForm', { address, navType });
           } else {
             navigation.goBack()
 
@@ -88,21 +88,19 @@ export default function Map({ navigation, route }) {
             style={{
               height: 20,
               width: 20,
-              margin: SIZES.padding,
-              color: COLORS.black,
+              margin: SIZES.padding
             }}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => {
-            navigation.navigate('Map2', { address, navType, basket });
+            navigation.navigate('Map2', { address, navType });
         }}>
           <Image
             source={icons.myLocation}
             style={{
               height: 20,
               width: 20,
-              margin: SIZES.padding,
-              color: COLORS.black,
+              margin: SIZES.padding
             }}
           />
         </TouchableOpacity>
@@ -114,7 +112,7 @@ export default function Map({ navigation, route }) {
   function renderSearch() {
     return (
       <View style={styles.searchContainer}>
-        {navType === 'checkout' ?
+        {navType === 'pickupDelivery' || navType === 'returnDelivery' ?
           <View
             style={styles.addressContainer}
           >
@@ -180,9 +178,9 @@ export default function Map({ navigation, route }) {
     //   type: SET_MAP_LOCATION,
     //   payload: newAddress,
     // });
-    if (navType === 'checkout') {
+    if (navType === 'pickupDelivery' || navType === 'returnDelivery') {
       let newAddress = { ...address, ...region }
-      navigation.navigate('AddressLocationForm', { address: newAddress, navType, basket });
+      navigation.navigate('AddressLocationForm', { address: newAddress, navType });
     }
     if (navType === 'findLocation') {
       //GEOCODER

@@ -19,9 +19,9 @@ import haversine from "haversine";
 import Geolocation from 'react-native-geolocation-service';
 import axios from 'axios';
 import polyline from '@mapbox/polyline';
-import { icons } from "../../constants";
+import { icons } from "../../../constants";
 import { useSelector } from "react-redux";
-import { gapikey } from "../../globals/env";
+import { gapikey } from "../../../globals/env";
 
 // const LATITUDE = 29.95539;
 // const LONGITUDE = 78.07513;

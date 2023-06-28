@@ -5,7 +5,7 @@ import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 
 
 // create a component
-export default function TestScreen({ navigation, route }) {
+export default function ProfileSetup({ navigation, route }) {
 
 
 
@@ -14,24 +14,24 @@ export default function TestScreen({ navigation, route }) {
         return (
             <View
                 style={styles.header}>
-                <TouchableOpacity
-                    style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
-                    onPress={() => navigation.goBack()}>
-                    <Image
-                        source={icons.back}
-                        style={{ height: 20, width: 20, tintColor: COLORS.primary }}
-                    />
-                </TouchableOpacity>
+                <View></View>
+      
                 <Text
                     style={{
                         ...FONTS.body2,
                         color: COLORS.black,
                         // fontWeight: 'bold',
                     }}>
-                    {address ? "Edit Address" : "New Address"}
+                    Profile Setup
                 </Text>
-
-                <View></View>
+          <TouchableOpacity
+                    style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
+                    onPress={() => navigation.navigate('CustomerHome')}>
+                    <Image
+                        source={icons.back}
+                        style={{ height: 20, width: 20, tintColor: COLORS.primary }}
+                    />
+                </TouchableOpacity>
             </View>
         );
     }
@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     header: {
+        padding: SIZES.padding,
         height: 50,
         flexDirection: 'row',
         justifyContent: 'flex-start',

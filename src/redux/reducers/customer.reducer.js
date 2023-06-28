@@ -1,13 +1,13 @@
 import { selectedShop } from '../../globals/data';
 import {
   CLEAR_CUSTOMER_BASKET,
+  CLEAR_CUSTOMER_BASKETS,
   CLEAR_CUSTOMER_DATA,
   CLEAR_CUSTOMER_ORDER,
-  CLEAR_SELECTED_SHOP,
   SET_CUSTOMER_BASKET,
+  SET_CUSTOMER_BASKETS,
   SET_CUSTOMER_DATA,
   SET_CUSTOMER_ORDER,
-  SET_SELECTED_SHOP,
   SET_USER,
 } from '../actions/type';
 
@@ -24,10 +24,6 @@ const initialOrder = {
 };
 
 const initialState = {
-  shop: {
-    services: [],
-    addons: [],
-  },
   customer: {
     name: null,
     imgUrl: null,
@@ -47,11 +43,13 @@ const initialState = {
     cloths: [],
     addons: [],
     hasAddons: false,
+    deliveryOption: null
   },
+  baskets: [],
   basket: {
     orders: [],
-    pickupAddress: null,
-    returnLocation: null
+    pickupDelivery: null,
+    returnDelivery: null,
   },
 };
 
@@ -78,14 +76,26 @@ export default (state = initialState, action) => {
         ...state,
         basket: {
           orders: [],
-          pickupAddress: null,
-          returnLocation: null
+          pickupDelivery: null,
+          returnDelivery: null
         },
       }
     case SET_CUSTOMER_BASKET:
       return {
         ...state,
         basket: { ...state.basket, ...action.payload },
+      };
+
+
+    case CLEAR_CUSTOMER_BASKETS:
+      return {
+        ...state,
+        baskets: [],
+      }
+    case SET_CUSTOMER_BASKETS:
+      return {
+        ...state,
+        baskets: action.payload,
       };
     case SET_CUSTOMER_ORDER:
       return {
@@ -108,16 +118,7 @@ export default (state = initialState, action) => {
         ...state,
         user: action.payload,
       };
-    case SET_SELECTED_SHOP:
-      return {
-        ...state,
-        shop: action.payload,
-      };
-    case CLEAR_SELECTED_SHOP:
-      return {
-        ...state,
-        shop: {},
-      };
+
     default:
       return state;
   }

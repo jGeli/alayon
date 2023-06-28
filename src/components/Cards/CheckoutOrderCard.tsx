@@ -9,14 +9,15 @@ import { useSelector } from 'react-redux';
 const CheckoutOrderCard = ({ navigation, shopData, param }) => {
     const { errors } = useSelector(({ ui }) => ui);
     const [shop, setShop] = useState({})
+    const [listItems, setListItems] = useState([])
+
     let totalOrder = 0;
 
-    let { shop_name, data } = shop;
 
 
 
     function renderAddOns(order) {
-        let { totalAddons, pricing, qty, service, addons } = order;
+        let { totalAddons, pricing, qty, service, addons, shop } = order;
 
 
         return (
@@ -82,8 +83,8 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
                                         color: COLORS.black,
                                         // marginLeft: SIZES.padding,
                                     }}>
-                                    {order.addons.map((a, index) => {
-                                        return `${a.name} (${a.qty})${index !== order.addons.length - 1 ? ', ' : ''
+                                    {addons.map((a, index) => {
+                                        return `${a.name} (${a.qty})${index !== addons.length - 1 ? ', ' : ''
                                             }`;
                                     })}
                                 </Text>
@@ -112,7 +113,7 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
 
 
     function renderServiceItems(order) {
-        let { pricing, qty, service, addons } = order;
+        let { pricing, qty, service, shop, addons, cloths} = order;
 
         let totalService = 0;
         let totalAddons = 0;
@@ -141,7 +142,7 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
             }
 
             if (pricing === 'Piece') {
-                order.cloths.map((a, index) => {
+                cloths.map((a, index) => {
                     price = a.pricePiece;
                     totalService += a.pricePiece * a.qty;
                 });
@@ -254,12 +255,11 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
     function handleDeliveryType(shop) {
         const { deliveryOption } = shopData;
         const { deliveryOptions } = constants;
-
         let deliveryOpt = deliveryOption ? deliveryOptions.find(a => a.id === deliveryOption) : { price: 0, name: 'Select', description: 'No Delivery Option Selected' }
         totalOrder += deliveryOpt.price;
         return (
             <TouchableOpacity
-                onPress={() => navigation.navigate('DeliveryOptionScreen', { shop: shopData, selectedOption: deliveryOption, ...param })}
+                onPress={() => navigation.navigate('DeliveryOptionScreen', { order: shopData })}
                 style={{
                     width: '100%',
                     flexDirection: 'column',
@@ -331,7 +331,8 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
     }
 
     useEffect(() => {
-        setShop(shopData)
+        setShop(shopData.shop);
+        setListItems(shopData.data)
     }, [shopData, errors])
 
     return (
@@ -356,7 +357,7 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
                     source={icons.laundry_store}
                     style={{ height: 25, width: 25, tintColor: COLORS.black, marginRight: SIZES.padding }}
                 />
-                <Text style={{ ...FONTS.body3, color: COLORS.black }}>{shop_name}</Text>
+                <Text style={{ ...FONTS.body3, color: COLORS.black }}>{shop.shop_name}</Text>
             </View>
 
             {/* ORDER DETAILS */}
@@ -374,8 +375,9 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
                 }}
             >
 
-                {data && data.map(a => {
+                {listItems && listItems.map((a, index) => {
                     return <View
+                    key={index}
                     style={{
                         flex: 1,
                         borderBottomColor: COLORS.white,
@@ -414,7 +416,7 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
                         {/* DELIVERY SERVICE OPTION */}
 
                         {/* ORDER TOTAL */}
-                        <Text style={{ ...FONTS.body3, color: COLORS.black }}>Order Total ({data && data.length} Items)</Text>
+                        <Text style={{ ...FONTS.body3, color: COLORS.black }}>Order Total ({listItems && listItems.length} Items)</Text>
                         <Text style={{ ...FONTS.body3, color: COLORS.black, fontWeight: 'bold' }}>₱ {totalOrder}</Text>
 
                     </View>

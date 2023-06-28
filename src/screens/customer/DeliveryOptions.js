@@ -18,36 +18,27 @@ import { setCustomerBasket } from '../../utils/AsyncStorage';
 
 // create a component
 const DeliveryOptionScreen = ({ navigation, route }) => {
-    const { shop: { _id } } = useSelector(({ customer }) => customer);
-    const { basket, shop, selectedOption } = route.params;
+    const { order } = route.params;
+    const { basket } = useSelector(({ customer }) => customer);
+
     const dispatch = useDispatch()
     const [selected, setSelected] = useState(null)
-    const [rnd, setRnd] = useState(null)
-    const [newBasket, setNewBasket] = useState({});
     const handleBack = async () => {
-
-        if (selected) {
-            dispatch({ type: CLEAR_ERROR });
-        }
-
-        await setCustomerBasket({ ...newBasket, orderItems: newBasket.orders.length });
-        dispatch({ type: SET_CUSTOMER_BASKET, payload: { ...newBasket, orderItems: newBasket.orders.length } })
-        let basketData = newBasket;
-        basketData.deliveryOption = selected;
-        console.log(basketData, 'new basket')
-        navigation.navigate('OrderSummary', { basket: basketData, rnd: Math.random(), shopId: _id })
+        navigation.goBack()
     }
 
-
     const handleSelect = async (val) => {
-        let { orders } = newBasket;
-
+        let { orders } = basket;
         let newOrders = [];
         let newVal = val;
+
         orders.map(a => {
+
             let newObj = {};
             newObj = a;
-            if (shop._id === a.shop._id) {
+            console.log('id1', order?.shop._id)
+            console.log('id2', a?.shop?._id)
+            if (order?.shop?._id == a.shop?._id) {
                 newVal = newObj.deliveryOption === val ? null : val
                 newObj.deliveryOption = newObj.deliveryOption === val ? null : val;
                 newOrders.push(newObj)
@@ -58,26 +49,22 @@ const DeliveryOptionScreen = ({ navigation, route }) => {
 
 
         setSelected(newVal);
-        setNewBasket({ ...newBasket, orders: newOrders })
-
-
-
-
-
-        // setRnd(Math.random())
+        dispatch({ type: SET_CUSTOMER_BASKET, payload: { orders: newOrders } })
+        dispatch({ type: CLEAR_ERROR })
 
     }
 
 
 
     useEffect(() => {
-        setSelected(selectedOption)
-        setNewBasket(basket)
+        let { deliveryOption } = order
+        if (deliveryOption) {
+            setSelected(deliveryOption)
+        }
         return () => {
             setSelected(null);
-            setNewBasket({})
         }
-    }, [selectedOption, rnd, basket])
+    }, [order])
 
     const renderHeader = () => {
         return (
@@ -134,7 +121,6 @@ const DeliveryOptionScreen = ({ navigation, route }) => {
             </View>
         </TouchableOpacity>
     }
-
 
     return (
         <SafeAreaView

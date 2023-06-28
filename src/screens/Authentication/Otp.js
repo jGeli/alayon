@@ -20,9 +20,9 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import OtpAutoFillViewManager from 'react-native-otp-auto-fill';
 
 const Otp = ({ navigation, route }) => {
-  const { redirection, param } = route.params ? route.params : {};
+  const { redirection, param, user } = route.params ? route.params : {};
 
-  const { user } = useSelector(({ auth }) => auth);
+  // const { user } = useSelector(({ auth }) => auth);
   const { errors } = useSelector(({ ui }) => ui);
   const dispatch = useDispatch();
 
@@ -33,8 +33,10 @@ const Otp = ({ navigation, route }) => {
 
   const handleVerify = code => {
     dispatch(verifyOTP({ code, id: user.id }, null))
-      .then(() => {
-        navigation.navigate(redirection, param)
+      .then(res => {
+        console.log(res)
+        let { screen } = res;
+        navigation.navigate(screen ? screen : redirection, param)
       })
       ;
   };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-import { COLORS } from '../../constants';
+import { COLORS } from '../../../constants';
 
 const MapPlaces = ({ handlePlace }) => {
   return (

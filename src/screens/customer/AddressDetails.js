@@ -6,13 +6,13 @@ import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 
 // create a component
 const AddressDetails = ({ navigation, route }) => {
-    const { address, navType, basket } = route.params;
+    const { address, navType } = route.params;
     const [values, setValues] = useState(address?.address)
 
     const handleNext = () => {
         let newAddress = address ? address : {};
         newAddress.address = values;
-        navigation.navigate("Map", { address: newAddress, navType, basket })
+        navigation.navigate("Map", { address: newAddress, navType })
 
     }
 

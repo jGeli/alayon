@@ -1,4 +1,4 @@
-import { CLEAR_USER, SET_AUTHENTICATED, SET_TOKEN, SET_UNAUTHENTICATED, SET_USER, SET_USERTYPE } from '../actions/type';
+import { CLEAR_USER, SET_AUTHENTICATED, SET_LOADING, SET_TOKEN, SET_UNAUTHENTICATED, SET_USER, SET_USERTYPE, STOP_LOADING } from '../actions/type';
 
 const initialState = {
   isAuthenticated: false,
@@ -7,6 +7,7 @@ const initialState = {
   },
   userType: 'customer',
   token: null,
+  loading: true
 };
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -47,6 +48,19 @@ export default (state = initialState, action) => {
         ...state,
         userType: action.payload,
       };
+
+    case SET_LOADING:
+      return {
+        ...state,
+        loading: true,
+      };
+    case STOP_LOADING:
+      return {
+        ...state,
+        loading: false,
+      };
+
+
     default:
       return state;
   }

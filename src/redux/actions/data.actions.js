@@ -1,26 +1,23 @@
 import axios from 'axios';
-import {constants} from '../../constants';
+import { constants } from '../../constants';
 import {
   SET_ERROR,
   SET_LAUNDRY_CLOTH,
   SET_LAUNDRY_SERVICES,
   SET_LAUNDRY_SHOPS,
   SET_MERCHANT_PROFILE,
-  SET_USER,
 } from './type';
-import {authHeader, getData} from '../auth-header';
+import { authHeader, getData } from '../auth-header';
 
 const varEnv = constants.varEnv;
 
 export const createShopProfile = (data, navigation) => dispatch => {
-  console.log('TOKEN');
-  console.log(data.token);
   axios
     .post(`${varEnv.apiUrl}/merchants`, data, {
-      headers: {Authorization: 'Bearer ' + data.token},
+      headers: { Authorization: 'Bearer ' + data.token },
     })
     .then(res => {
-      dispatch({type: SET_MERCHANT_PROFILE, payload: res.data.d});
+      dispatch({ type: SET_MERCHANT_PROFILE, payload: res.data.d });
       navigation.navigate('LaundryService', res.data);
     })
     .catch(err => {
@@ -32,11 +29,12 @@ export const createShopProfile = (data, navigation) => dispatch => {
     });
 };
 
-export const getShops = (data, navigation) => dispatch => {
+export const getShops = () => dispatch => {
+  console.log('GET LAUNDRY SHOPS')
   axios
-    .get(`${varEnv.apiUrl}/alayon/shops`, data)
+    .get(`${varEnv.apiUrl}/alayon/shops`)
     .then(res => {
-      dispatch({type: SET_LAUNDRY_SHOPS, payload: res.data});
+      dispatch({ type: SET_LAUNDRY_SHOPS, payload: res.data });
     })
     .catch(err => {
       console.log(JSON.stringify(err));
@@ -51,7 +49,7 @@ export const getServices = () => dispatch => {
   axios
     .get(`${varEnv.apiUrl}/alayon/services`)
     .then(res => {
-      dispatch({type: SET_LAUNDRY_SERVICES, payload: res.data});
+      dispatch({ type: SET_LAUNDRY_SERVICES, payload: res.data });
     })
     .catch(err => {
       console.log(JSON.stringify(err));
@@ -68,7 +66,7 @@ export const getCloths = () => dispatch => {
     .then(res => {
       console.log('CLOTHS');
       console.log(res.data);
-      dispatch({type: SET_LAUNDRY_CLOTH, payload: res.data});
+      dispatch({ type: SET_LAUNDRY_CLOTH, payload: res.data });
     })
     .catch(err => {
       console.log(JSON.stringify(err));
@@ -83,7 +81,7 @@ export const uploadFileImage = data => {
   console.log(data);
   return axios
     .post(`${varEnv.apiUrl}/merchants/upload`, data, {
-      headers: {'Content-Type': 'multipart/form-data'},
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
     .then(res => {
       return res.data;

@@ -10,20 +10,28 @@ import {
   PermissionsAndroid,
 
 } from 'react-native';
+import haversine from "haversine";
 import { icons, SIZES, COLORS, FONTS, constants } from '../../constants';
 import { cutString } from '../../utils/helpers';
 import { useDispatch, useSelector } from 'react-redux';
 import { getShops } from '../../redux/actions/data.actions';
 import moment from 'moment/moment';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { SET_LAUNDRY_SHOPS, SET_SELECTED_SHOP } from '../../redux/actions/type';
+import { CLEAR_SELECTED_SHOP, SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, SET_LAUNDRY_SHOPS, SET_SELECTED_SHOP } from '../../redux/actions/type';
+import { distanceMultiplier } from '../../globals/env';
+import { getAuthUser } from '../../redux/actions/auth.actions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCustomerBasket, getCustomerLocations } from '../../utils/AsyncStorage';
+import axios from 'axios';
+import { getCustomerData } from '../../redux/actions/customer.actions';
 
 const varEnv = constants.varEnv;
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
-  const { user: { locations } } = useSelector(({ auth }) => auth);
+  const { isAuthenticated } = useSelector(({ auth }) => auth);
   const { shops, location } = useSelector(({ data }) => data);
+  const { basket } = useSelector(({ customer }) => customer);
   const [useLocation, setUseLocation] = useState(false);
 
   const requestLocationPermission = async () => {
@@ -55,17 +63,16 @@ export default function Home({ navigation }) {
 
 
   const onShopSelect = item => {
+    console.log("SELECTED")
     if (item.services && item.services.length !== 0) {
+      dispatch({ type: CLEAR_SELECTED_SHOP })
       navigation.navigate('ShopServices', { shopId: item._id });
-      dispatch({ type: SET_SELECTED_SHOP, payload: item })
     }
   };
 
 
-  let defaultLoaction = locations && locations.find(a => a.isDefault);
 
 
-  console.log('location', location)
   function renderHeader() {
     return (
       <View style={styles.headerContainer}>
@@ -245,8 +252,11 @@ export default function Home({ navigation }) {
     );
   }
 
+
   function renderNearbyList() {
     const renderItem = ({ item }) => {
+      let { latitude, longitude } = item.location ? item.location : { latitude: location.latitude, longitude: location.longitude };
+      let distance = haversine({ latitude: location.latitude, longitude: location.longitude }, { latitude, longitude }) || 0
       return shops.length === 0 ? (
         <TouchableOpacity
           style={{
@@ -344,7 +354,7 @@ export default function Home({ navigation }) {
                 }}
               />
               <Text style={{ color: COLORS.primary, fontWeight: 'bold' }}>
-                {item.ratings ? item.ratings : 1.1} Km away
+                {location.address ? `${parseFloat(distance * distanceMultiplier).toFixed(2)} Km away` : 'Not in range'}
               </Text>
             </View>
             <View style={{ width: '90%' }}>
@@ -450,15 +460,25 @@ export default function Home({ navigation }) {
         />
       </View>
     );
+
   }
+
+
 
   useEffect(() => {
     dispatch(getShops());
-    requestLocationPermission()
+    requestLocationPermission();
     return () => {
       dispatch({ type: SET_LAUNDRY_SHOPS, payload: [] });
     };
   }, []);
+
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     dispatch(getCustomerData(navigation))
+  //   }
+  // }, [isAuthenticated]);
+
 
   return (
     <SafeAreaView style={styles.container}>

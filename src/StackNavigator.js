@@ -15,7 +15,7 @@ import NotificationScreen from './screens/Notifications';
 import RecentSearch from './screens/customer/RecentSearch';
 import Filter from './screens/customer/Filter';
 import AddressLocation from './screens/customer/AddressLocation';
-import MapScreen from './components/Map/Map';
+import MapScreen from './components/Cards/Map/Map';
 import MyAccount from './screens/customer/MyAccount';
 
 import OnBoarding from './screens/OnBoarding/OnBoarding';
@@ -44,42 +44,56 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerBasket, getCustomerLocations } from './utils/AsyncStorage';
 import { SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA } from './redux/actions/type';
 import OrderStatus from './screens/customer/OrderStatus';
-import Map2 from './components/Map/Map2';
-import Map3 from './components/Map/Map3';
+import Map2 from './components/Cards/Map/Map2';
+import Map3 from './components/Cards/Map/Map3';
+import BasketsScreen from './screens/customer/BasketsScreen';
+import ProfileSetup from './screens/Authentication/ProfileSetup';
 
 let socket = null;
 
 const StackNavigator = () => {
+  const dispatch = useDispatch();
   const Tab = createBottomTabNavigator();
   const Stack = createNativeStackNavigator();
-  const dispatch = useDispatch();
-  const { isAuthenticated, user } = useSelector(({ auth }) => auth);
-
+  const { isAuthenticated, user, loading } = useSelector(({ auth }) => auth);
   const [mainScreen, setMainScreen] = useState(null);
-  const [loading, setLoading] = useState(true)
   const [textMsg, setTextMsg] = useState('');
+  const [rnd, setRnd] = useState(0)
   // getting data
-  const getUserData = async () => {
-    try {
-      const userToken = JSON.parse(await AsyncStorage.getItem('token'));
-      const onBoarded = await AsyncStorage.getItem('onBoarded');
-      const basket = await getCustomerBasket();
-      const locations = await getCustomerLocations();
-
-      if (onBoarded) {
-        // setMainScreen('OrderStatus');
-        setMainScreen('MainCustomer');
-
-      } else {
-        setMainScreen('OnBoarding')
-      }
-
-      setLoading(false)
-      if (userToken) {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
-      }
 
 
+
+
+  const handleSocket = () => {
+    socket.emit('ping', 'HELLO WORLD!')
+  }
+
+  const initScreen = async () => {
+    const userToken = JSON.parse(await AsyncStorage.getItem('token'));
+    const basket = await getCustomerBasket();
+    const locations = await getCustomerLocations();
+    const onBoarded = await AsyncStorage.getItem('onBoarded');
+
+
+    if (onBoarded) {
+      // setMainScreen('OrderStatus');
+      setMainScreen('MainCustomer');
+
+    } else {
+      setMainScreen('OnBoarding')
+    }
+
+
+
+
+
+
+
+    if (userToken) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
+      setRnd(Math.random())
+      dispatch(getAuthUser())
+    } else {
 
       if (basket && !isAuthenticated) {
         dispatch({ type: SET_CUSTOMER_BASKET, payload: basket });
@@ -90,13 +104,22 @@ const StackNavigator = () => {
         dispatch({ type: SET_CUSTOMER_DATA, payload: { locations } });
       }
 
-      dispatch(getAuthUser());
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
-  function CustomerBottomTabs({ navigation, route }) {
+
+
+    }
+
+  }
+
+  useEffect(() => {
+    initScreen()
+
+  }, [isAuthenticated])
+
+
+
+  const CustomerBottomTabs = ({ navigation, route }) => {
+
     return (
       <Tab.Navigator>
         <Tab.Screen
@@ -232,35 +255,6 @@ const StackNavigator = () => {
     );
   }
 
-  const handleSocket = () => {
-    socket.emit('ping', 'HELLO WORLD!')
-  }
-
-  useEffect(() => {
-    getUserData();
-
-
-  }, [isAuthenticated]);
-
-  useEffect(() => {
-    console.log("SOCKET")
-    if (user && user._id) {
-      socket = io("http://192.168.1.100:42005", {
-        auth: {
-          token: user._id
-        },
-        query: {
-          "userId": user._id
-        }
-      });
-      socket.on('pong', (data) => {
-        console.log('pong', data)
-        setTextMsg(data)
-      })
-    }
-
-  }, [user])
-
 
   return (
     <>
@@ -362,6 +356,16 @@ const StackNavigator = () => {
             <Stack.Screen
               name="DeliveryOptionScreen"
               component={DeliveryOptionScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="BasketsScreen"
+              component={BasketsScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ProfileSetup"
+              component={ProfileSetup}
               options={{ headerShown: false }}
             />
             <Stack.Screen

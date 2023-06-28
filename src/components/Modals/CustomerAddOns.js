@@ -25,7 +25,8 @@ import { SET_CUSTOMER_ORDER } from '../../redux/actions/type';
 
 // create a component
 const CustomerAddOns = ({ active, onClose }) => {
-  const { shop, order } = useSelector(({ customer }) => customer);
+  const { order } = useSelector(({ customer }) => customer);
+  const { selectedShop } = useSelector(({ data }) => data);
   const modalAnimatedValue = useRef(new Animated.Value(0)).current;
   const dispatch = useDispatch();
   const [selected, setSelected] = useState({});
@@ -118,8 +119,8 @@ const CustomerAddOns = ({ active, onClose }) => {
     if (order && order.addons && order.addons.length !== 0) {
       setAdds(order.addons);
     }
-    if (shop.addons[0]) {
-      setSelected(shop.addons[0]);
+    if (selectedShop && selectedShop.addons[0]) {
+      setSelected(selectedShop.addons[0]);
     }
   }, [active]);
 
@@ -138,7 +139,7 @@ const CustomerAddOns = ({ active, onClose }) => {
             paddingRight: 20,
             alignItems: 'center',
           }}
-          data={shop.addons}
+          data={selectedShop.addons}
           keyExtractor={item => `${item._id}`}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item, index }) => {

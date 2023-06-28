@@ -1,11 +1,14 @@
+import { selectedShop } from '../../globals/data';
 import {
   CLEAR_MAP_LOCATION,
+  CLEAR_SELECTED_SHOP,
   SET_ERROR,
   SET_LAUNDRY_CLOTH,
   SET_LAUNDRY_SERVICES,
   SET_LAUNDRY_SHOPS,
   SET_MAP_LOCATION,
   SET_SELECTED_LAUNDRY_SERVICE,
+  SET_SELECTED_SHOP,
   SET_USER,
 } from '../actions/type';
 
@@ -18,7 +21,11 @@ const initialState = {
     lng: 0,
     address: '',
   },
-  selectedService: {},
+  selectedShop: {},
+  selectedService: {
+    services: [],
+    addons: [],
+  },
   error: {},
 };
 export default (state = initialState, action) => {
@@ -28,6 +35,22 @@ export default (state = initialState, action) => {
         ...state,
         user: action.payload,
       };
+
+    case SET_SELECTED_SHOP:
+      return {
+        ...state,
+        selectedShop: { ...state.selectedShop, ...action.payload },
+      };
+    case CLEAR_SELECTED_SHOP:
+      return {
+        ...state,
+        selectedShop: {
+          services: [],
+          addons: [],
+        },
+      };
+
+
 
     case SET_MAP_LOCATION:
       return {

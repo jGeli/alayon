@@ -70,10 +70,10 @@ const deliveryOptions = [
 const varEnv = {
   //API URLS
   //Local
-  // apiUrl: 'http://192.168.1.100:42005/api/v1',
+  // apiUrl: 'http://192.168.1.16:42005/api/v1',
   // defaultToken:
-  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0N2Q0MmExZGZlMmRkMTJlOGFhYjAwMSIsImlhdCI6MTY4NjE3OTM5MiwiZXhwIjoxNjg4NzcxMzkyfQ.KIO6Op_ce3cwzzpUxgvmCBLAqIcibZRXnxTI94nP3jk',
-  // shopId: '647d4319dfe2dd12e8aab00c',
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTE1OTcyMWJhYmQwNGJlODc1ODhkZCIsImlhdCI6MTY4NzkxNDM4MiwiZXhwIjoxNjkwNTA2MzgyfQ.ri5Jm6-dbIdt_XFkY7zJSOjk8iBRzHtg8fU9JkvoPnk',
+  // shopId: '6492af74fb498149c8c29d0a',
   //Live
   apiUrl: 'https://alayon.bugtech.solutions/api/v1',
   defaultToken:

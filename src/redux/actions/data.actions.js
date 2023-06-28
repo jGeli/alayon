@@ -6,6 +6,10 @@ import {
   SET_LAUNDRY_SERVICES,
   SET_LAUNDRY_SHOPS,
   SET_MERCHANT_PROFILE,
+  SET_USER,
+  SET_CONVERSATION,
+  SET_CONVERSATIONS,
+  CLEAR_CONVERSATIONS,
 } from './type';
 import { authHeader, getData } from '../auth-header';
 
@@ -88,5 +92,22 @@ export const uploadFileImage = data => {
     })
     .catch(err => {
       console.log(err.response);
+    });
+};
+
+export const getConversation = () => dispatch => {
+  axios
+    .get(`${varEnv.apiUrl}/support`)
+    .then(res => {
+      console.log('MESSAGE');
+      console.log(res.data);
+      dispatch({type: SET_CONVERSATION, payload: res.data});
+    })
+    .catch(err => {
+      console.log(JSON.stringify(err));
+      dispatch({
+        type: SET_ERROR,
+        payload: err,
+      });
     });
 };

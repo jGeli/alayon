@@ -10,17 +10,20 @@ import {
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 // import Geolocation from '@react-native-community/geolocation';
-import { COLORS, FONTS, SIZES, icons, images } from '../../constants';
+import { COLORS, FONTS, SIZES, icons, images } from '../../../constants';
 import Geolocation from 'react-native-geolocation-service';
 import Geocoder from 'react-native-geocoding';
 import { useDispatch, useSelector } from 'react-redux';
-import { getShops } from '../../redux/actions/data.actions';
+import { getShops } from '../../../redux/actions/data.actions';
+import MapPlaces from './MapPlaces';
+import { SET_MAP_LOCATION } from '../../../redux/actions/type';
+import { gapikey } from '../../../globals/env';
 
-// Geocoder.init(''); // use a valid API key
+Geocoder.init(gapikey); // use a valid API key
 
 //Components
 export default function Map({ navigation, route }) {
-  const { address, navType, basket } = route.params
+  const { address, navType } = route.params
   const dispatch = useDispatch();
   const { shops } = useSelector(({ data }) => data);
   const { width, height } = Dimensions.get('window');
@@ -39,9 +42,26 @@ export default function Map({ navigation, route }) {
   const mapRef = useRef();
 
   const handleRegion = val => {
+  if(!isDrag){
     setIsDrag(true);
-    setRegion(val);
+  }
+  setRegion(val);
+  
+  
   };
+
+  const handlePlace = ({ lat, lng }) => {
+    console.log(lat, lng)
+    setRegion({
+      latitude: lat,
+      longitude: lng,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+    })
+
+    onCenter(lat, lng);
+
+  }
 
   const onCenter = (latitude, longitude) => {
     mapRef.current.animateToRegion({
@@ -56,8 +76,8 @@ export default function Map({ navigation, route }) {
     return (
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => {
-          if (navType === 'checkout') {
-            navigation.navigate('AddressLocationForm', { address, navType, basket });
+          if (navType === 'pickupDelivery' || navType === 'returnDelivery') {
+            navigation.navigate('AddressLocationForm', { address, navType });
           } else {
             navigation.goBack()
 
@@ -68,12 +88,22 @@ export default function Map({ navigation, route }) {
             style={{
               height: 20,
               width: 20,
-              margin: SIZES.padding,
-              color: COLORS.black,
+              margin: SIZES.padding
             }}
           />
         </TouchableOpacity>
-
+        <TouchableOpacity onPress={() => {
+            navigation.navigate('Map2', { address, navType });
+        }}>
+          <Image
+            source={icons.myLocation}
+            style={{
+              height: 20,
+              width: 20,
+              margin: SIZES.padding
+            }}
+          />
+        </TouchableOpacity>
         {/* <Image source={icons.back} style={{height: 25, width: 25}} /> */}
       </View>
     );
@@ -82,17 +112,20 @@ export default function Map({ navigation, route }) {
   function renderSearch() {
     return (
       <View style={styles.searchContainer}>
-        <View
-          style={styles.addressContainer}
-        >
-          <Text
-            style={{ ...FONTS.body3, color: COLORS.black }}
+        {navType === 'pickupDelivery' || navType === 'returnDelivery' ?
+          <View
+            style={styles.addressContainer}
           >
-            {address.address}
-          </Text>
-        </View>
-        {/* <MapPlaces handlePlace={handlePlace} /> */}
+            <Text
+              style={{ ...FONTS.body3, color: COLORS.black }}
+            >
+              {address.address}
+            </Text>
+          </View>
+          :
 
+          <MapPlaces handlePlace={handlePlace} />
+        }
         {/* <View style={styles.SectionStyle}>
             <Image
               source={icons.search} //Change your icon image here
@@ -141,27 +174,28 @@ export default function Map({ navigation, route }) {
 
   const handleSave = () => {
 
-    let newAddress = { ...address, ...region }
     // dispatch({
     //   type: SET_MAP_LOCATION,
     //   payload: newAddress,
     // });
-    console.log('newAd')
-    console.log(newAddress)
-    console.log(basket)
-    navigation.navigate('AddressLocationForm', { address: newAddress, navType, basket });
-
-    //GEOCODER
-    // Geocoder.from(latitude, longitude)
-    //   .then(json => {
-    //     let newAddress = { ...address, ...region, address: address.address }
-    //     dispatch({
-    //       type: SET_MAP_LOCATION,
-    //       payload: newAddress,
-    //     });
-    //     navigation.navigate('AddressLocationForm', { address: newAddress });
-    //   })
-    //   .catch(error => console.warn(error));
+    if (navType === 'pickupDelivery' || navType === 'returnDelivery') {
+      let newAddress = { ...address, ...region }
+      navigation.navigate('AddressLocationForm', { address: newAddress, navType });
+    }
+    if (navType === 'findLocation') {
+      //GEOCODER
+      const { latitude, longitude } = region;
+      Geocoder.from(latitude, longitude)
+        .then(({ results }) => {
+          let newAddress = { ...region, address: results[0] ? results[0].formatted_address : address.address }
+          dispatch({
+            type: SET_MAP_LOCATION,
+            payload: newAddress,
+          });
+          navigation.navigate('CustomerHome', { address: newAddress });
+        })
+        .catch(error => console.warn(error));
+    }
   };
 
   // function to check permissions and get Location
@@ -225,8 +259,6 @@ export default function Map({ navigation, route }) {
     );
   });
 
-  console.log('MP')
-  console.log(basket)
   return (
     <View style={styles.container}>
       {/* HEADER */}
@@ -243,7 +275,7 @@ export default function Map({ navigation, route }) {
         }}
       // onPress={e => console.log(e)}
       >
-        <Marker
+        <Marker.Animated
           // draggable
           coordinate={{
             latitude: region.latitude,
@@ -256,7 +288,7 @@ export default function Map({ navigation, route }) {
           <View style={isDrag ? styles.markerDrag : styles.marker}>
             <Image source={icons.pinIcon} style={{ height: 35, width: 40 }} />
           </View>
-        </Marker>
+        </Marker.Animated>
         {renderMarker}
       </MapView>
       <View style={styles.topContainer}>
@@ -269,11 +301,15 @@ export default function Map({ navigation, route }) {
           SAVE
         </Text>
       </TouchableOpacity>
+      <View
+         style={styles.alayonLogo}
+      >
       <Image
         resizeMode="contain"
         source={images.logo}
-        style={styles.alayonLogo}
+        style={{height: 40, width: 100}}
       />
+      </View>
     </View>
   );
 }
@@ -352,17 +388,20 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   topContainer: {
-    flex: 1,
+    // flex: 1,
     width: '100%',
     position: 'absolute',
-    top: 10,
-    padding: SIZES.padding,
+    top: 0,
+    paddingRight: SIZES.padding,
+    paddingLeft: SIZES.padding,
+    // backgroundColor: COLORS.black
     // left: 10
   },
 
   headerContainer: {
     // backgroundColor: 'black',
     // flex: 1,
+    // paddingTop: SIZES.padding,
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
@@ -378,7 +417,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     flexDirection: 'row',
-    padding: SIZES.padding,
+    // padding: SIZES.padding,
     // marginVertical: SIZES.padding * 1,
     flex: 1,
   },
@@ -405,14 +444,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     // top: 130,
-    bottom: 100,
+    bottom: 120,
     backgroundColor: COLORS.white3,
     padding: 2,
     borderRadius: 50,
   },
   saveButton: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 60,
     backgroundColor: COLORS.primary,
     padding: SIZES.padding,
     height: 40,
@@ -422,14 +461,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   alayonLogo: {
-    height: 30,
+    height: 50,
     width: '100%',
     position: 'absolute',
     bottom: 0,
     left: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: COLORS.white,
     // margin: 50,
-    // padding: 50
+    padding: SIZES.padding
   },
   alayonBanner: {
     position: 'absolute',

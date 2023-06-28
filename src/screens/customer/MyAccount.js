@@ -7,15 +7,16 @@ import {
   Image,
   SafeAreaView,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { COLORS, SIZES, FONTS, images, styles } from '../../constants';
 import { myAccount } from '../../globals/data';
 import UploadProfileImage from '../../components/UploadProfileImage';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../redux/actions/auth.actions';
+import { clearData } from '../../utils/AsyncStorage';
 export default function MyAccount({ navigation }) {
   const dispatch = useDispatch();
-  const { user } = useSelector(({ auth }) => auth);
+  const { user, isAuthenticated } = useSelector(({ auth }) => auth);
   const { name, imgUrl } = useSelector(({ customer }) => customer);
 
   const handleImage = (e) => {
@@ -94,9 +95,11 @@ export default function MyAccount({ navigation }) {
             borderTopWidth: 1,
             marginTop: SIZES.padding / 2,
           }}
-          onPress={() => {
+          onPress={async () => {
             if (item.name === 'Logout') {
+              await clearData();
               dispatch(logoutUser(navigation));
+
             } else {
               navigation.navigate(item.screen)
             }
@@ -141,6 +144,13 @@ export default function MyAccount({ navigation }) {
       </View>
     );
   }
+  useEffect(() => {
+    if (!isAuthenticated) {
+      // navigation.navigate('SignIn', {})
+    }
+
+  }, [])
+
 
   return (
     <SafeAreaView style={styles.container}>

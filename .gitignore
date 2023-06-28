@@ -70,3 +70,4 @@ buck-out/
 ios/build/
 ios/Podfile.lock
 /package-lock.json
+src/globals/env.js

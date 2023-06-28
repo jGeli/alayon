@@ -7,8 +7,8 @@ export const clearData = async key => {
     try {
         await AsyncStorage.removeItem('locations');
         await AsyncStorage.removeItem('basket');
+        await AsyncStorage.removeItem('baskets');
         await AsyncStorage.removeItem('token');
-
         return;
     } catch (e) {
         console.log(e);
@@ -66,24 +66,7 @@ export const getUserData = async () => {
     }
 };
 
-export const setCustomerLocations = async (data) => {
-    try {
 
-        const initLocations = [];
-        const oldLocations = await getCustomerLocations();
-
-        if (oldLocations) {
-
-            await AsyncStorage.setItem(`locations`, JSON.stringify([...oldLocations, ...data]))
-        } else {
-            await AsyncStorage.setItem(`locations`, JSON.stringify([...initLocations, ...data]))
-        }
-
-    } catch (error) {
-        console.log(error);
-        return null
-    }
-};
 
 
 // set customer basket
@@ -112,6 +95,43 @@ export const setCustomerBasket = async (data) => {
     }
 };
 
+export const setCustomerBaskets = async (data) => {
+    try {
+
+        const oldBaskets = await getCustomerBaskets();
+        console.log('OLD BASK', oldBaskets, data)
+        const newBaskets = [...oldBaskets, { ...data }];
+        console.log('NEW BASK', newBaskets)
+        await AsyncStorage.setItem('baskets', JSON.stringify(newBaskets))
+
+        return newBaskets;
+    } catch (error) {
+        console.log(error);
+        return null
+    }
+};
+
+export const getCustomerBaskets = async () => {
+    try {
+
+
+        const baskets = JSON.parse(await AsyncStorage.getItem('baskets'));
+        console.log('ASYN BASKET', baskets)
+        if (baskets) {
+            console.log('ASYN YES')
+            return baskets
+        } else {
+            console.log('ASYN NON')
+            return []
+        }
+
+    } catch (error) {
+        console.log(error);
+        return []
+    }
+};
+
+
 // get customer basket
 export const getCustomerBasket = async () => {
     try {
@@ -127,14 +147,42 @@ export const getCustomerBasket = async () => {
     }
 };
 
+
+
+export const setCustomerLocations = async (data) => {
+    try {
+
+        await AsyncStorage.setItem(`locations`, JSON.stringify(data))
+        return data
+    } catch (error) {
+        console.log(error);
+        return null
+    }
+};
+
+
+
 export const getCustomerLocations = async () => {
     try {
         const locations = JSON.parse(await AsyncStorage.getItem('locations'));
         if (locations) {
             return locations
         } else {
-            return null
+            return []
         }
+    } catch (error) {
+        console.log(error);
+        return []
+    }
+};
+
+
+export const deleteCustomerLocations = async (id) => {
+    try {
+
+
+        await AsyncStorage.setItem(`locations`, JSON.stringify(newLocations))
+        return newLocations
     } catch (error) {
         console.log(error);
         return null

@@ -16,8 +16,12 @@ const logo = require('../assets/images/logo.png');
 const status = require('../assets/images/status.png');
 const animatedWashing = require('../assets/images/animated-washing.gif');
 const defaultBanner = require('../assets/images/ALAYON/10.jpg');
+const setLoading = require('../assets/images/setLoading.gif');
+const setLoading2 = require('../assets/images/setLoading2.gif');
 
 export default {
+    setLoading,
+    setLoading2,
     animatedWashing,
     chariot,
     defaultBanner,

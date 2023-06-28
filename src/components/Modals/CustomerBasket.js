@@ -26,15 +26,18 @@ import {
 import {
   CLEAR_CUSTOMER_ORDER,
   SET_CUSTOMER_BASKET,
+  SET_CUSTOMER_BASKETS,
   SET_CUSTOMER_ORDER,
 } from '../../redux/actions/type';
-import { getCustomerLocations, setCustomerBasket } from '../../utils/AsyncStorage';
+import { getCustomerLocations, setCustomerBasket, setCustomerBaskets } from '../../utils/AsyncStorage';
+import { createBasket, getCustomerShopBaskets } from '../../redux/actions/customer.actions';
 
 const PRICING = ['Piece', 'Kilo', 'Batch'];
 
 // create a component
 const CustomerBasket = ({ active, onClose }) => {
-  const { shop, order, basket, customer: { locations } } = useSelector(({ customer }) => customer);
+  const { order, baskets, customer: { locations } } = useSelector(({ customer }) => customer);
+  const { selectedShop } = useSelector(({ data }) => data);
   const { isAuthenticated } = useSelector(({ auth }) => auth);
 
   const modalAnimatedValue = useRef(new Animated.Value(0)).current;
@@ -60,23 +63,25 @@ const CustomerBasket = ({ active, onClose }) => {
   };
 
   const handleSave = async () => {
-    let { orders } = basket;
-    let pickupAddress = null;
-    if (locations) {
-      pickupAddress = locations.find(a => { return a.isDefault });
-    }
-    orders.push({
-      ...order,
-      shop,
-    });
-
-    let newBasket = { ...basket, orders, orderItems: orders.length, pickupAddress };
+    let newBaskets = []
+    newBaskets = baskets;
 
     if (!isAuthenticated) {
-      await setCustomerBasket(newBasket)
+      newBaskets = await setCustomerBaskets({ ...order, shop: selectedShop, _id: Math.random() })
+    } else {
+
+      newBaskets.push({
+        ...order,
+        shop: selectedShop,
+      });
+      await dispatch(createBasket({ ...order, shop: selectedShop }))
     }
-    dispatch({ type: SET_CUSTOMER_BASKET, payload: newBasket });
-    onClose(newBasket);
+
+
+    newBaskets = newBaskets.filter(a => a.shop._id === selectedShop._id);
+
+    dispatch({ type: SET_CUSTOMER_BASKETS, payload: newBaskets })
+    onClose(newBaskets);
     dispatch({ type: CLEAR_CUSTOMER_ORDER });
 
   };
@@ -101,7 +106,7 @@ const CustomerBasket = ({ active, onClose }) => {
     let totalService = 0;
     let totalAddons = 0;
     if (order.service) {
-      let service = shop.services.find(a => a.service === order.service);
+      let service = selectedShop.services.find(a => a.service === order.service);
 
       if (selected === 'Kilo') {
         totalService +=
@@ -134,7 +139,7 @@ const CustomerBasket = ({ active, onClose }) => {
   }, [selected, active, order.qty]);
 
   function renderPricing() {
-    let service = shop.services.find(a => a.service === order.service);
+    let service = selectedShop.services.find(a => a.service === order.service);
     let { isPerBatch, isPerKilo, isPerPiece } = service ? service : {};
     return (
       <>
@@ -365,7 +370,7 @@ const CustomerBasket = ({ active, onClose }) => {
 
 
   function renderOrderItems() {
-    let service = shop.services.find(a => a.service === order.service);
+    let service = selectedShop.services.find(a => a.service === order.service);
     return (
       <View
         style={{
@@ -778,6 +783,7 @@ const CustomerBasket = ({ active, onClose }) => {
       </View>
     );
   }
+
 
   return (
     <Modal animationType="fade" transparent={true} visible={active}>

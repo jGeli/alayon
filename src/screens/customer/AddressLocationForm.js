@@ -6,13 +6,14 @@ import { TextInput } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { SET_CUSTOMER_DATA, SET_USER } from '../../redux/actions/type';
 import { updateUserById } from '../../redux/actions/user.actions';
-import { setCustomerBasket, setCustomerLocations } from '../../utils/AsyncStorage';
+import { deleteCustomerLocations, getCustomerLocations, setCustomerBasket, setCustomerLocations } from '../../utils/AsyncStorage';
+import { createLocation, deleteLocation, updateLocation } from '../../redux/actions/customer.actions';
 
 const labels = constants.addressLabels;
 
 // create a component
 const AddressLocationForm = ({ navigation, route }) => {
-    const { address, navType, basket } = route.params;
+    const { address, navType } = route.params;
     const dispatch = useDispatch();
     const { customer: { locations } } = useSelector(({ customer }) => customer);
     const { user, isAuthenticated } = useSelector(({ auth }) => auth);
@@ -31,67 +32,86 @@ const AddressLocationForm = ({ navigation, route }) => {
         setValues({ ...values, isDefault: e })
     }
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
+        if (isAuthenticated) {
+            await dispatch(deleteLocation(id))
+        } else {
+            let oldLocations = await getCustomerLocations();
 
-        let newLocations = locations.filter(a => { return a._id !== id });
-        dispatch({ type: SET_USER, payload: { locations: newLocations } });
-        navigation.navigate('AddressLocationScreen', { locations: newLocations, navType, rnd: Math.random() })
+            let newLocations = [];
+
+            newLocations = oldLocations.filter(a => {
+                return a._id != id
+            })
+
+            await setCustomerLocations(newLocations);
+            dispatch({ type: 'SET_CUSTOMER_DATA', payload: { locations: newLocations } })
+        }
+
+        navigation.navigate('AddressLocationScreen', { navType, rnd: Math.random() })
+
     }
 
 
     const handleSubmit = async () => {
-        let newLocations = [];
-        let newVal = values;
-
-        if (!values._id) {
-            newLocations = locations;
-            newVal._id = Math.random();
-            newLocations.push(newVal);
-        } else {
-            locations.map(a => {
-                if (a._id === values._id) {
-                    newLocations.push(values);
-                } else {
-                    newLocations.push(a);
-                }
-            })
-        }
 
 
-        console.log('NEW LOCA')
-        console.log(newLocations)
-        console.log(basket)
-        console.log(isAuthenticated)
 
         if (isAuthenticated) {
-            dispatch(updateUserById(user._id, { locations: newLocations }))
-                .then(() => {
-
-                    navigation.navigate('AddressLocationScreen', { basket, locations: newLocations, navType, rnd: Math.random() })
-                });
+            if (values._id) {
+                await dispatch(updateLocation(values))
+            } else {
+                await dispatch(createLocation(values))
+            }
         } else {
+            let newVal = values;
+            let newLocations = []
+            let oldLocations = await getCustomerLocations()
+            if (newVal.isDefault) {
+                oldLocations.forEach(a => {
+                    newLocations.push({
+                        ...a,
+                        isDefault: false
+                    })
+                })
+            } else {
+                newLocations = oldLocations
+            }
+
+
+            if (values._id) {
+                newLocations = newLocations.map(a => {
+                    if (a._id == values._id) {
+                        return values;
+                    } else {
+                        return a;
+                    }
+                })
+            } else {
+                newVal._id = Math.random();
+                newLocations.push(newVal)
+            }
+
             await setCustomerLocations(newLocations);
-            navigation.navigate('AddressLocationScreen', { basket, locations: newLocations, navType, rnd: Math.random() })
-            dispatch({ type: SET_CUSTOMER_DATA, payload: { locations: newLocations } })
+            dispatch({ type: 'SET_CUSTOMER_DATA', payload: { locations: newLocations } })
+
+
         }
 
-
+        navigation.navigate('AddressLocationScreen', { navType, rnd: Math.random() })
     }
-
 
 
     useEffect(() => {
         if (address) {
             setValues({ ...values, ...address, isDefault: locations.length === 0 ? true : address.isDefault })
         }
+        return () => {
+            setValues({ isDefault: locations.length === 0 ? true : false, label: null, mobile: null, name: null })
+        }
+    }, [address])
 
 
-    }, [address, locations])
-
-
-    console.log('ADDRESS')
-    console.log(address)
-    console.log(basket)
 
     function renderHeader() {
         return (
@@ -99,7 +119,7 @@ const AddressLocationForm = ({ navigation, route }) => {
                 style={styles.header}>
                 <TouchableOpacity
                     style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
-                    onPress={() => navigation.navigate('AddressLocationScreen', { basket, locations: locations, navType })
+                    onPress={() => navigation.navigate('AddressLocationScreen', { locations: locations, navType })
                     }>
                     <Image
                         source={icons.back}
@@ -180,7 +200,7 @@ const AddressLocationForm = ({ navigation, route }) => {
                         onChangeText={handleChange('postalCode')}
                     />
                 </View> */}
-                <TouchableOpacity style={{ ...styles.textInputContainer, flexDirection: 'row', justifyContent: 'space-between', padding: SIZES.padding, paddingLeft: SIZES.padding }} onPress={() => navigation.navigate('AddressDetails', { address: values, navType, basket })}>
+                <TouchableOpacity style={{ ...styles.textInputContainer, flexDirection: 'row', justifyContent: 'space-between', padding: SIZES.padding, paddingLeft: SIZES.padding }} onPress={() => navigation.navigate('AddressDetails', { address: values, navType })}>
                     <Text style={{ color: COLORS.gray2 }}>{values.address ? values.address : 'Street Name, Building, House No.'}</Text>
                     <Image
                         source={icons.arrow_right}

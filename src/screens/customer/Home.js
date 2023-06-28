@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,39 +7,78 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
+  PermissionsAndroid,
+
 } from 'react-native';
+import haversine from "haversine";
 import { icons, SIZES, COLORS, FONTS, constants } from '../../constants';
 import { cutString } from '../../utils/helpers';
 import { useDispatch, useSelector } from 'react-redux';
 import { getShops } from '../../redux/actions/data.actions';
 import moment from 'moment/moment';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { SET_LAUNDRY_SHOPS, SET_SELECTED_SHOP } from '../../redux/actions/type';
+import { CLEAR_SELECTED_SHOP, SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, SET_LAUNDRY_SHOPS, SET_SELECTED_SHOP } from '../../redux/actions/type';
+import { distanceMultiplier } from '../../globals/env';
+import { getAuthUser } from '../../redux/actions/auth.actions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCustomerBasket, getCustomerLocations } from '../../utils/AsyncStorage';
+import axios from 'axios';
+import { getCustomerData } from '../../redux/actions/customer.actions';
 
 const varEnv = constants.varEnv;
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
-  const { user: { locations } } = useSelector(({ auth }) => auth);
-  const { shops } = useSelector(({ data }) => data);
+  const { isAuthenticated } = useSelector(({ auth }) => auth);
+  const { shops, location } = useSelector(({ data }) => data);
+  const { basket } = useSelector(({ customer }) => customer);
+  const [useLocation, setUseLocation] = useState(false);
 
-  const onShopSelect = item => {
-    if (item.services && item.services.length !== 0) {
-      navigation.navigate('ShopServices', { shopId: item._id });
-      dispatch({ type: SET_SELECTED_SHOP, payload: item })
+  const requestLocationPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Geolocation Permission',
+          message: 'Can we access your location?',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      console.log('granted', granted);
+      if (granted === 'granted') {
+        console.log('You can use Geolocation');
+        setUseLocation(false)
+        return true;
+      } else {
+        setUseLocation(true)
+        console.log('You cannot use Geolocation');
+        return false;
+      }
+    } catch (err) {
+      return false;
     }
   };
 
 
-  let defaultLoaction = locations && locations.find(a => a.isDefault);
+  const onShopSelect = item => {
+    console.log("SELECTED")
+    if (item.services && item.services.length !== 0) {
+      dispatch({ type: CLEAR_SELECTED_SHOP })
+      navigation.navigate('ShopServices', { shopId: item._id });
+    }
+  };
+
+
 
 
   function renderHeader() {
     return (
       <View style={styles.headerContainer}>
         <TouchableOpacity
-          disabled={true}
-          onPress={() => navigation.navigate('AddressLocationScreen', { locations })}
+          disabled={useLocation}
+          onPress={() => navigation.navigate('Map', { navType: 'findLocation' })}
           style={{
             flexDirection: 'row',
             flex: 1,
@@ -66,8 +105,10 @@ export default function Home({ navigation }) {
             style={{
               alignItems: 'flex-start',
               justifyContent: 'center',
-              // flex: 1,
-              width: '80%',
+              // backgroundColor: COLORS.black,
+              paddingRight: SIZES.padding,
+              flex: 1,
+              // width: '80%',
             }}>
             <Text
               style={{
@@ -75,7 +116,7 @@ export default function Home({ navigation }) {
                 color: COLORS.primary,
                 // fontWeight: 'bold',
               }}>
-              {defaultLoaction && defaultLoaction.address ? cutString(defaultLoaction.address) : 'Find your location?'}
+              {location && location.address ? cutString(location.address, 25) : 'Find your location?'}
             </Text>
           </View>
         </TouchableOpacity>
@@ -211,8 +252,11 @@ export default function Home({ navigation }) {
     );
   }
 
+
   function renderNearbyList() {
     const renderItem = ({ item }) => {
+      let { latitude, longitude } = item.location ? item.location : { latitude: location.latitude, longitude: location.longitude };
+      let distance = haversine({ latitude: location.latitude, longitude: location.longitude }, { latitude, longitude }) || 0
       return shops.length === 0 ? (
         <TouchableOpacity
           style={{
@@ -310,7 +354,7 @@ export default function Home({ navigation }) {
                 }}
               />
               <Text style={{ color: COLORS.primary, fontWeight: 'bold' }}>
-                {item.ratings ? item.ratings : 1.1} Km away
+                {location.address ? `${parseFloat(distance * distanceMultiplier).toFixed(2)} Km away` : 'Not in range'}
               </Text>
             </View>
             <View style={{ width: '90%' }}>
@@ -416,15 +460,25 @@ export default function Home({ navigation }) {
         />
       </View>
     );
+
   }
+
+
 
   useEffect(() => {
     dispatch(getShops());
-
+    requestLocationPermission();
     return () => {
       dispatch({ type: SET_LAUNDRY_SHOPS, payload: [] });
     };
   }, []);
+
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     dispatch(getCustomerData(navigation))
+  //   }
+  // }, [isAuthenticated]);
+
 
   return (
     <SafeAreaView style={styles.container}>

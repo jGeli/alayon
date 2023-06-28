@@ -59,16 +59,7 @@ const SignIn = ({ navigation, route }) => {
     );
   };
 
-  const handleAuthUser = async () => {
-    let token = await getToken();
-    if (token) {
-      console.log('TOKKSS')
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      dispatch(getAuthUser(navigation));
-    }
-    console.log("TT")
-    console.log(token)
-  };
+
 
   const handleHome = () => {
     console.log('SET HOME')
@@ -81,7 +72,6 @@ const SignIn = ({ navigation, route }) => {
   }
 
   useEffect(() => {
-    handleAuthUser();
     getHash()
       .then(e => setHash(e))
       .catch(console.log);

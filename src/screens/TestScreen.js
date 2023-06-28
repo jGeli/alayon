@@ -5,7 +5,7 @@ import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 
 
 // create a component
-const TestScreen = ({ navigation }) => {
+export default function TestScreen({ navigation, route }) {
 
 
 
@@ -66,5 +66,3 @@ const styles = StyleSheet.create({
 
 });
 
-//make this component available to the app
-export default TestScreen;

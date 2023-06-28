@@ -35,33 +35,36 @@ const { addressLabels } = constants;
 
 export default function OrderSummary({ navigation, route }) {
   const dispatch = useDispatch();
-  const { basket, shopId, rnd } = route.params;
+  const { shopId, rnd } = route.params;
   const { isAuthenticated } = useSelector(({ auth }) => auth)
   const { errors } = useSelector(({ ui }) => ui)
-  const { customer: { locations } } = useSelector(({ customer }) => customer)
+  const { basket, customer: { locations } } = useSelector(({ customer }) => customer)
   const [checkoutItems, setCheckoutItems] = useState([]);
   let newOrders = groupShopOrders(basket.orders)
 
 
   const handleBookNow = (val) => {
+    let { orders } = val;
 
-    console.log('ORDERS')
-    console.log(val)
-    console.log(!val.deliveryOption)
-    console.log(val.deliveryOption)
-    console.log(newOrders)
-    if (!val.pickupAddress) {
+    if (!val.pickupDelivery) {
       dispatch({ type: SET_ERROR, payload: { locations: 'Set Pickup and Delivery Address' } })
       return;
     }
 
-    if (!val.deliveryOption) {
-      dispatch({ type: SET_ERROR, payload: { deliveryOption: 'Set Pickup and Delivery Address' } })
-      return;
+    for (let order of orders) {
+      if (!order.deliveryOption) {
+        dispatch({ type: SET_ERROR, payload: { deliveryOption: 'Set Pickup and Delivery Address' } })
+        return;
+      }
     }
 
 
-    navigation.navigate(isAuthenticated ? 'CustomerOrders' : 'OrderSummary', { basket, shopId })
+
+
+
+    navigation.navigate('OrderStatus', {})
+
+    // navigation.navigate(isAuthenticated ? 'CustomerOrders' : 'OrderSummary', { basket, shopId })
     // Clipboard.setString(JSON.stringify(basket.orders));
   }
 
@@ -100,11 +103,12 @@ export default function OrderSummary({ navigation, route }) {
 
   function customerDetails() {
     let label = null;
-    let { pickupAddress } = basket;
+    let { pickupDelivery, returnDelivery } = basket;
+    let hasReturn = returnDelivery && returnDelivery._id != pickupDelivery._id;
 
 
-    if (pickupAddress && pickupAddress.label) {
-      label = addressLabels.find(ab => ab._id === pickupAddress.label);
+    if (pickupDelivery && pickupDelivery.label) {
+      label = addressLabels.find(ab => ab._id === pickupDelivery.label);
     }
 
     return (
@@ -129,7 +133,7 @@ export default function OrderSummary({ navigation, route }) {
           }}
           onPress={() => {
             dispatch({ type: CLEAR_ERROR })
-            navigation.navigate('AddressLocationScreen', { basket, locations, navType: 'checkout' })
+            navigation.navigate('AddressLocationScreen', { basket, locations, navType: 'pickupDelivery', shopId })
           }}
         >
           <View style={{ flexGrow: 1 }}>
@@ -161,30 +165,31 @@ export default function OrderSummary({ navigation, route }) {
                     fontSize: SIZES.h4,
                     color: COLORS.black,
                   }}>
-                  Pick-up & Delivery Details
+                  {hasReturn ? 'Pick-up Address Details' :
+                    'Pick-up & Return Address Details'}
                 </Text>
               </View>
             </View>
-            {pickupAddress ?
+            {pickupDelivery ?
               <View
-                onPress={() => setSelected(pickupAddress._id)}
-
               >
                 <View
                   style={{ flexDirection: 'row', marginTop: SIZES.padding }}
                 >
                   <Text
                     style={{ ...FONTS.body3, color: COLORS.black }}
-                  >{pickupAddress.name}</Text>
+                  >{pickupDelivery.name}</Text>
                   <Text style={{ marginLeft: SIZES.padding, marginRight: SIZES.padding }}>|</Text>
                   <Text
                     style={{ ...FONTS.body3, color: COLORS.darkGray }}
-                  >(+63) {pickupAddress.mobile}</Text>
+                  >(+63) {pickupDelivery.mobile}</Text>
                 </View>
-                <Text style={{ ...FONTS.body4 }}>{pickupAddress.address}</Text>
-                {/* <Text style={{ ...FONTS.body4 }}>Barangay, City Municipality, Province, Region, {pickupAddress.postalCode}</Text> */}
-                {label && <Text style={{ ...FONTS.body3, color: COLORS.transparentBlack7 }}>{label.name}</Text>}
-                {pickupAddress.isDefault && <Text style={{ ...FONTS.body4, color: COLORS.primary, marginTop: 5, borderRadius: 5, borderColor: COLORS.primary, borderWidth: 1, paddingLeft: 5, paddingRight: 5, width: 60 }}>Default</Text>}
+                <Text style={{ ...FONTS.body4 }}>{pickupDelivery.address}</Text>
+                {/* <Text style={{ ...FONTS.body4 }}>Barangay, City Municipality, Province, Region, {pickupDelivery.postalCode}</Text> */}
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+                  {label && <Text style={{ ...FONTS.body3, color: COLORS.transparentBlack7 }}>{label.name}</Text>}
+                  {pickupDelivery.isDefault && <Text style={{ ...FONTS.body4, color: COLORS.primary, marginTop: 5, borderRadius: 5, borderColor: COLORS.primary, borderWidth: 1, paddingLeft: 5, paddingRight: 5, width: 60, marginLeft: SIZES.padding }}>Default</Text>}
+                </View>
               </View>
               :
               <Text style={{ ...FONTS.body3, color: errors.locations ? COLORS.red : COLORS.darkGray, marginLeft: SIZES.padding * 3 }}>{errors.locations ? errors.locations : 'No default address'}</Text>
@@ -195,22 +200,90 @@ export default function OrderSummary({ navigation, route }) {
             style={{ height: 25, width: 25, tintColor: COLORS.darkGray }}
           />
         </TouchableOpacity>
-        {pickupAddress &&
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderBottomColor: COLORS.gray,
-              backgroundColor: COLORS.white3
-              // borderBottomWidth: 1,
-            }}
-            onPress={() => {
 
-              navigation.navigate('AddressLocationScreen', { basket, locations, navType: 'checkout' })
-            }}
-          >
+        <View
+          style={{
+            padding: hasReturn ? SIZES.padding : 0,
+            // flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            borderBottomColor: COLORS.gray,
+            backgroundColor: COLORS.white3
+            // borderBottomWidth: 1,
+          }}
+
+        >
+          {hasReturn &&
+
             <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                // justifyContent: 'space-between',
+                // marginBottom: SIZES.padding,
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                }}>
+                <Image
+                  source={icons.myLocation}
+                  resizeMode="contain"
+                  style={{
+                    height: 20,
+                    width: 20,
+                    tintColor: COLORS.primary,
+                    marginRight: 5,
+                  }}
+                />
+                <Text
+                  style={{
+                    fontSize: SIZES.h4,
+                    color: COLORS.black,
+                  }}>
+                  Return Address Details
+                </Text>
+              </View>
+            </View>
+          }
+          {hasReturn ?
+            <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}
+              onPress={() => {
+
+                navigation.navigate('AddressLocationScreen', { basket, locations, navType: 'returnDelivery' })
+              }}
+            >
+
+              <View style={{ flexGrow: 1 }}>
+                <View
+                  style={{ flexDirection: 'row', marginTop: SIZES.padding }}
+                >
+                  <Text
+                    style={{ ...FONTS.body3, color: COLORS.black }}
+                  >{returnDelivery.name}</Text>
+                  <Text style={{ marginLeft: SIZES.padding, marginRight: SIZES.padding }}>|</Text>
+                  <Text
+                    style={{ ...FONTS.body3, color: COLORS.darkGray }}
+                  >(+63) {returnDelivery.mobile}</Text>
+                </View>
+                <Text style={{ ...FONTS.body4 }}>{returnDelivery.address}</Text>
+                {/* <Text style={{ ...FONTS.body4 }}>Barangay, City Municipality, Province, Region, {returnDelivery.postalCode}</Text> */}
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+                  {label && <Text style={{ ...FONTS.body3, color: COLORS.transparentBlack7 }}>{label.name}</Text>}
+                  {returnDelivery.isDefault && <Text style={{ ...FONTS.body4, color: COLORS.primary, marginTop: 5, borderRadius: 5, borderColor: COLORS.primary, borderWidth: 1, paddingLeft: 5, paddingRight: 5, width: 60, marginLeft: SIZES.padding }}>Default</Text>}
+                </View>
+              </View>
+              <Image
+                source={icons.arrow_right}
+                style={{ height: 25, width: 25, tintColor: COLORS.darkGray }}
+              />
+            </TouchableOpacity>
+
+            :
+
+            <TouchableOpacity
               style={{
                 flexGrow: 1,
                 margin: 5,
@@ -219,7 +292,12 @@ export default function OrderSummary({ navigation, route }) {
                 paddingLeft: SIZES.padding,
                 alignItems: 'center',
                 justifyContent: 'flex-start',
-              }}>
+              }}
+              onPress={() => {
+
+                navigation.navigate('AddressLocationScreen', { basket, locations, navType: 'returnDelivery' })
+              }}
+            >
               <Image
                 source={icons.add}
                 style={{
@@ -230,11 +308,11 @@ export default function OrderSummary({ navigation, route }) {
                 }}
               />
               <Text style={{ ...FONTS.body4 }}>
-                Separate Pickup & Return Details
+                Separate Return Delivery
               </Text>
-            </View>
-          </TouchableOpacity>
-        }
+            </TouchableOpacity>
+          }
+        </View>
       </View >
     );
   }
@@ -251,7 +329,7 @@ export default function OrderSummary({ navigation, route }) {
         }}>
         {checkoutItems.map((a, index) => {
           return (
-            <View key={a._id}>
+            <View key={index}>
               <CheckoutOrderCard shopData={a} navigation={navigation} key={a._id} param={{ shopId, basket }} />
             </View>
           )
@@ -340,10 +418,9 @@ export default function OrderSummary({ navigation, route }) {
   useEffect(() => {
 
     let newOrders = groupShopOrders(basket.orders);
-    console.log("ITEMSS")
-    console.log(newOrders[0].data)
+    console.log(newOrders)
     setCheckoutItems(newOrders)
-
+    console.log('SHOP ID', shopId)
   }, [basket, rnd])
 
 

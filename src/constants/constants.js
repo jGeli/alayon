@@ -70,15 +70,15 @@ const deliveryOptions = [
 const varEnv = {
   //API URLS
   //Local
-  apiUrl: 'http://192.168.1.16:42005/api/v1',
-  defaultToken:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTE1OTcyMWJhYmQwNGJlODc1ODhkZCIsImlhdCI6MTY4NzkxNDM4MiwiZXhwIjoxNjkwNTA2MzgyfQ.ri5Jm6-dbIdt_XFkY7zJSOjk8iBRzHtg8fU9JkvoPnk',
-  shopId: '6492af74fb498149c8c29d0a',
-  //Live
-  // apiUrl: 'https://alayon.bugtech.solutions/api/v1',
+  // apiUrl: 'http://192.168.1.16:42005/api/v1',
   // defaultToken:
-  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0N2QyM2I3NzNiMzFhNTRkNDczOGE4OCIsImlhdCI6MTY4NjE3ODExNywiZXhwIjoxNjg4NzcwMTE3fQ.hCKBMQy8zHRYlopXIUyzKK9p1bvywp31iZFXMTlls6s',
-  // shopId: '647d23d973b31a54d4738a93',
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTE1OTcyMWJhYmQwNGJlODc1ODhkZCIsImlhdCI6MTY4NzkxNDM4MiwiZXhwIjoxNjkwNTA2MzgyfQ.ri5Jm6-dbIdt_XFkY7zJSOjk8iBRzHtg8fU9JkvoPnk',
+  // shopId: '6492af74fb498149c8c29d0a',
+  //Live
+  apiUrl: 'https://alayon.bugtech.solutions/api/v1',
+  defaultToken:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0N2QyM2I3NzNiMzFhNTRkNDczOGE4OCIsImlhdCI6MTY4NjE3ODExNywiZXhwIjoxNjg4NzcwMTE3fQ.hCKBMQy8zHRYlopXIUyzKK9p1bvywp31iZFXMTlls6s',
+  shopId: '647d23d973b31a54d4738a93',
   //STATIC FILES URL
 };
 

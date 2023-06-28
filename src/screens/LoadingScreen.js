@@ -1,13 +1,30 @@
 //import liraries
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, Image } from 'react-native';
+import { COLORS, SIZES, images } from '../constants';
 
 // create a component
 const LoadingScreen = () => {
     return (
-        <View style={styles.container}>
-            <Text>LoadingScreen</Text>
-        </View>
+        <SafeAreaView
+            style={{
+                backgroundColor: COLORS.white,
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexGrow: 1,
+            }}
+        >
+            
+            <Image 
+                source={images.setLoading}
+                resizeMode='contain'
+                style={{
+                    height: 100,
+                    width: SIZES.width
+                }}
+            />
+
+        </SafeAreaView>
     );
 };
 

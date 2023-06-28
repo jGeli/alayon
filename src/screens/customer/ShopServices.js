@@ -25,36 +25,43 @@ import { clothTypes } from '../../globals/data';
 import { getShopById } from '../../redux/actions/merchant.actions';
 import {
   CLEAR_CUSTOMER_BASKET,
+  CLEAR_CUSTOMER_BASKETS,
+  CLEAR_SELECTED_SHOP,
   CLOSE_MODALS,
   OPEN_BASKET_MODAL,
   OPEN_CUSTOMER_ADDONS_MODAL,
   SET_CUSTOMER_BASKET,
+  SET_CUSTOMER_BASKETS,
   SET_CUSTOMER_ORDER,
   SET_SELECTED_SHOP,
 } from '../../redux/actions/type';
 import CustomerAddOns from '../../components/Modals/CustomerAddOns';
 import CustomerBasket from '../../components/Modals/CustomerBasket';
 import { userData5 } from '../../globals/data';
-import { getCustomerShopById } from '../../redux/actions/customer.actions';
+import { getCustomerShopBaskets, getCustomerShopById } from '../../redux/actions/customer.actions';
 import Reviews from '../../components/Reviews';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCustomerBaskets, setCustomerBaskets } from '../../utils/AsyncStorage';
 
 // create a component
 export default ShopServices = ({ navigation, route }) => {
   const { shopId } = route.params;
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector(({ auth }) => auth);
-  const { shop, order, basket } = useSelector(({ customer }) => customer);
+  const { shop, order, baskets, basket, customer: { locations } } = useSelector(({ customer }) => customer);
+  const { selectedShop } = useSelector(({ data }) => data);
   const { customerAddOns, basketModal } = useSelector(({ ui }) => ui);
   const [cloths, setCloths] = useState();
-  const [deliveryType, setDeliveryType] = useState('standard');
-  const [pricing, setPricing] = useState('piece');
   const [isAddonEnabled, setAddonEnabled] = useState(false);
   const [tab, setTab] = useState('services');
 
+
   const handleChat = async () => {
     await AsyncStorage.removeItem('basket')
+    await AsyncStorage.removeItem('baskets')
     dispatch({ type: CLEAR_CUSTOMER_BASKET })
+    dispatch({ type: CLEAR_CUSTOMER_BASKETS })
+
   }
 
   const toggleSwitch = () => {
@@ -71,14 +78,23 @@ export default ShopServices = ({ navigation, route }) => {
     // setAddonEnabled(previousState => !previousState)
   };
 
-
-
   const handleCheckout = (val) => {
-    let { orders } = val;
+
+    if (val.length !== 0) {
+      let pickupDelivery = null;
+
+      if (!basket.pickupDelivery) {
+        let defaultLocation = locations.find(a => a.isDefault)
+        pickupDelivery = defaultLocation ? defaultLocation : null;
+        console.log(defaultLocation)
+      } else {
+        pickupDelivery = basket.pickupDelivery;
+      }
 
 
-    if (orders.length !== 0) {
-      navigation.navigate('OrderSummary', { basket: val, shopId, rnd: Math.random() });
+      console.log('CHEKKS OUT', val)
+      dispatch({ type: SET_CUSTOMER_BASKET, payload: { orders: val, pickupDelivery } })
+      navigation.navigate('OrderSummary', { shopId, rnd: Math.random() });
     } else {
       dispatch({ type: OPEN_BASKET_MODAL, payload: 'checkout_basket' });
     }
@@ -94,9 +110,34 @@ export default ShopServices = ({ navigation, route }) => {
   }
 
   const handleShop = async () => {
+    console.log("GETTING SHOP BASSKET")
     let shopData = await dispatch(getCustomerShopById(shopId));
+    if (isAuthenticated) {
+      console.log('GETTING BASK')
+      await dispatch(getCustomerShopBaskets(shopId));
+    } else {
+      let baskets = await getCustomerBaskets();
+      let newBaskets = baskets.filter(a => a.shop._id === shopId);
+      console.log(baskets)
+      dispatch({ type: SET_CUSTOMER_BASKETS, payload: newBaskets })
+    }
+
+
+    console.log('SHOP DATA', shopData)
+
     if (shopData && shopData._id) {
-      dispatch({ type: SET_SELECTED_SHOP, payload: shopData });
+      let { services } = shopData;
+      if (services.length !== 0) {
+        let service = services[0];
+
+        if (service) {
+          setCloths(service.cloths);
+        }
+      }
+      dispatch({
+        type: SET_SELECTED_SHOP,
+        payload: shopData,
+      });
       dispatch({
         type: SET_CUSTOMER_ORDER,
         payload: { service: shopData.services[0].service },
@@ -132,10 +173,21 @@ export default ShopServices = ({ navigation, route }) => {
     if (type === 'add') {
       let cloth = orderCloths.find(a => a.cloth === item.cloth);
       if (!cloth) {
+        let { service, cloth, batchQty,
+          batchUnit,
+          priceBatch,
+          priceKilo,
+          pricePiece } = item
         orderCloths.push({
-          ...item,
+          service,
+          cloth,
           name: item.name,
           qty: 1,
+          batchQty,
+          batchUnit,
+          priceBatch,
+          priceKilo,
+          pricePiece,
         });
         newCloths = orderCloths;
       } else {
@@ -154,50 +206,30 @@ export default ShopServices = ({ navigation, route }) => {
 
   const handleChangeService = val => {
     // setSelectedServiceType(val);
-    dispatch({ type: SET_CUSTOMER_ORDER, payload: { service: val } });
+    console.log(val)
+    dispatch({ type: SET_CUSTOMER_ORDER, payload: { service: val.service } });
     if (val) {
       setCloths(val.cloths);
     }
   };
 
-  useEffect(() => {
-    let { services } = shop;
-    if (shop && services.length !== 0) {
-      let service = services[0];
 
-      if (service) {
-        setPricing(
-          service.isPerPiece
-            ? 'isPerPiece'
-            : service.isPerKilo
-              ? 'isPerKilo'
-              : service.isPerBatch
-                ? 'isPerBatch'
-                : null,
-        );
-        setCloths(service.cloths);
-      }
-    }
-
-    return () => {
-      setCloths([]);
-    };
-  }, [shop, basket, basketModal, order]);
 
   useEffect(() => {
+
     if (shopId) {
-      handleShop();
+      dispatch({ type: CLEAR_CUSTOMER_BASKET })
+      handleShop(selectedShop._id);
     }
 
     return () => {
       setCloths([]);
-      dispatch({
-        type: SET_CUSTOMER_ORDER,
-        payload: { service: null, cloths: [], addons: [] },
-      });
     };
   }, [shopId]);
 
+
+  let totalItem = 0;
+  order.cloths.forEach(a => (totalItem += a.qty));
 
 
   function renderHeader() {
@@ -213,7 +245,7 @@ export default ShopServices = ({ navigation, route }) => {
         }}>
         <Image
           resizeMode="stretch"
-          source={{ uri: shop.bannerUrl }}
+          source={{ uri: selectedShop.bannerUrl }}
           // resizeMode="cover"
           style={{
             // top: 0,
@@ -260,7 +292,7 @@ export default ShopServices = ({ navigation, route }) => {
               }}
               // onPress={() => navigation.goBack()}
               onPress={() =>
-                navigation.navigate('Conversation', { shop })}
+                navigation.navigate('Conversation', { shop: selectedShop })}
 
             >
               <Image
@@ -275,7 +307,7 @@ export default ShopServices = ({ navigation, route }) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              // onPress={() => navigation.goBack()}
+              onPress={() => navigation.navigate('BasketsScreen', {})}
               style={{
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -305,7 +337,7 @@ export default ShopServices = ({ navigation, route }) => {
               color: COLORS.white,
               fontWeight: 'bold',
             }}>
-            {shop.shop_name}
+            {selectedShop.shop_name}
           </Text>
         </View>
         <View
@@ -406,7 +438,7 @@ export default ShopServices = ({ navigation, route }) => {
             paddingLeft: 10,
             alignItems: 'center',
           }}
-          data={shop.services}
+          data={selectedShop.services}
           keyExtractor={item => `${item._id}`}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item, index }) => (
@@ -415,7 +447,7 @@ export default ShopServices = ({ navigation, route }) => {
               style={{
                 marginLeft: SIZES.padding,
                 marginRight:
-                  index == shop.services.length - 1 ? SIZES.padding : 0,
+                  index == selectedShop.services.length - 1 ? SIZES.padding : 0,
                 backgroundColor:
                   item.cloths.length === 0
                     ? COLORS.darkGray
@@ -591,12 +623,12 @@ export default ShopServices = ({ navigation, route }) => {
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleSwitch}
             value={order.hasAddons}
-            disabled={shop.addons && shop.addons.length === 0}
+            disabled={selectedShop.addons && selectedShop.addons.length === 0}
           />
         </View>
         <TouchableOpacity
           onPress={() => dispatch({ type: OPEN_CUSTOMER_ADDONS_MODAL })}
-          disabled={shop.addons && shop.addons.length === 0}
+          disabled={selectedShop.addons && selectedShop.addons.length === 0}
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
@@ -625,7 +657,7 @@ export default ShopServices = ({ navigation, route }) => {
                 color: COLORS.darkGray,
                 marginLeft: 5,
               }}>
-              {shop.addons && shop.addons.length === 0
+              {selectedShop.addons && selectedShop.addons.length === 0
                 ? 'No Add-ons available'
                 : 'Select'}
             </Text>
@@ -639,8 +671,6 @@ export default ShopServices = ({ navigation, route }) => {
     );
   }
 
-  let totalItem = 0;
-  order.cloths.map(a => (totalItem += a.qty));
 
   function renderFooter() {
     return (
@@ -687,7 +717,6 @@ export default ShopServices = ({ navigation, route }) => {
             style={{
               height: 20,
               width: 20,
-              color: COLORS.primary,
               tintColor: COLORS.primary,
             }}
           />
@@ -706,7 +735,7 @@ export default ShopServices = ({ navigation, route }) => {
             borderLeftWidth: 1,
             height: '100%',
           }}
-          onPress={() => handleCheckout(basket)}>
+          onPress={() => handleCheckout(baskets)}>
           <Text
             style={{
               ...FONTS.body3,
@@ -714,7 +743,7 @@ export default ShopServices = ({ navigation, route }) => {
               // fontWeight: 'bold',
               margin: SIZES.padding,
             }}>
-            Checkout ({basket.orders.length})
+            Checkout ({baskets.length})
           </Text>
         </TouchableOpacity>
       </View>

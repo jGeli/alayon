@@ -11,7 +11,7 @@ export const cutString = (str, len) => {
   let newStr = '';
   if (str) {
     newStr = String(str).slice(0, len);
-    newStr + `${str.length > len ? '...' : ''}`;
+    newStr = newStr + `${str.length > len ? '..' : ''}`;
   }
 
   return newStr;
@@ -46,7 +46,7 @@ export const groupShopOrders = (data) => {
     data.reduce((group, item) => {
       let fld = item.shop._id;
       group[fld] = group[fld] ?? {
-        ...item.shop,
+        shop: item.shop,
         data: [],
         length: 0,
         deliveryOption: item.deliveryOption
@@ -63,18 +63,20 @@ export const groupShopOrders = (data) => {
 };
 
 
-export const totalOrders = (data) => {
+export const totalOrders = (values) => {
   let grandTotal = 0;
 
-  for (let shop of data) {
+  for (let orders of values) {
+    let { shop, data, deliveryOption } = orders;
+
     let totalOrder = 0;
 
-    let delivery = constants.deliveryOptions.find(a => a.id === shop.deliveryOption)
+    let delivery = constants.deliveryOptions.find(a => a.id === deliveryOption)
     let deliveryOpt = delivery ? delivery : { price: 0 }
 
 
-    for (let order of shop.data) {
-      let { pricing, qty, service, addons } = order;
+    for (let order of data) {
+      let { pricing, qty, service, addons, cloths } = order;
       let totalService = 0;
       let totalAddons = 0;
       let price = 0
@@ -101,7 +103,7 @@ export const totalOrders = (data) => {
         }
 
         if (pricing === 'Piece') {
-          order.cloths.map((a, index) => {
+          cloths.map((a, index) => {
             price = a.pricePiece;
             totalService += a.pricePiece * a.qty;
           });

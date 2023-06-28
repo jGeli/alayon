@@ -79,7 +79,7 @@ export default ShopServices = ({ navigation, route }) => {
   };
 
   const handleCheckout = (val) => {
-
+    console.log('')
     if (val.length !== 0) {
       let pickupDelivery = null;
 
@@ -91,10 +91,14 @@ export default ShopServices = ({ navigation, route }) => {
         pickupDelivery = basket.pickupDelivery;
       }
 
+      dispatch({ type: CLOSE_MODALS });
 
-      console.log('CHEKKS OUT', val)
-      dispatch({ type: SET_CUSTOMER_BASKET, payload: { orders: val, pickupDelivery } })
-      navigation.navigate('OrderSummary', { shopId, rnd: Math.random() });
+      if (isAuthenticated) {
+        navigation.navigate('OrderSummary', { shopId, rnd: Math.random(), selectedBaskets: val.map(a => a._id) });
+      } else {
+        navigation.navigate('SignIn', { redirection: 'OrderSummary', param: { shopId, rnd: Math.random(), baskets: val } });
+      }
+
     } else {
       dispatch({ type: OPEN_BASKET_MODAL, payload: 'checkout_basket' });
     }
@@ -110,15 +114,12 @@ export default ShopServices = ({ navigation, route }) => {
   }
 
   const handleShop = async () => {
-    console.log("GETTING SHOP BASSKET")
     let shopData = await dispatch(getCustomerShopById(shopId));
     if (isAuthenticated) {
-      console.log('GETTING BASK')
       await dispatch(getCustomerShopBaskets(shopId));
     } else {
       let baskets = await getCustomerBaskets();
       let newBaskets = baskets.filter(a => a.shop._id === shopId);
-      console.log(baskets)
       dispatch({ type: SET_CUSTOMER_BASKETS, payload: newBaskets })
     }
 
@@ -762,10 +763,11 @@ export default ShopServices = ({ navigation, route }) => {
             basketModal === 'addbasket' || basketModal === 'checkout_basket'
           }
           onClose={e => {
-            dispatch({ type: CLOSE_MODALS });
 
             if (basketModal === 'checkout_basket' && e) {
               handleCheckout(e)
+            } else {
+              dispatch({ type: CLOSE_MODALS });
             }
           }}
         />

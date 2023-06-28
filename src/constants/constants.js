@@ -70,18 +70,18 @@ const deliveryOptions = [
 const varEnv = {
   //API URLS
   //Local
-  socket: 'http://192.168.1.100:42005',
-  apiUrl: 'http://192.168.1.100:42005/api/v1',
-  defaultToken:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0N2Q0MmExZGZlMmRkMTJlOGFhYjAwMSIsImlhdCI6MTY4NjE3OTM5MiwiZXhwIjoxNjg4NzcxMzkyfQ.KIO6Op_ce3cwzzpUxgvmCBLAqIcibZRXnxTI94nP3jk',
-  shopId: '647d4319dfe2dd12e8aab00c',
-  //Live
-  // socket: 'https://alayon.bugtech.solutions',
-  // host: 'https://alayon.bugtech.solutions',
-  // apiUrl: 'https://alayon.bugtech.solutions/api/v1',
+  // socket: 'http://192.168.1.100:42005',
+  // apiUrl: 'http://192.168.1.100:42005/api/v1',
   // defaultToken:
-  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0N2QyM2I3NzNiMzFhNTRkNDczOGE4OCIsImlhdCI6MTY4NjE3ODExNywiZXhwIjoxNjg4NzcwMTE3fQ.hCKBMQy8zHRYlopXIUyzKK9p1bvywp31iZFXMTlls6s',
-  // shopId: '647d23d973b31a54d4738a93',
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0N2Q0MmExZGZlMmRkMTJlOGFhYjAwMSIsImlhdCI6MTY4NjE3OTM5MiwiZXhwIjoxNjg4NzcxMzkyfQ.KIO6Op_ce3cwzzpUxgvmCBLAqIcibZRXnxTI94nP3jk',
+  // shopId: '647d4319dfe2dd12e8aab00c',
+  //Live
+  socket: 'https://alayon.bugtech.solutions',
+  host: 'https://alayon.bugtech.solutions',
+  apiUrl: 'https://alayon.bugtech.solutions/api/v1',
+  defaultToken:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0N2QyM2I3NzNiMzFhNTRkNDczOGE4OCIsImlhdCI6MTY4NjE3ODExNywiZXhwIjoxNjg4NzcwMTE3fQ.hCKBMQy8zHRYlopXIUyzKK9p1bvywp31iZFXMTlls6s',
+  shopId: '647d23d973b31a54d4738a93',
   //STATIC FILES URL
 };
 

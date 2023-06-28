@@ -63,10 +63,11 @@ const SignIn = ({ navigation, route }) => {
 
   const handleHome = () => {
     console.log('SET HOME')
+
     if (redirection === 'CustomerAccount') {
       navigation.navigate('MainCustomer', {})
     } else {
-      navigation.navigate(redirection, param ? param : {})
+      navigation.goBack()
     }
 
   }

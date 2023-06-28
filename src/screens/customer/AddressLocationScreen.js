@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'r
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { SET_CUSTOMER_BASKET } from '../../redux/actions/type';
+import { getLocations } from '../../redux/actions/customer.actions';
 
 const { addressLocations, addressLabels } = constants;
 
@@ -149,10 +150,14 @@ const AddressLocationScreen = ({ navigation, route }) => {
             setSelected(basket[navType] ? basket[navType]._id : null)
         }
 
-    }, [navType, basket])
+    }, [navType, basket]);
+
+    useEffect(() => {
+        dispatch(getLocations())
+    }, [])
 
 
-    console.log('ADD',)
+    console.log('ADD', locations)
 
     return (
         <SafeAreaView style={styles.container}>

@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   storeToken,
 } from '../auth-header';
+import { getCustomerData } from './customer.actions';
 
 const varEnv = constants.varEnv;
 
@@ -72,6 +73,9 @@ export const getAuthUser = navigation => dispatch => {
       console.log(user)
       dispatch({ type: SET_USER, payload: user });
       dispatch({ type: SET_AUTHENTICATED });
+      if (user.type === 'customer') {
+        dispatch(getCustomerData())
+      }
       console.log('AUTH USER')
       console.log(res.data)
 

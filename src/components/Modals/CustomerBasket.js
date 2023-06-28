@@ -83,7 +83,6 @@ const CustomerBasket = ({ active, onClose }) => {
     dispatch({ type: SET_CUSTOMER_BASKETS, payload: newBaskets })
     onClose(newBaskets);
     dispatch({ type: CLEAR_CUSTOMER_ORDER });
-
   };
 
   useEffect(() => {
@@ -136,7 +135,7 @@ const CustomerBasket = ({ active, onClose }) => {
         payload: { totalService, totalAddons },
       });
     }
-  }, [selected, active, order.qty]);
+  }, [selected, active]);
 
   function renderPricing() {
     let service = selectedShop.services.find(a => a.service === order.service);

@@ -22,12 +22,55 @@ import {
 import { chatList } from '../../globals/data';
 import { cutString } from '../../utils/helpers';
 import { Badge } from '@rneui/themed';
+import { useDispatch, useSelector } from 'react-redux';
+import { getConversation } from '../../redux/actions/data.actions';
+import { SET_CONVERSATION } from '../../redux/actions/type';
+import axios from 'axios';
 
  export default function ChatList({navigation}) {
+  const dispatch = useDispatch();
+  const [list, setList] = useState([])
+  const { user: { locations } } = useSelector(({ auth }) => auth);
+  const varEnv = constants.varEnv;
+  // console.log(data)
+  
+  console.log("AAAAAAAAAAAAAAAAAAAAa")
+  // console.log(dispatch({type: SET_CONVERSATION}, "DATA"))
 
+
+  useEffect(() => {
+    // const handleData = ({data}) => {
+    //   console.log(data)
+    // }
+    // dispatch(getConversation());
+    // dispatch(getConversation())
+  // console.log(setList(data), "AASS")
+
+    // dispatch({type: SET_CONVERSATION}, "DATA")
+    axios
+    .get(`${varEnv.apiUrl}/support`)
+    .then(res => {
+      console.log('MESSAGE');
+      console.log(res.data);
+      setList(res.data)
+      // dispatch({type: SET_CONVERSATION, payload: res.data});
+    })
+    .catch(err => {
+      console.log(JSON.stringify(err));
+      dispatch({
+        type: SET_ERROR,
+        payload: err,
+      });
+    });
+    
+  }, []);
+
+  console.log(list, 'letse')
+
+  
   function renderChatList() {
     const renderItem = ({item}) => {
-      console.log(item)
+      // console.log(item)
       return (
         <TouchableOpacity
           onPress={() => navigation.navigate('Conversation', {shop: item})}
@@ -83,7 +126,7 @@ import { Badge } from '@rneui/themed';
                 }}
               >
                 {/* [Chat Name Test Name long] */}
-                {item.shop_name}
+                {item.receiverId}
               </Text>
               <Text
                 style={{
@@ -118,7 +161,7 @@ import { Badge } from '@rneui/themed';
         
         <FlatList 
           keyExtractor={(item, index) => `${index}`}
-          data={chatList}
+          data={list.d}
           vertical
           scrollEnabled={true}
           renderItem={renderItem}

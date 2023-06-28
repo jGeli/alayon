@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getConversation } from '../../redux/actions/data.actions';
 import { SET_CONVERSATION } from '../../redux/actions/type';
 import axios from 'axios';
+import moment from 'moment';
 
  export default function ChatList({navigation}) {
   const dispatch = useDispatch();
@@ -70,7 +71,7 @@ import axios from 'axios';
   
   function renderChatList() {
     const renderItem = ({item}) => {
-      // console.log(item)
+      // console.log(data)
       return (
         <TouchableOpacity
           onPress={() => navigation.navigate('Conversation', {shop: item})}
@@ -87,7 +88,7 @@ import axios from 'axios';
           }}
         >
           <Image
-            // source={chatList.bannerUrl}
+            // source={images.defaultBanner}
             source={item.bannerUrl}
             resizeMode='contain'
             style={{
@@ -126,7 +127,7 @@ import axios from 'axios';
                 }}
               >
                 {/* [Chat Name Test Name long] */}
-                {item.receiverId}
+                {item.senderId?.fistName + ' ' + item.senderId?.lastName}
               </Text>
               <Text
                 style={{
@@ -135,7 +136,7 @@ import axios from 'axios';
                 }}
               >
                 {/* [Last Message in Conversation] */}
-                {cutString(String(item.latestChat), 40)}
+                {cutString(String(item.thread[-0].messages), 40)}
                 {/* {item.latestChat} */}
               </Text>
             </View>
@@ -147,7 +148,7 @@ import axios from 'axios';
                 width: '30%',
                 textAlign: 'left'
               }}
-            >{item.date}</Text>   
+            >{moment(item.createdAt).format('MM/DD/YY')}</Text>   
           </View>
         </TouchableOpacity>
       )

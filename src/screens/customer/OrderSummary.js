@@ -435,6 +435,8 @@ export default function OrderSummary({ navigation, route }) {
 
   }, [selectedBaskets, baskets])
 
+  console.log('BASKETS', baskets);
+  console.log('SELECTED BASKETS', selectedBaskets);
 
   return (
     <SafeAreaView

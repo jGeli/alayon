@@ -101,7 +101,7 @@ export default function Home({ navigation }) {
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Chats", {})}
+          onPress={() => navigation.navigate("Chats",  {shops})}
           style={{
             paddingRight: SIZES.padding * 2,
             justifyContent: 'center',

@@ -79,14 +79,12 @@ export default ShopServices = ({ navigation, route }) => {
   };
 
   const handleCheckout = (val) => {
-    console.log('')
     if (val.length !== 0) {
       let pickupDelivery = null;
 
       if (!basket.pickupDelivery) {
         let defaultLocation = locations.find(a => a.isDefault)
         pickupDelivery = defaultLocation ? defaultLocation : null;
-        console.log(defaultLocation)
       } else {
         pickupDelivery = basket.pickupDelivery;
       }
@@ -98,6 +96,7 @@ export default ShopServices = ({ navigation, route }) => {
       } else {
         navigation.navigate('SignIn', { redirection: 'OrderSummary', param: { shopId, rnd: Math.random(), baskets: val } });
       }
+      dispatch({ type: OPEN_BASKET_MODAL, payload: 'checkout_basket' });
 
     } else {
       dispatch({ type: OPEN_BASKET_MODAL, payload: 'checkout_basket' });
@@ -817,10 +816,6 @@ export default ShopServices = ({ navigation, route }) => {
 
       </SafeAreaView>
     </Fragment>
-
-
-
-
   );
 };
 

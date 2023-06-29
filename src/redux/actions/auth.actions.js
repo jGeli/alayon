@@ -26,13 +26,6 @@ export const requestSignin = (data, navigation, params) => dispatch => {
     .post(`${varEnv.apiUrl}/auth/request`, data)
     .then(res => {
       let { user, redirection } = res.data;
-      console.log(res.data);
-      console.log(res.data, 'Text');
-      console.log(res.data, 'RES DATA INE');
-
-
-      console.log('OTP PARAMS')
-      console.log(params)
 
       if (redirection) {
         params.redirection = redirection;

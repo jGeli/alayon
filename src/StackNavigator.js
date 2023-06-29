@@ -30,7 +30,7 @@ import DeliveryOptionScreen from './screens/customer/DeliveryOptions';
 import AddOnsScreen from './screens/customer/AddOnsScreen';
 import AddressLocationScreen from './screens/customer/AddressLocationScreen';
 import ChatList from './screens/ChatSupport/ChatList';
-// import Conversation from './screens/ChatSupport/Conversation';
+import Conversation from './screens/ChatSupport/Conversation';
 import AddressLocationForm from './screens/customer/AddressLocationForm';
 import SelectRegion from './screens/customer/SelectRegion';
 import AddressDetails from './screens/customer/AddressDetails';
@@ -265,7 +265,7 @@ const StackNavigator = () => {
           {/* CUSTOMER SCREENS */}
 
           <Stack.Navigator initialRouteName={mainScreen}>
-            {/* <Stack.Screen
+            <Stack.Screen
               name="Chats"
               component={ChatList}
             // options={{ headerShown: false }}
@@ -274,7 +274,7 @@ const StackNavigator = () => {
               name="Conversation"
               component={Conversation}
               options={{ headerShown: false }}
-            /> */}
+            />
             <Stack.Screen
               name="OnBoarding"
               component={OnBoarding}

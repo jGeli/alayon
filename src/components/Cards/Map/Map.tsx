@@ -182,7 +182,7 @@ export default function Map({ navigation, route }) {
       let newAddress = { ...address, ...region }
       navigation.navigate('AddressLocationForm', { address: newAddress, navType });
     }
-    if (navType === 'findLocation') {
+    if (navType === 'findLocation' || navType === 'current') {
       //GEOCODER
       const { latitude, longitude } = region;
       Geocoder.from(latitude, longitude)
@@ -209,6 +209,17 @@ export default function Map({ navigation, route }) {
             let { coords } = position;
             setRegion({ ...region, ...position.coords });
             onCenter(coords.latitude, coords.longitude);
+            if(navType === 'current'){
+              Geocoder.from(coords.latitude, coords.longitude)
+              .then(({ results }) => {
+                let newAddress = { ...coords, address: results[0] ? results[0].formatted_address : address.address }
+                dispatch({
+                  type: SET_MAP_LOCATION,
+                  payload: newAddress,
+                });
+              })
+              .catch(error => console.warn(error));         
+            }
           },
           error => {
             // See error code charts below.
@@ -235,7 +246,10 @@ export default function Map({ navigation, route }) {
 
   useEffect(() => {
     dispatch(getShops());
-  }, [dispatch]);
+    if(navType === 'current'){
+      getLocation();
+    }
+  }, [dispatch, navType]);
 
   const renderMarker = shops.map((a, index) => {
     const { latitude, longitude } = a.location;

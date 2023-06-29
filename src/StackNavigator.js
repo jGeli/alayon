@@ -85,10 +85,6 @@ const StackNavigator = () => {
 
 
 
-
-
-
-
     if (userToken) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
       setRnd(Math.random())

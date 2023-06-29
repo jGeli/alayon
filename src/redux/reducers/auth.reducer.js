@@ -1,4 +1,4 @@
-import { CLEAR_USER, SET_AUTHENTICATED, SET_LOADING, SET_TOKEN, SET_UNAUTHENTICATED, SET_USER, SET_USERTYPE, STOP_LOADING } from '../actions/type';
+import { CLEAR_USER, SET_ALLOW_LOCATION, SET_AUTHENTICATED, SET_LOADING, SET_TOKEN, SET_UNAUTHENTICATED, SET_USER, SET_USERTYPE, STOP_LOADING } from '../actions/type';
 
 const initialState = {
   isAuthenticated: false,
@@ -11,6 +11,7 @@ const initialState = {
 };
 export default (state = initialState, action) => {
   switch (action.type) {
+
     case SET_AUTHENTICATED:
       return {
         ...state,

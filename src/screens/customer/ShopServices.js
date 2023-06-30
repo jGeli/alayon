@@ -112,6 +112,7 @@ export default ShopServices = ({ navigation, route }) => {
   const handleShop = async () => {
     console.log("GETTING SHOP BASSKET")
     let shopData = await dispatch(getCustomerShopById(shopId));
+    console.log(shopData)
     if (isAuthenticated) {
       console.log('GETTING BASK')
       await dispatch(getCustomerShopBaskets(shopId));
@@ -474,7 +475,7 @@ export default ShopServices = ({ navigation, route }) => {
                   color:
                     order.service == item.service ? COLORS.white : COLORS.black,
                 }}>
-                {item.name}
+                {item.name}   
               </Text>
             </TouchableOpacity>
           )}

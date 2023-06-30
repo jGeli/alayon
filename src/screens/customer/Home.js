@@ -270,8 +270,9 @@ export default function Home({ navigation }) {
             borderColor: COLORS.black,
             borderWidth: 0.5,
           }}
-        // onPress={() => onSelectCategory(item)}
+        // onPress={() => console.log(item)}
         >
+          
           <SkeletonPlaceholder>
             <View
               style={{

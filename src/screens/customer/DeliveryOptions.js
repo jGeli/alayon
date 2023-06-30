@@ -27,20 +27,18 @@ const DeliveryOptionScreen = ({ navigation, route }) => {
         navigation.goBack()
     }
 
-    const handleSelect = async (val) => {
+    const handleSubmit = () => {
         let { orders } = basket;
         let newOrders = [];
-        let newVal = val;
+        let newVal = selected;
 
         orders.map(a => {
 
             let newObj = {};
             newObj = a;
-            console.log('id1', order?.shop._id)
-            console.log('id2', a?.shop?._id)
             if (order?.shop?._id == a.shop?._id) {
-                newVal = newObj.deliveryOption === val ? null : val
-                newObj.deliveryOption = newObj.deliveryOption === val ? null : val;
+                newVal = newObj.deliveryOption === selected ? null : selected
+                newObj.deliveryOption = newObj.deliveryOption === selected ? null : selected;
                 newOrders.push(newObj)
             } else {
                 newOrders.push(newObj)
@@ -48,10 +46,23 @@ const DeliveryOptionScreen = ({ navigation, route }) => {
         })
 
 
+        dispatch({ type: SET_CUSTOMER_BASKET, payload: { orders: newOrders } });
+        dispatch({ type: CLEAR_ERROR });
         setSelected(newVal);
-        dispatch({ type: SET_CUSTOMER_BASKET, payload: { orders: newOrders } })
-        dispatch({ type: CLEAR_ERROR })
+        navigation.goBack()
+    }
 
+
+    const handleSelect = async (val) => {
+        let { orders } = basket;
+        let newVal = val;
+
+        orders.map(a => {
+            if (order?.shop?._id == a.shop?._id) {
+                newVal = a.deliveryOption === val ? null : val
+            }
+        })
+        setSelected(newVal);
     }
 
 
@@ -75,6 +86,7 @@ const DeliveryOptionScreen = ({ navigation, route }) => {
                     alignItems: 'center',
                     backgroundColor: COLORS.white,
                     elevation: 5,
+                    width: '100%'
                     // height: 40,
                 }}>
                 <TouchableOpacity
@@ -126,7 +138,7 @@ const DeliveryOptionScreen = ({ navigation, route }) => {
         <SafeAreaView
             style={{
                 flexGrow: 1,
-                flex: 1
+                alignItems: 'center',
             }}>
             {renderHeader()}
             <View
@@ -138,6 +150,15 @@ const DeliveryOptionScreen = ({ navigation, route }) => {
                 { }
 
             </View>
+
+            <TouchableOpacity
+                disabled={!selected}
+                style={[styles.textButton, { opacity: !selected ? .5 : 1 }]}
+                onPress={() => handleSubmit()}
+            >
+                <Text style={{ ...FONTS.body2, color: COLORS.white, letterSpacing: 2 }}>CONFIRM</Text>
+            </TouchableOpacity>
+
         </SafeAreaView>
     );
 };
@@ -150,6 +171,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: COLORS.white,
     },
+    textButton: {
+
+        minHeight: 40,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: COLORS.primary,
+        borderRadius: SIZES.semiRadius,
+        width: '80%',
+        elevation: 3,
+        margin: SIZES.padding * 2
+    }
 });
 
 //make this component available to the app

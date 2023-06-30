@@ -17,50 +17,22 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getShops } from '../../redux/actions/data.actions';
 import moment from 'moment/moment';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { CLEAR_SELECTED_SHOP, SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, SET_LAUNDRY_SHOPS, SET_SELECTED_SHOP } from '../../redux/actions/type';
+import { CLEAR_SELECTED_SHOP, SET_ALLOW_LOCATION, SET_ALLOW_LOCATION_MODAL, SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, SET_LAUNDRY_SHOPS, SET_SELECTED_SHOP } from '../../redux/actions/type';
 import { distanceMultiplier } from '../../globals/env';
 import { getAuthUser } from '../../redux/actions/auth.actions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCustomerBasket, getCustomerLocations } from '../../utils/AsyncStorage';
 import axios from 'axios';
 import { getCustomerData } from '../../redux/actions/customer.actions';
+import AllowLocationModal from '../../components/Modals/AllowLocationModal';
 
 const varEnv = constants.varEnv;
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector(({ auth }) => auth);
-  const { shops, location } = useSelector(({ data }) => data);
+  const { shops, location, isLocationAllow } = useSelector(({ data }) => data);
   const { basket } = useSelector(({ customer }) => customer);
   const [useLocation, setUseLocation] = useState(false);
-
-  const requestLocationPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Geolocation Permission',
-          message: 'Can we access your location?',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        },
-      );
-      console.log('granted', granted);
-      if (granted === 'granted') {
-        console.log('You can use Geolocation');
-        setUseLocation(false)
-        return true;
-      } else {
-        setUseLocation(true)
-        console.log('You cannot use Geolocation');
-        return false;
-      }
-    } catch (err) {
-      return false;
-    }
-  };
-
 
   const onShopSelect = item => {
     console.log("SELECTED")
@@ -70,6 +42,14 @@ export default function Home({ navigation }) {
     }
   };
 
+  const handleLocation = () => {
+    console.log('IS ALLOW LOCATION', isLocationAllow)
+    if (!isLocationAllow) {
+      dispatch({ type: SET_ALLOW_LOCATION_MODAL })
+    } else {
+      navigation.navigate('Map', { navType: 'current' })
+    }
+  }
 
 
 
@@ -78,7 +58,7 @@ export default function Home({ navigation }) {
       <View style={styles.headerContainer}>
         <TouchableOpacity
           disabled={useLocation}
-          onPress={() => navigation.navigate('Map', { navType: 'findLocation' })}
+          onPress={() => handleLocation()}
           style={{
             flexDirection: 'row',
             flex: 1,
@@ -464,11 +444,22 @@ export default function Home({ navigation }) {
 
   }
 
+  async function checkPermission() {
+    const granted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+    if (!granted) {
+      setTimeout(() => {
+        dispatch({ type: SET_ALLOW_LOCATION_MODAL })
+      }, 3000)
+    }
+    dispatch({ type: SET_ALLOW_LOCATION, payload: granted })
+  }
+
 
 
   useEffect(() => {
     dispatch(getShops());
-    requestLocationPermission();
+    checkPermission()
+
     return () => {
       dispatch({ type: SET_LAUNDRY_SHOPS, payload: [] });
     };
@@ -483,6 +474,7 @@ export default function Home({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <AllowLocationModal navigation={navigation} />
       {renderHeader()}
 
       {renderFeaturedList()}

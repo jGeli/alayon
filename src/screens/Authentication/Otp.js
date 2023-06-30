@@ -18,6 +18,7 @@ import { CLEAR_ERROR, SET_ERROR } from '../../redux/actions/type.js';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import OtpAutoFillViewManager from 'react-native-otp-auto-fill';
+import { createBulkBasket } from '../../redux/actions/customer.actions';
 
 const Otp = ({ navigation, route }) => {
   const { redirection, param, user } = route.params ? route.params : {};
@@ -32,11 +33,21 @@ const Otp = ({ navigation, route }) => {
   const [resend, setResend] = useState(3);
 
   const handleVerify = code => {
+    let { baskets } = param ? param : { baskets: [] }
+    console.log('OTTPSS', param)
+
     dispatch(verifyOTP({ code, id: user.id }, null))
       .then(res => {
         console.log(res)
-        let { screen } = res;
-        navigation.navigate(screen ? screen : redirection, param)
+        if (redirection === 'OrderSummary' && baskets.length !== 0) {
+          console.log('OTTPSS', param)
+          dispatch(createBulkBasket(baskets))
+            .then((resBaskets) => {
+              navigation.navigate(redirection, { ...param, selectedBaskets: resBaskets.map(a => { return a._id }) })
+            })
+        } else {
+          navigation.navigate(redirection, param)
+        }
       })
       ;
   };

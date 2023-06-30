@@ -16,8 +16,6 @@ const initialOrder = {
   totalService: 0,
   totalAddons: 0,
   pricing: 'Piece',
-  service: null,
-  shop: null,
   cloths: [],
   addons: [],
   hasAddons: false,
@@ -106,11 +104,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         order: {
+          ...state.order,
           ...initialOrder,
-          cloths: [],
-          addons: state.order.addons,
-          service: state.shop.services[0].service,
-          hasAddons: state.order.addons.length !== 0,
+          cloths: []
+          // addons: state.order.addons,
+          // service: state.shop.services[0].service,
+          // hasAddons: state.order.addons.length !== 0,
         },
       };
     case SET_USER:

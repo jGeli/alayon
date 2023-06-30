@@ -1,5 +1,6 @@
 import {
   CLEAR_ERROR,
+  CLOSE_ALLOW_LOCATION_MODAL,
   CLOSE_MODALS,
   OPEN_ADDONS_MODAL,
   OPEN_ADD_CLOTHTYPE_MODAL,
@@ -7,6 +8,7 @@ import {
   OPEN_CUSTOMER_ADDONS_MODAL,
   OPEN_PRICING_MODAL,
   OPEN_SERVICE_PRICING_MODAL,
+  SET_ALLOW_LOCATION_MODAL,
   SET_ERROR,
   SET_LOADING,
   STOP_LOADING,
@@ -21,6 +23,7 @@ const initialState = {
   customerAddOns: false,
   basketModal: null,
   servicePricingModal: false,
+  allowLocation: false
 };
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -40,6 +43,18 @@ export default (state = initialState, action) => {
       return {
         ...state,
         errors: action.payload,
+      };
+
+    case SET_ALLOW_LOCATION_MODAL:
+      return {
+        ...state,
+        allowLocation: true,
+      };
+
+    case CLOSE_ALLOW_LOCATION_MODAL:
+      return {
+        ...state,
+        allowLocation: false,
       };
 
     case OPEN_ADD_CLOTHTYPE_MODAL:

@@ -18,8 +18,17 @@ const animatedWashing = require('../assets/images/animated-washing.gif');
 const defaultBanner = require('../assets/images/ALAYON/10.jpg');
 const setLoading = require('../assets/images/setLoading.gif');
 const setLoading2 = require('../assets/images/setLoading2.gif');
+const location = require('../assets/images/location.gif');
+const location2 = require('../assets/images/location2.gif');
+const map = require('../assets/images/map.gif');
+const location3 = require('../assets/images/location3.gif');
+
 
 export default {
+    location,
+    location2,
+    location3,
+    map,
     setLoading,
     setLoading2,
     animatedWashing,

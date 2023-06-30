@@ -1,20 +1,28 @@
 import axios from 'axios';
 import { constants } from '../../constants';
 import {
+  SET_CUSTOMER_BASKET,
   SET_CUSTOMER_BASKETS,
   SET_CUSTOMER_DATA,
   SET_ERROR,
 } from './type';
+import { removeData } from '../../utils/AsyncStorage';
 
 const varEnv = constants.varEnv;
 
 export const getCustomerData = navigation => dispatch => {
+  console.log("GET CUSTOMER DATA")
   return axios
     .get(`${varEnv.apiUrl}/customers`)
     .then(res => {
-      let { customer, screen } = res.data;
+      console.log('CCCC', res.data)
+      let { baskets } = res.data;
+      if (baskets.length !== 0) {
+        dispatch({ type: SET_CUSTOMER_BASKETS, payload: baskets });
+      }
       dispatch({ type: SET_CUSTOMER_DATA, payload: res.data });
-      navigation && navigation.navigate(screen, {});
+      removeData('baskets');
+      // navigation && navigation.navigate(screen, {});
 
     })
     .catch(err => {
@@ -54,6 +62,24 @@ export const createBasket = data => dispatch => {
       return res.data;
     })
     .catch(err => {
+      dispatch({
+        type: SET_ERROR,
+        payload: err,
+      });
+      return null;
+    });
+};
+
+export const createBulkBasket = data => dispatch => {
+  return axios
+    .post(`${varEnv.apiUrl}/customers/baskets/bulk`, data)
+    .then(res => {
+      console.log('CREATE BULK BASKETS', res.data)
+      dispatch(getCustomerData())
+      return res.data;
+    })
+    .catch(err => {
+      console.log(err.response)
       dispatch({
         type: SET_ERROR,
         payload: err,
@@ -113,6 +139,7 @@ export const getLocations = () => dispatch => {
   return axios
     .get(`${varEnv.apiUrl}/customers/locations`)
     .then(res => {
+      console.log("GET LOCATIONSSS", res.data)
       dispatch({ type: SET_CUSTOMER_DATA, payload: { locations: res.data } })
     })
     .catch(err => {
@@ -125,12 +152,12 @@ export const getLocations = () => dispatch => {
 };
 
 
-
 export const getCustomerShopBaskets = (id) => dispatch => {
   return axios
     .get(`${varEnv.apiUrl}/customers/shops/baskets/${id}`)
     .then(res => {
-      dispatch({ type: SET_CUSTOMER_BASKETS, payload: res.data })
+      dispatch({ type: SET_CUSTOMER_BASKETS, payload: res.data });
+
     })
     .catch(err => {
       dispatch({

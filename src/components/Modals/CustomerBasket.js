@@ -3,36 +3,25 @@ import React, { Component, useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Image,
   TouchableWithoutFeedback,
   Modal,
   TouchableOpacity,
   Animated,
-  TextInput,
-  SafeAreaView,
-  FlatList,
   ScrollView,
   Dimensions,
 } from 'react-native';
 import { COLORS, FONTS, SIZES, icons, styles } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCloths } from '../../redux/actions/data.actions';
-import { createClothType, deleteCloths } from '../../redux/actions/admin.actions';
-import {
-  createShopAddOns,
-  updateServiceClothPricing,
-} from '../../redux/actions/merchant.actions';
 import {
   CLEAR_CUSTOMER_ORDER,
-  SET_CUSTOMER_BASKET,
   SET_CUSTOMER_BASKETS,
   SET_CUSTOMER_ORDER,
 } from '../../redux/actions/type';
-import { getCustomerLocations, setCustomerBasket, setCustomerBaskets } from '../../utils/AsyncStorage';
-import { createBasket, getCustomerShopBaskets } from '../../redux/actions/customer.actions';
-
-const PRICING = ['Piece', 'Kilo', 'Batch'];
+import { setCustomerBaskets } from '../../utils/AsyncStorage';
+import {
+  createBasket,
+} from '../../redux/actions/customer.actions';
 
 // create a component
 const CustomerBasket = ({ active, onClose }) => {
@@ -83,7 +72,6 @@ const CustomerBasket = ({ active, onClose }) => {
     dispatch({ type: SET_CUSTOMER_BASKETS, payload: newBaskets })
     onClose(newBaskets);
     dispatch({ type: CLEAR_CUSTOMER_ORDER });
-
   };
 
   useEffect(() => {
@@ -136,7 +124,7 @@ const CustomerBasket = ({ active, onClose }) => {
         payload: { totalService, totalAddons },
       });
     }
-  }, [selected, active, order.qty]);
+  }, [selected, active]);
 
   function renderPricing() {
     let service = selectedShop.services.find(a => a.service === order.service);

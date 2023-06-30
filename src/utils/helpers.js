@@ -49,7 +49,7 @@ export const groupShopOrders = (data) => {
         shop: item.shop,
         data: [],
         length: 0,
-        deliveryOption: item.deliveryOption
+        deliveryOption: item.deliveryOption ? item.deliveryOption : null
       };
 
       group[fld].length++;

@@ -21,7 +21,7 @@ import axios from 'axios';
 import polyline from '@mapbox/polyline';
 import { icons } from "../../../constants";
 import { useSelector } from "react-redux";
-import { gapikey } from "../../../globals/env";
+import { gapikey, distanceMultiplier } from "../../../globals/env";
 
 // const LATITUDE = 29.95539;
 // const LONGITUDE = 78.07513;
@@ -212,7 +212,7 @@ const Map3 = () => {
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={[styles.bubble, styles.button]}>
                     <Text style={styles.bottomBarContent}>
-                        {parseFloat(values.directDistance).toFixed(2)} km
+                        {parseFloat(values.directDistance * distanceMultiplier).toFixed(2)} km
                     </Text>
                     <Text style={styles.bottomBarContent}>
                         {parseFloat(values.distanceTravelled).toFixed(2)} km

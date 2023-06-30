@@ -35,12 +35,10 @@ const { addressLabels } = constants;
 
 export default function OrderSummary({ navigation, route }) {
   const dispatch = useDispatch();
-  const { shopId, rnd } = route.params;
-  const { isAuthenticated } = useSelector(({ auth }) => auth)
+  const { shopId, rnd, selectedBaskets } = route.params;
   const { errors } = useSelector(({ ui }) => ui)
-  const { basket, customer: { locations } } = useSelector(({ customer }) => customer)
+  const { basket, baskets, customer: { locations } } = useSelector(({ customer }) => customer)
   const [checkoutItems, setCheckoutItems] = useState([]);
-  let newOrders = groupShopOrders(basket.orders)
 
 
   const handleBookNow = (val) => {
@@ -340,7 +338,7 @@ export default function OrderSummary({ navigation, route }) {
 
   function renderFooter() {
 
-    let total = totalOrders(newOrders);
+    let total = totalOrders(checkoutItems);
     return (
       <View
         style={{
@@ -413,17 +411,32 @@ export default function OrderSummary({ navigation, route }) {
     );
   }
 
+  const handleSelectedBaskets = () => {
+    let orders = [];
+    if (selectedBaskets.length !== 0) {
+      selectedBaskets.map(a => {
+        let basket = baskets.find(ab => ab._id == a);
+        console.log('BSSK', basket)
+        if (basket) {
+          orders.push(basket)
+        }
+      })
+    }
+    let nOrders = groupShopOrders(orders);
+
+    setCheckoutItems(nOrders)
+
+  }
+
 
 
   useEffect(() => {
+    handleSelectedBaskets()
 
-    let newOrders = groupShopOrders(basket.orders);
-    console.log(newOrders)
-    setCheckoutItems(newOrders)
-    console.log('SHOP ID', shopId)
-  }, [basket, rnd])
+  }, [selectedBaskets, baskets])
 
-
+  console.log('BASKETS', baskets);
+  console.log('SELECTED BASKETS', selectedBaskets);
 
   return (
     <SafeAreaView

@@ -42,7 +42,7 @@ import { icons, COLORS } from './constants';
 import { getAuthUser } from './redux/actions/auth.actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerBasket, getCustomerLocations } from './utils/AsyncStorage';
-import { SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA } from './redux/actions/type';
+import { SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, STOP_LOADING } from './redux/actions/type';
 import OrderStatus from './screens/customer/OrderStatus';
 import Map2 from './components/Cards/Map/Map2';
 import Map3 from './components/Cards/Map/Map3';
@@ -85,10 +85,6 @@ const StackNavigator = () => {
 
 
 
-
-
-
-
     if (userToken) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
       setRnd(Math.random())
@@ -112,7 +108,10 @@ const StackNavigator = () => {
   }
 
   useEffect(() => {
-    initScreen()
+    initScreen();
+    setTimeout(() => {
+      dispatch({ type: STOP_LOADING })
+    }, 5000)
 
   }, [isAuthenticated])
 
@@ -258,7 +257,7 @@ const StackNavigator = () => {
 
   return (
     <>
-      {loading && !mainScreen ?
+      {(loading || !mainScreen) ?
         <LoadingScreen />
         :
 

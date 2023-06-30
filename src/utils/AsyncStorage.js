@@ -45,6 +45,16 @@ export const storeData = async (key, value) => {
     }
 };
 
+export const removeData = async (key) => {
+    try {
+        await AsyncStorage.removeItem(key);
+
+    } catch (e) {
+        console.log(e);
+        // saving error
+    }
+};
+
 export const storeUser = async value => {
     try {
         await AsyncStorage.setItem('user', JSON.stringify(value));

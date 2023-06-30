@@ -2,6 +2,7 @@ import { selectedShop } from '../../globals/data';
 import {
   CLEAR_MAP_LOCATION,
   CLEAR_SELECTED_SHOP,
+  SET_ALLOW_LOCATION,
   SET_ERROR,
   SET_LAUNDRY_CLOTH,
   SET_LAUNDRY_SERVICES,
@@ -26,10 +27,16 @@ const initialState = {
     services: [],
     addons: [],
   },
+  isLocationAllow: false,
   error: {},
 };
 export default (state = initialState, action) => {
   switch (action.type) {
+    case SET_ALLOW_LOCATION:
+      return {
+        ...state,
+        isLocationAllow: action.payload,
+      };
     case SET_USER:
       return {
         ...state,

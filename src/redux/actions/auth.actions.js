@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   storeToken,
 } from '../auth-header';
+import { getCustomerData } from './customer.actions';
 
 const varEnv = constants.varEnv;
 
@@ -25,13 +26,6 @@ export const requestSignin = (data, navigation, params) => dispatch => {
     .post(`${varEnv.apiUrl}/auth/request`, data)
     .then(res => {
       let { user, redirection } = res.data;
-      console.log(res.data);
-      console.log(res.data, 'Text');
-      console.log(res.data, 'RES DATA INE');
-
-
-      console.log('OTP PARAMS')
-      console.log(params)
 
       if (redirection) {
         params.redirection = redirection;
@@ -72,6 +66,9 @@ export const getAuthUser = navigation => dispatch => {
       console.log(user)
       dispatch({ type: SET_USER, payload: user });
       dispatch({ type: SET_AUTHENTICATED });
+      if (user.type === 'customer') {
+        dispatch(getCustomerData())
+      }
       console.log('AUTH USER')
       console.log(res.data)
 

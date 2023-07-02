@@ -12,14 +12,14 @@ import {
 } from 'react-native';
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
-import { CLEAR_ERROR, SET_CUSTOMER_BASKET } from '../../redux/actions/type';
+import { CLEAR_ERROR, SET_CUSTOMER_BASKET, SET_CUSTOMER_BASKETS } from '../../redux/actions/type';
 import { useEffect } from 'react';
 import { setCustomerBasket } from '../../utils/AsyncStorage';
 
 // create a component
 const DeliveryOptionScreen = ({ navigation, route }) => {
     const { order } = route.params;
-    const { basket } = useSelector(({ customer }) => customer);
+    const { basket, baskets } = useSelector(({ customer }) => customer);
 
     const dispatch = useDispatch()
     const [selected, setSelected] = useState(null)
@@ -28,43 +28,43 @@ const DeliveryOptionScreen = ({ navigation, route }) => {
     }
 
     const handleSubmit = () => {
-        let { orders } = basket;
         let newOrders = [];
         let newVal = selected;
-
-        orders.map(a => {
+        baskets.map(a => {
 
             let newObj = {};
             newObj = a;
+            console.log('SELECTED OPT', order?.shop?._id == a.shop?._id)
             if (order?.shop?._id == a.shop?._id) {
-                newVal = newObj.deliveryOption === selected ? null : selected
-                newObj.deliveryOption = newObj.deliveryOption === selected ? null : selected;
+                newVal = newObj.deliveryOption == selected ? null : selected
+                newObj.deliveryOption = newObj.deliveryOption == selected ? null : selected;
                 newOrders.push(newObj)
             } else {
                 newOrders.push(newObj)
             }
         })
 
-
-        dispatch({ type: SET_CUSTOMER_BASKET, payload: { orders: newOrders } });
+        console.log('NEW ORDER', newOrders)
+        dispatch({ type: SET_CUSTOMER_BASKETS, payload: newOrders });
         dispatch({ type: CLEAR_ERROR });
-        setSelected(newVal);
         navigation.goBack()
     }
 
 
     const handleSelect = async (val) => {
-        let { orders } = basket;
+        let { data } = order;
         let newVal = val;
 
-        orders.map(a => {
+        data.map(a => {
             if (order?.shop?._id == a.shop?._id) {
                 newVal = a.deliveryOption === val ? null : val
             }
         })
+        // console.log(orders, 'ORDsssR')
+        console.log(order, 'ORDERRRR')
+        // console.log(baskets, 'BASSKETTSS')
         setSelected(newVal);
     }
-
 
 
     useEffect(() => {

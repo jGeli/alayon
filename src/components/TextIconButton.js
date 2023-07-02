@@ -28,14 +28,14 @@ const TextIconButton = ({
             }}
             onPress={onPress}
         >
-            {iconPosition == 'LEFT' && 
-            <Image 
-                source={icon}
-                style={{
-                    ...styles.image,
-                    ...iconStyle
-                }}
-            />
+            {iconPosition == 'LEFT' &&
+                <Image
+                    source={icon}
+                    style={{
+                        ...styles.image,
+                        ...iconStyle
+                    }}
+                />
             }
             <Text
                 style={{
@@ -47,14 +47,14 @@ const TextIconButton = ({
 
             </Text>
 
-            {iconPosition == 'RIGHT' && 
-            <Image 
-                source={icon}
-                style={{
-                    ...styles.image,
-                    ...iconStyle
-                }}
-            />
+            {iconPosition == 'RIGHT' &&
+                <Image
+                    source={icon}
+                    style={{
+                        ...styles.image,
+                        ...iconStyle
+                    }}
+                />
             }
 
         </TouchableOpacity>

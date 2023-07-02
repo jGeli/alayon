@@ -81,7 +81,8 @@ const getStepIndicatorIconConfig = ({
   return iconConfig;
 };
 
-export default function OrderStatus({navigation}) {
+export default function OrderStatus({navigation, route}) {
+  const { order, navType } = route.params;
   const [currentPage, setCurrentPage] = React.useState<number>(0);
 
   const onStepPress = (position: number) => {
@@ -89,27 +90,35 @@ export default function OrderStatus({navigation}) {
     setCurrentPage(position > 6 ? 6 : position < 0 ? 0 : position);
   };
   
+  
   function renderHeader() {
     return (
-      <View
-        style={{
-          marginHorizontal: SIZES.padding,
-          height: 40,
-          marginTop: 20
-        }}>
-        <Text
-          style={{
-            ...FONTS.h4,
-            color: COLORS.black,
-            textAlign: 'center'
-            // fontWeight: 'bold',
-          }}>
-        DELIVERY STATUS
-        </Text>
+        <View
+            style={styles.header}>
+            <TouchableOpacity
+                style={{  padding: SIZES.padding}}
+                onPress={() => navigation.navigate(navType == 'track' ? 'CustomerOrders': 'CustomerHome', {})}>
+                <Image
+                    source={navType === 'track' ? icons.back : icons.home}
+                    style={{ height: 20, width: 20, tintColor: COLORS.primary }}
+                />
+            </TouchableOpacity>
+            <Text
+                style={{
+                    ...FONTS.body2,
+                    color: COLORS.black,
+                    fontWeight: 'bold',
+                }}>
+              DELIVERY STATUS
+            </Text>
 
-      </View>
+            <View
+              style={{ height: 20, width: 20, margin: SIZES.padding, tintColor: COLORS.primary }}
+              ></View>
+        </View>
     );
-  }     
+}
+
 
   function renderInfo() {
     return (
@@ -143,11 +152,11 @@ export default function OrderStatus({navigation}) {
 
 
   const renderStepIndicator = (params: any) => {
-    console.log(params)
   return(
     <Image {...getStepIndicatorIconConfig(params)} />
   );
   }
+  
   
   const renderLabel
   = ({
@@ -203,7 +212,7 @@ export default function OrderStatus({navigation}) {
             marginBottom: 20, paddingHorizontal: SIZES.padding}}
         >
             <Text style={{...FONTS.h3, color: COLORS.transparentBlack7}}>Track Order</Text>
-            <Text style={{ ...FONTS.body3, color: COLORS.gray}}>NY012345</Text>
+            <Text style={{ ...FONTS.body3, color: COLORS.gray}}>{order.transaction_id}</Text>
         </View>
         <LineDivider
             lineStyle={{
@@ -243,12 +252,11 @@ export default function OrderStatus({navigation}) {
     )
   }
 
-  console.log(currentPage)
 
   function renderFooter() {
     return (
         <View
-            style={{marginTop: SIZES.radius, marginBottom: SIZES.padding}}
+            style={{paddingVertical: SIZES.padding, width: '100%', paddingHorizontal: SIZES.padding * 2}}
         >
         <View
             style={{flexDirection: 'row', height: 55}}
@@ -388,7 +396,6 @@ export default function OrderStatus({navigation}) {
   
   }
 
-
   return (
     <SafeAreaView style={styles.container}>
         {renderHeader()}
@@ -408,14 +415,22 @@ export default function OrderStatus({navigation}) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    height: '100%',
+      container: {
+        flexGrow: 1,
+        flex: 1,
+        backgroundColor: COLORS.lightGray3,
+        paddingBottom: SIZES.padding,
+        alignItems: 'center'
+    },
+  header: {
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: COLORS.white,
-    paddingHorizontal: SIZES.padding
-
-    // flexDirection: 'row',
-  },
-
+    elevation: 5,
+    width: '100%'
+},
   stepIndicator: {
     height: '100%',
     backgroundColor: COLORS.white3

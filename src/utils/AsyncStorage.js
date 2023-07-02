@@ -109,9 +109,7 @@ export const setCustomerBaskets = async (data) => {
     try {
 
         const oldBaskets = await getCustomerBaskets();
-        console.log('OLD BASK', oldBaskets, data)
         const newBaskets = [...oldBaskets, { ...data }];
-        console.log('NEW BASK', newBaskets)
         await AsyncStorage.setItem('baskets', JSON.stringify(newBaskets))
 
         return newBaskets;
@@ -170,8 +168,6 @@ export const setCustomerLocations = async (data) => {
     }
 };
 
-
-
 export const getCustomerLocations = async () => {
     try {
         const locations = JSON.parse(await AsyncStorage.getItem('locations'));
@@ -185,7 +181,6 @@ export const getCustomerLocations = async () => {
         return []
     }
 };
-
 
 export const deleteCustomerLocations = async (id) => {
     try {

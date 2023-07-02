@@ -52,26 +52,19 @@ const CustomerBasket = ({ active, onClose }) => {
   };
 
   const handleSave = async () => {
-    let newBaskets = []
-    newBaskets = baskets;
-
+    let newBaskets = [];
     if (!isAuthenticated) {
-      newBaskets = await setCustomerBaskets({ ...order, shop: selectedShop, _id: Math.random() })
+      newBaskets = await setCustomerBaskets({ ...order, shop: selectedShop, _id: Math.random() });
+      dispatch({ type: SET_CUSTOMER_BASKETS, payload: newBaskets })
     } else {
-
-      newBaskets.push({
-        ...order,
-        shop: selectedShop,
-      });
-      await dispatch(createBasket({ ...order, shop: selectedShop }))
+      newBaskets = await dispatch(createBasket({ ...order, shop: selectedShop }));
     }
 
 
-    newBaskets = newBaskets.filter(a => a.shop._id === selectedShop._id);
 
-    dispatch({ type: SET_CUSTOMER_BASKETS, payload: newBaskets })
-    onClose(newBaskets);
+    console.log('NEW BASKETS', newBaskets)
     dispatch({ type: CLEAR_CUSTOMER_ORDER });
+    onClose(newBaskets);
   };
 
   useEffect(() => {

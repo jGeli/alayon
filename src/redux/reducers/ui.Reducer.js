@@ -102,6 +102,7 @@ export default (state = initialState, action) => {
         customerAddOns: false,
         basketModal: null,
         servicePricingModal: false,
+        allowLocation: false
       };
     case CLEAR_ERROR:
       return {

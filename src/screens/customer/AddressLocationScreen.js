@@ -147,10 +147,16 @@ const AddressLocationScreen = ({ navigation, route }) => {
 
     useEffect(() => {
         if (navType === 'pickupDelivery' || navType === 'returnDelivery') {
-            setSelected(basket[navType] ? basket[navType]._id : null)
+            if (locations.length !== 0 && !basket[navType]) {
+                let defaultLoc = locations.find(a => a.isDefault);
+                dispatch({ type: SET_CUSTOMER_BASKET, payload: { [navType]: selected === defaultLoc._id ? null : defaultLoc } })
+                setSelected(defaultLoc._id)
+            } else {
+                setSelected(basket[navType] ? basket[navType]._id : null)
+            }
         }
 
-    }, [navType, basket]);
+    }, [navType, basket, locations]);
 
     useEffect(() => {
         dispatch(getLocations())

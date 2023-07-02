@@ -27,7 +27,8 @@ import LabeledText from '../../components/LabeledText';
 import DashLine from '../../components/DashedLine';
 import CheckoutOrderCard from '../../components/Cards/CheckoutOrderCard';
 import { groupShopOrders, totalOrders } from '../../utils/helpers';
-import { CLEAR_ERROR, SET_ERROR } from '../../redux/actions/type';
+import { CLEAR_ERROR, SET_CUSTOMER_BASKET, SET_ERROR } from '../../redux/actions/type';
+import { createOrder } from '../../redux/actions/customer.actions';
 
 
 const { addressLabels } = constants;
@@ -43,7 +44,7 @@ export default function OrderSummary({ navigation, route }) {
 
   const handleBookNow = (val) => {
     let { orders } = val;
-
+    let hasDelOpt = true;
     if (!val.pickupDelivery) {
       dispatch({ type: SET_ERROR, payload: { locations: 'Set Pickup and Delivery Address' } })
       return;
@@ -51,16 +52,22 @@ export default function OrderSummary({ navigation, route }) {
 
     for (let order of orders) {
       if (!order.deliveryOption) {
-        dispatch({ type: SET_ERROR, payload: { deliveryOption: 'Set Pickup and Delivery Address' } })
-        return;
+        hasDelOpt = false;
+        // return;
       }
     }
 
+    if (!hasDelOpt) {
+      dispatch({ type: SET_ERROR, payload: { deliveryOption: 'Set Pickup and Delivery Address' } })
+      return;
+    }
 
+    dispatch(createOrder(val))
+      .then(({ d }) => {
+        console.log('BOOKING', d)
+        navigation.navigate('OrderStatus', { order: d })
+      })
 
-
-
-    navigation.navigate('OrderStatus', {})
 
     // navigation.navigate(isAuthenticated ? 'CustomerOrders' : 'OrderSummary', { basket, shopId })
     // Clipboard.setString(JSON.stringify(basket.orders));
@@ -79,7 +86,7 @@ export default function OrderSummary({ navigation, route }) {
         }}>
         <TouchableOpacity
           style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
-          onPress={() => navigation.navigate('ShopServices', { shopId })}>
+          onPress={() => navigation.goBack()}>
           <Image
             source={icons.back}
             style={{ height: 20, width: 20, tintColor: COLORS.primary }}
@@ -387,7 +394,8 @@ export default function OrderSummary({ navigation, route }) {
             borderLeftWidth: 1,
             height: '100%',
           }}
-          onPress={() => handleBookNow(basket)}>
+          onPress={() => handleBookNow(basket)}
+        >
           <Text
             style={{
               ...FONTS.body3,
@@ -413,10 +421,10 @@ export default function OrderSummary({ navigation, route }) {
 
   const handleSelectedBaskets = () => {
     let orders = [];
+    let pickupDelivery = basket['pickupDelivery'];
     if (selectedBaskets.length !== 0) {
       selectedBaskets.map(a => {
         let basket = baskets.find(ab => ab._id == a);
-        console.log('BSSK', basket)
         if (basket) {
           orders.push(basket)
         }
@@ -424,7 +432,16 @@ export default function OrderSummary({ navigation, route }) {
     }
     let nOrders = groupShopOrders(orders);
 
+    if (!pickupDelivery && locations.length !== 0) {
+      let defLoc = locations.find(a => a.isDefault);
+      console.log(defLoc, 'DEFLOCA')
+      if (defLoc) {
+        pickupDelivery = defLoc
+      }
+    }
     setCheckoutItems(nOrders)
+
+    dispatch({ type: SET_CUSTOMER_BASKET, payload: { pickupDelivery, orders: orders } })
 
   }
 
@@ -435,8 +452,6 @@ export default function OrderSummary({ navigation, route }) {
 
   }, [selectedBaskets, baskets])
 
-  console.log('BASKETS', baskets);
-  console.log('SELECTED BASKETS', selectedBaskets);
 
   return (
     <SafeAreaView

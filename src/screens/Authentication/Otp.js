@@ -34,13 +34,10 @@ const Otp = ({ navigation, route }) => {
 
   const handleVerify = code => {
     let { baskets } = param ? param : { baskets: [] }
-    console.log('OTTPSS', param)
 
     dispatch(verifyOTP({ code, id: user.id }, null))
       .then(res => {
-        console.log(res)
         if (redirection === 'OrderSummary' && baskets.length !== 0) {
-          console.log('OTTPSS', param)
           dispatch(createBulkBasket(baskets))
             .then((resBaskets) => {
               navigation.navigate(redirection, { ...param, selectedBaskets: resBaskets.map(a => { return a._id }) })

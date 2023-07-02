@@ -1,12 +1,15 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image, FlatList, Button } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { userData2 } from '../../globals/data'
-import { COLORS, FONTS, SIZES, icons, images, styles } from '../../constants'
+import { COLORS, FONTS, SIZES, icons, images } from '../../constants'
 import { TextButton } from '../../components'
 import CustomerOrders from '../../components/Cards/CustomerOrder'
+import { useSelector } from 'react-redux'
+import { ScrollView } from 'react-native'
 
 
 export default function MerchantHomeScreen({ navigation }) {
+  const { customer: { orders } } = useSelector(({customer}) => customer) 
   const [isOnline, setIsOnline] = useState(false);
   const [myList, setMyList] = useState([]);
   const [selectedServiceStatus, setSelectedServiceStatus] = useState(1);
@@ -28,43 +31,36 @@ export default function MerchantHomeScreen({ navigation }) {
   // }, [])
 
 
+
   function renderHeader() {
     return (
-      <View style={styles.headerContainer}>
-        <TouchableOpacity style={{
-          flexDirection: 'row',
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'flex-start'
-        }}>
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingRight: SIZES.padding * 1
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-            >
-              <Image source={icons.back} style={{ height: 20, width: 20 }} />
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              alignItems: "flex-start",
-              justifyContent: 'center',
-              flexDirection: 'row',
-              marginVertical: SIZES.padding * 2,
-              width: '80%'
-            }}
-          >
-            <Text style={{ ...FONTS.h3, color: COLORS.black, fontWeight: 'bold', }}>My Orders</Text>
-          </View>
-        </TouchableOpacity>
+      <View
+        style={styles.header}>
+        {/* <TouchableOpacity
+          style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
+          onPress={() => navigation.goBack()}>
+          <Image
+            source={icons.back}
+            style={{ height: 20, width: 20, tintColor: COLORS.primary }}
+          />
+        </TouchableOpacity> */}
+        <Text
+          style={{
+            ...FONTS.body2,
+            color: COLORS.black,
+            fontWeight: 'bold',
+          }}>
+          MY ORDERS
+        </Text>
+
+        <View></View>
       </View>
-    )
+    );
   }
+
+
+
+
   function renderOrders() {
     return (
 
@@ -141,27 +137,59 @@ export default function MerchantHomeScreen({ navigation }) {
           padding: SIZES.padding
         }}
       >
-        <CustomerOrders onPress={() => navigation.navigate('OrderSummary', {})}
-        />
+      {orders.map(a => {
+      
+        return <View key={a._id}><CustomerOrders navigation={navigation} order={a}
+        /></View>
+      })}
+        
       </View>
     )
   }
+  
+  
+  console.log("CUSTOMER ORDER", orders)
 
   return (
     <SafeAreaView
-      // style={styles.container}
+      style={styles.container}
 
-      style={{
-        flexGrow: 1,
-        width: SIZES.width,
-        padding: SIZES.padding,
-        backgroundColor: COLORS.white2,
-        alignItems: 'center',
-      }}
+    // style={{
+    //   flexGrow: 1,
+    //   width: SIZES.width,
+    //   padding: SIZES.padding,
+    //   backgroundColor: COLORS.white2,
+    //   alignItems: 'center',
+    // }}
     >
       {renderHeader()}
       {renderOrders()}
+      <ScrollView>
       {renderOrderDetails()}
+      </ScrollView>
     </SafeAreaView>
   )
 }
+
+
+// define your styles
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    flex: 1,
+    backgroundColor: COLORS.lightGray3,
+    paddingBottom: SIZES.padding * 3,
+    alignItems: 'center'
+  },
+  header: {
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    elevation: 5,
+    width: '100%',
+    marginBottom: SIZES.padding
+  },
+
+});

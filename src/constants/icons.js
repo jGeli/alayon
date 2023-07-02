@@ -203,6 +203,7 @@ export default {
   chat,
   laundryBasket,
   edit,
+  edit_order,
   addbox,
   dotsetting,
   likes,

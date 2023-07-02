@@ -88,8 +88,6 @@ const varEnv = {
 const addressLabels = [{ _id: 0, name: 'Work' }, { _id: 1, name: 'Home 1' }, { _id: 2, name: 'Home 2' }]
 
 const addressLocations = [{ _id: 0, "latitude": 11.2317012, "longitude": 125.0024682, "address": "62J2+MXW, Tacloban City, Leyte, Philippines", name: "John Benedict", mobile: "9774461641", postalCode: "6500", label: 1 }, { _id: 1, "longitude": 125.00254014506935, "latitude": 11.234456830480326, "address": "62M2+RXV, Real St, Downtown, Tacloban City, Leyte, Philippines", name: "Marty Pabello", mobile: "9878423422", postalCode: "6500", isDefault: true, label: 0 }]
-
-
 const basketOrder = { orders: [] }
 
 const servicePricing = {

@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getShops } from '../../redux/actions/data.actions';
 import moment from 'moment/moment';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { CLEAR_SELECTED_SHOP, SET_ALLOW_LOCATION, SET_ALLOW_LOCATION_MODAL, SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, SET_LAUNDRY_SHOPS, SET_SELECTED_SHOP } from '../../redux/actions/type';
+import { CLEAR_SELECTED_SHOP, CLOSE_MODALS, SET_ALLOW_LOCATION, SET_ALLOW_LOCATION_MODAL, SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, SET_LAUNDRY_SHOPS, SET_SELECTED_SHOP } from '../../redux/actions/type';
 import { distanceMultiplier } from '../../globals/env';
 import { getAuthUser } from '../../redux/actions/auth.actions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -101,7 +101,7 @@ export default function Home({ navigation }) {
           </View>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Chats",  {shops})}
+          onPress={() => navigation.navigate("Chats", { shops })}
           style={{
             paddingRight: SIZES.padding * 2,
             justifyContent: 'center',
@@ -461,6 +461,8 @@ export default function Home({ navigation }) {
 
     return () => {
       dispatch({ type: SET_LAUNDRY_SHOPS, payload: [] });
+      dispatch({ type: CLOSE_MODALS });
+
     };
   }, []);
 

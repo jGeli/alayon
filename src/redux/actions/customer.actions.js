@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { constants } from '../../constants';
 import {
+  CLEAR_CUSTOMER_BASKETS,
   SET_CUSTOMER_BASKET,
   SET_CUSTOMER_BASKETS,
   SET_CUSTOMER_DATA,
@@ -15,7 +16,6 @@ export const getCustomerData = navigation => dispatch => {
   return axios
     .get(`${varEnv.apiUrl}/customers`)
     .then(res => {
-      console.log('CCCC', res.data)
       let { baskets } = res.data;
       if (baskets.length !== 0) {
         dispatch({ type: SET_CUSTOMER_BASKETS, payload: baskets });
@@ -52,14 +52,29 @@ export const getCustomerShopById = id => dispatch => {
     });
 };
 
+export const createOrder = data => dispatch => {
+  return axios
+    .post(`${varEnv.apiUrl}/customers/orders`, data)
+    .then(res => {
+      // return dispatch(getCustomerShopBaskets(shop._id));
+      dispatch(getCustomerData());
+      return res.data
+    })
+    .catch(err => {
+      dispatch({
+        type: SET_ERROR,
+        payload: err,
+      });
+      return null;
+    });
+};
+
 export const createBasket = data => dispatch => {
   let { shop } = data;
   return axios
     .post(`${varEnv.apiUrl}/customers/baskets`, data)
     .then(res => {
-      console.log('CREATE BASKETS', res.data)
-      dispatch(getCustomerShopBaskets(shop._id))
-      return res.data;
+      return dispatch(getCustomerShopBaskets(shop._id));
     })
     .catch(err => {
       dispatch({
@@ -71,6 +86,7 @@ export const createBasket = data => dispatch => {
 };
 
 export const createBulkBasket = data => dispatch => {
+  console.log('CREATE BULK BASKETS')
   return axios
     .post(`${varEnv.apiUrl}/customers/baskets/bulk`, data)
     .then(res => {
@@ -153,11 +169,13 @@ export const getLocations = () => dispatch => {
 
 
 export const getCustomerShopBaskets = (id) => dispatch => {
+  dispatch({ type: CLEAR_CUSTOMER_BASKETS });
   return axios
     .get(`${varEnv.apiUrl}/customers/shops/baskets/${id}`)
     .then(res => {
+      console.log('SHOP BASKETSS', res.data)
       dispatch({ type: SET_CUSTOMER_BASKETS, payload: res.data });
-
+      return res.data;
     })
     .catch(err => {
       dispatch({

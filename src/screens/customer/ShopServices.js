@@ -79,6 +79,7 @@ export default ShopServices = ({ navigation, route }) => {
   };
 
   const handleCheckout = (val) => {
+    console.log('CHECKOUT BASKET', val)
     if (val.length !== 0) {
       let pickupDelivery = null;
 
@@ -89,17 +90,18 @@ export default ShopServices = ({ navigation, route }) => {
         pickupDelivery = basket.pickupDelivery;
       }
 
-      dispatch({ type: CLOSE_MODALS });
 
       if (isAuthenticated) {
         navigation.navigate('OrderSummary', { shopId, rnd: Math.random(), selectedBaskets: val.map(a => a._id) });
       } else {
         navigation.navigate('SignIn', { redirection: 'OrderSummary', param: { shopId, rnd: Math.random(), baskets: val } });
       }
-      dispatch({ type: OPEN_BASKET_MODAL, payload: 'checkout_basket' });
+      dispatch({ type: CLOSE_MODALS });
 
+      return
     } else {
       dispatch({ type: OPEN_BASKET_MODAL, payload: 'checkout_basket' });
+      return
     }
   };
 
@@ -123,13 +125,10 @@ export default ShopServices = ({ navigation, route }) => {
     }
 
 
-    console.log('SHOP DATA', shopData)
-
     if (shopData && shopData._id) {
       let { services } = shopData;
       if (services.length !== 0) {
         let service = services[0];
-
         if (service) {
           setCloths(service.cloths);
         }
@@ -205,8 +204,6 @@ export default ShopServices = ({ navigation, route }) => {
   };
 
   const handleChangeService = val => {
-    // setSelectedServiceType(val);
-    console.log(val)
     dispatch({ type: SET_CUSTOMER_ORDER, payload: { service: val.service } });
     if (val) {
       setCloths(val.cloths);
@@ -219,6 +216,7 @@ export default ShopServices = ({ navigation, route }) => {
 
     if (shopId) {
       dispatch({ type: CLEAR_CUSTOMER_BASKET })
+      dispatch({ type: CLEAR_CUSTOMER_BASKETS })
       handleShop(selectedShop._id);
     }
 
@@ -273,7 +271,9 @@ export default ShopServices = ({ navigation, route }) => {
               // backgroundColor: COLORS.darkGray2,
               padding: 5,
             }}
-            onPress={() => navigation.goBack()}>
+            onPress={() => {
+              navigation.goBack()
+            }}>
             <Image
               source={icons.back}
               style={{ height: 20, width: 20, tintColor: COLORS.white }}

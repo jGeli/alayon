@@ -28,7 +28,7 @@ export default function TestScreen({ navigation, route }) {
                         color: COLORS.black,
                         // fontWeight: 'bold',
                     }}>
-                    {address ? "Edit Address" : "New Address"}
+                    Test Screen
                 </Text>
 
                 <View></View>

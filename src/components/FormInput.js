@@ -6,6 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {FONTS, SIZES, COLORS} from '../constants';
 
 const FormInput = ({
+  onSubmitEditing,
   value,
   containerStyle,
   label,
@@ -52,6 +53,7 @@ const FormInput = ({
             flex: 1,
             ...inputStyle,
           }}
+          onSubmitEditing={onSubmitEditing}
           value={value}
           placeholder={placeholder}
           placeholderTextColor={COLORS.gray}

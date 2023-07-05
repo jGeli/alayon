@@ -292,7 +292,7 @@ export default ShopServices = ({ navigation, route }) => {
               }}
               // onPress={() => navigation.goBack()}
               onPress={() =>
-                navigation.navigate('Conversation', { shop: selectedShop })}
+                navigation.navigate('Chats')}
 
             >
               <Image

@@ -3,10 +3,9 @@ import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image, TextInpu
 import { COLORS, FONTS, SIZES, icons, styles, constants } from '../../constants'
 import { userData, userData2, myAccount, userData4 } from '../../globals/data'
 import axios from 'axios'
-
 import { FormInput } from '../../components'
 import { useDispatch, useSelector } from 'react-redux'
-import ShopServices from './ShopServices'
+
 
 const varEnv = constants.varEnv;
 
@@ -15,7 +14,7 @@ export default function CustomerReviewScreen({ navigation, route }) {
   let { shop } = route.params.shop;
   const dispatch = useDispatch();
   const {user} = useSelector(({auth}) => auth)
-  const { selectedShop } = useSelector(({ data }) => data);
+  
 
 
   console.log(user, "user")
@@ -152,8 +151,7 @@ export default function CustomerReviewScreen({ navigation, route }) {
             paddingLeft: 10,
             alignItems: 'center',
           }}
-          data={selectedShop._id}
-          keyExtractor={item => `${item._id}`}
+          data={shop}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item, index }) => (
             
@@ -164,7 +162,7 @@ export default function CustomerReviewScreen({ navigation, route }) {
                   fontWeight: 'bold',
                   color: COLORS.black,
                 }}>
-                {item.name}   
+                {item.name}
               </Text>
   
           )}
@@ -181,7 +179,7 @@ export default function CustomerReviewScreen({ navigation, route }) {
 
           }}
         >
-           
+
           <Text>
           <Text style={{
                 fontSize: SIZES.base * 2,
@@ -283,8 +281,6 @@ export default function CustomerReviewScreen({ navigation, route }) {
 
     //   </SafeAreaView>
     // )
-  
-
   // const styles = StyleSheet.create({
   //   container: {
   //     flexGrow: 1,

@@ -202,3 +202,40 @@ export const getCustomerBaskets = () => dispatch => {
       return null;
     });
 };
+
+export const getConversation = id => dispatch => {
+
+  return axios.get(`${varEnv.apiUrl}/chats/${id}`)
+  .then(res => {
+    return res.data
+  })
+  .catch(err => {
+    console.log('ERR ORDERS', err.response)
+    return null;
+  });
+};
+
+
+export const getChatLists = id => dispatch => {
+  return axios.get(`${varEnv.apiUrl}/chats`)
+  .then(res => {
+    return res.data
+  })
+  .catch(err => {
+    console.log('ERR ORDERS', err.response)
+    return null;
+  });
+};
+
+
+export const createChat = (id, data) => dispatch => {
+  return axios.post(`${varEnv.apiUrl}/chats/${id}`, data)
+  .then(res => {
+  console.log("CHAT CREATED RESP", res.data)
+    return res.data
+  })
+  .catch(err => {
+    console.log('ERR ORDERS', err.response)
+    return null;
+  });
+};

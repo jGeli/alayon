@@ -70,8 +70,15 @@ const deliveryOptions = [
 const varEnv = {
   //API URLS
   //Local
-  socket: 'http://192.168.1.14:42005',
-  apiUrl: 'http://192.168.1.14:42005/api/v1',
+  // socket: 'http://192.168.1.15:42005',
+  // apiUrl: 'http://192.168.1.15:42005/api/v1',
+  // defaultToken:
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTE1OTcyMWJhYmQwNGJlODc1ODhkZCIsImlhdCI6MTY4NzkxNDM4MiwiZXhwIjoxNjkwNTA2MzgyfQ.ri5Jm6-dbIdt_XFkY7zJSOjk8iBRzHtg8fU9JkvoPnk',
+  // shopId: '6492af74fb498149c8c29d0a',
+  //Live
+  socket: 'https://alayon.bugtech.solutions',
+  host: 'https://alayon.bugtech.solutions',
+  apiUrl: 'https://alayon.bugtech.solutions/api/v1',
   defaultToken:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTE1OTcyMWJhYmQwNGJlODc1ODhkZCIsImlhdCI6MTY4NzkxNDM4MiwiZXhwIjoxNjkwNTA2MzgyfQ.ri5Jm6-dbIdt_XFkY7zJSOjk8iBRzHtg8fU9JkvoPnk',
   shopId: '6492af74fb498149c8c29d0a',

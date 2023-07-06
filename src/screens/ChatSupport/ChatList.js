@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   Animated,
   View,
@@ -7,7 +7,8 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
-  FlatList
+  FlatList,
+  RefreshControl,
 } from 'react-native';
 
 import { 
@@ -23,50 +24,90 @@ import { chatList } from '../../globals/data';
 import { cutString } from '../../utils/helpers';
 import { Badge } from '@rneui/themed';
 import { useDispatch, useSelector } from 'react-redux';
-import { getConversation } from '../../redux/actions/data.actions';
 import { SET_CONVERSATION } from '../../redux/actions/type';
 import axios from 'axios';
+// import Sound from 'react-native-sound';
 import moment from 'moment';
+import socket from '../../utils/socket';
+import { getChatLists, getConversation } from '../../redux/actions/customer.actions';
+
 
  export default function ChatList({navigation}) {
   const dispatch = useDispatch();
   const [list, setList] = useState([])
-  const { user: { locations } } = useSelector(({ auth }) => auth);
+  const { user } = useSelector(({ auth }) => auth);
+  const [chats, setChats] = useState([])
+  const [refreshing, setRefreshing] = useState(false);
+
+  const soundRef = useRef();
+
   const varEnv = constants.varEnv;
-  // console.log(data)
-  
-  console.log("AAAAAAAAAAAAAAAAAAAAa")
-  // console.log(dispatch({type: SET_CONVERSATION}, "DATA"))
 
-
-  useEffect(() => {
-    // const handleData = ({data}) => {
-    //   console.log(data)
-    // }
-    // dispatch(getConversation());
-    // dispatch(getConversation())
-  // console.log(setList(data), "AASS")
-
-    // dispatch({type: SET_CONVERSATION}, "DATA")
-    axios
-    .get(`${varEnv.apiUrl}/support`)
-    .then(res => {
-      console.log('MESSAGE');
-      console.log(res.data);
-      setList(res.data)
-      // dispatch({type: SET_CONVERSATION, payload: res.data});
-    })
-    .catch(err => {
-      console.log(JSON.stringify(err));
-      dispatch({
-        type: SET_ERROR,
-        payload: err,
-      });
-    });
-    
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchChatLists();
   }, []);
 
-  console.log(list, 'letse')
+
+  // function playSound(testInfo) {
+  //   soundRef.current = null;
+  //     const callback = (error, sound) => {
+  //         if (error) {
+  //             Alert.alert('error', error.message);
+  //             return;
+  //         }
+          
+  //         sound.play(() => {
+  //             // Success counts as getting to the end
+  //             // Release when it's done so we're not using up resources
+  //             sound.release();
+  //         });
+  //     };
+  //     let sound = new Sound(testInfo.url, testInfo.basePath, error => callback(error, sound));
+  // }
+
+  const fetchChatLists =  async () => {
+    let chatLists = await dispatch(getChatLists())
+       
+      let newChats = chatLists.map(a => {
+      let newObj = {
+               ...a,
+               date: a.updatedAt,
+               name: a.sender._id == user._id ? a.receiver.providerId : a.sender.providerId,
+               latestChat: a.threads[a.threads.length - 1].message,
+               imgUrl: a.sender._id == user._id ? a.receiver.imgUrl : a.sender.imgUrl
+             }
+             return newObj
+       }) 
+       
+       console.log('NEW CHATS',newChats)
+       setChats(newChats)
+       
+       setTimeout(() => {
+        setRefreshing(false);
+      }, 2000);
+   }
+  
+
+   useEffect(() => {
+    console.log("first")
+    fetchChatLists()
+    socket.on('newMessage', (data) => {
+        console.log('NEW MESSAGE LIVE', data)
+        // playSound(
+        //   {
+        //     title: 'mp3 in bundle',
+        //     url: 'ring1.mp3',
+        //     basePath: Sound.MAIN_BUNDLE
+        // }
+        // )
+        fetchChatLists()
+      
+      }) 
+    
+  }, [])
+
+  console.log(chats, 'letse')
 
   
   function renderChatList() {
@@ -74,7 +115,7 @@ import moment from 'moment';
       // console.log(data)
       return (
         <TouchableOpacity
-          onPress={() => navigation.navigate('Conversation', {shop: item})}
+          onPress={() => navigation.navigate('Conversation', {conversation: item})}
         >
           <View
           style={{
@@ -89,7 +130,7 @@ import moment from 'moment';
         >
           <Image
             // source={images.defaultBanner}
-            source={item.bannerUrl}
+            source={{uri: item.bannerUrl}}
             resizeMode='contain'
             style={{
               height: 50,
@@ -127,7 +168,8 @@ import moment from 'moment';
                 }}
               >
                 {/* [Chat Name Test Name long] */}
-                {item.senderId?.fistName + ' ' + item.senderId?.lastName}
+                {/* {item.senderId?.fistName + ' ' + item.senderId?.lastName} */}
+                {item.name}
               </Text>
               <Text
                 style={{
@@ -136,8 +178,8 @@ import moment from 'moment';
                 }}
               >
                 {/* [Last Message in Conversation] */}
-                {cutString(String(item.thread[-0].messages), 40)}
-                {/* {item.latestChat} */}
+                {/* {cutString(String(item.thread[-0].messages), 40)} */}
+                {item.latestChat}
               </Text>
             </View>
            
@@ -161,8 +203,11 @@ import moment from 'moment';
       >
         
         <FlatList 
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
           keyExtractor={(item, index) => `${index}`}
-          data={list.d}
+          data={chats}
           vertical
           scrollEnabled={true}
           renderItem={renderItem}
@@ -188,7 +233,17 @@ import moment from 'moment';
         }}
       >
 
-        {renderChatList()}
+        {chats.length !== 0 ? renderChatList() : 
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <Text>
+            No Conversation to display.
+          </Text>
+        </View>}
       </View>
       
     </SafeAreaView>

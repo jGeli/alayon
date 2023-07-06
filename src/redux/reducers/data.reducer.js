@@ -1,6 +1,10 @@
 import { selectedShop } from '../../globals/data';
 import {
+  CLEAR_CHAT_LISTS,
+  CLEAR_CONVERSATION,
   CLEAR_MAP_LOCATION,
+  SET_CHAT_LISTS,
+  SET_CONVERSATION,
   CLEAR_SELECTED_SHOP,
   SET_ALLOW_LOCATION,
   SET_ERROR,
@@ -17,6 +21,8 @@ const initialState = {
   shops: [],
   services: [],
   cloths: [],
+  chats: [],
+  conversation: [],
   location: {
     lat: 0,
     lng: 0,
@@ -32,6 +38,29 @@ const initialState = {
 };
 export default (state = initialState, action) => {
   switch (action.type) {
+    case SET_CHAT_LISTS:
+      return {
+        ...state,
+        chats: action.payload
+      };
+    case SET_CONVERSATION:
+      return {
+        ...state,
+        conversation: action.payload
+      };
+
+
+    case CLEAR_CONVERSATION:
+      return {
+        ...state,
+        conversation: []
+      };
+    case CLEAR_CHAT_LISTS:
+      return {
+        ...state,
+        chats: []
+      };
+    
     case SET_ALLOW_LOCATION:
       return {
         ...state,

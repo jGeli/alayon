@@ -7,6 +7,7 @@ import {FONTS, SIZES, COLORS} from '../constants';
 
 const FormInput = ({
   value,
+  onSubmitEditing,
   containerStyle,
   label,
   placeholder,
@@ -52,6 +53,7 @@ const FormInput = ({
             flex: 1,
             ...inputStyle,
           }}
+          onSubmitEditing={onSubmitEditing}
           value={value}
           placeholder={placeholder}
           placeholderTextColor={COLORS.gray}

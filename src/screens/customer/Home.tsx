@@ -25,19 +25,51 @@ import { getCustomerBasket, getCustomerLocations } from '../../utils/AsyncStorag
 import axios from 'axios';
 import { getCustomerData } from '../../redux/actions/customer.actions';
 import AllowLocationModal from '../../components/Modals/AllowLocationModal';
+import { ScrollView } from 'react-native';
+import { RefreshControl } from 'react-native';
 
 const varEnv = constants.varEnv;
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
-  const { shops, location, isLocationAllow } = useSelector(({ data }) => data);
+  const { location, isLocationAllow } = useSelector(({ data }) => data);
+  const { isAuthenticated } = useSelector(({auth}) => auth)
   const { basket } = useSelector(({ customer }) => customer);
   const [useLocation, setUseLocation] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [shops, setShops] = useState([])
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setShops([]);
+    handleGetShops()
+  }, []);
+
+  const handleGetShops = async () => {
+    await dispatch(getShops())
+      .then(a => {
+        if (a && a.length !== 0) {
+          setShops(a)
+        }
+        setTimeout(() => {
+          setRefreshing(false)
+        }, 2000);
+      }).catch(err => {
+        setTimeout(() => {
+          setRefreshing(false)
+        }, 2000);
+      })
+
+
+  }
 
   const onShopSelect = item => {
     console.log("SELECTED")
     if (item.services && item.services.length !== 0) {
       dispatch({ type: CLEAR_SELECTED_SHOP })
+      dispatch({
+        type: SET_SELECTED_SHOP,
+        payload: {_id: item._id},
+      });
       navigation.navigate('ShopServices', { shopId: item._id });
     }
   };
@@ -100,6 +132,7 @@ export default function Home({ navigation }) {
             </Text>
           </View>
         </TouchableOpacity>
+        {isAuthenticated &&
         <TouchableOpacity
           onPress={() => navigation.navigate("Chats", { shops })}
           style={{
@@ -117,6 +150,7 @@ export default function Home({ navigation }) {
             }}
           />
         </TouchableOpacity>
+        }
         <TouchableOpacity
           onPress={() => navigation.navigate('Search', {})}
           style={{
@@ -134,7 +168,7 @@ export default function Home({ navigation }) {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => navigation.navigate('Filter', {})}
           style={{
             justifyContent: 'center',
@@ -149,7 +183,7 @@ export default function Home({ navigation }) {
               tintColor: COLORS.black,
             }}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     );
   }
@@ -252,7 +286,7 @@ export default function Home({ navigation }) {
           }}
         // onPress={() => console.log(item)}
         >
-          
+
           <SkeletonPlaceholder>
             <View
               style={{
@@ -432,6 +466,7 @@ export default function Home({ navigation }) {
         <FlatList
           data={shops.length !== 0 ? shops : constants.ShopSkeleton}
           showsVerticalScrollIndicator={false}
+          scrollEnabled={false}
           keyExtractor={(item, index) => `${index}`}
           renderItem={renderItem}
           contentContainerStyle={{
@@ -446,32 +481,27 @@ export default function Home({ navigation }) {
 
   async function checkPermission() {
     const granted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-    if (!granted) {
-      setTimeout(() => {
-        dispatch({ type: SET_ALLOW_LOCATION_MODAL })
-      }, 3000)
-    }
+    // if (!granted) {
+    //   setTimeout(() => {
+    //     dispatch({ type: SET_ALLOW_LOCATION_MODAL })
+    //   }, 3000)
+    // }
     dispatch({ type: SET_ALLOW_LOCATION, payload: granted })
   }
 
 
 
   useEffect(() => {
-    dispatch(getShops());
+    handleGetShops()
     checkPermission()
 
     return () => {
+      setShops([])
       dispatch({ type: SET_LAUNDRY_SHOPS, payload: [] });
       dispatch({ type: CLOSE_MODALS });
 
     };
   }, []);
-
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     dispatch(getCustomerData(navigation))
-  //   }
-  // }, [isAuthenticated]);
 
 
   return (
@@ -479,9 +509,16 @@ export default function Home({ navigation }) {
       <AllowLocationModal navigation={navigation} />
       {renderHeader()}
 
-      {renderFeaturedList()}
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {renderFeaturedList()}
 
-      {renderNearbyList()}
+        {renderNearbyList()}
+      </ScrollView>
+
     </SafeAreaView>
   );
 }

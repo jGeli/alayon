@@ -39,7 +39,9 @@ const SignIn = ({ navigation, route }) => {
   const [hash, setHash] = React.useState('');
   const [phoneError, setPhoneError] = React.useState('');
 
-  const handleSignInRequest = () => {
+  const handleSignInRequest = (e) => {
+    e && e.preventDefault();
+
     let { isValid, errorMsg } = validatePhone(phone);
     if (!isValid) {
       console.log(errorMsg);
@@ -72,16 +74,21 @@ const SignIn = ({ navigation, route }) => {
 
   }
 
-  useEffect(() => {
-    getHash()
-      .then(e => setHash(e))
-      .catch(console.log);
+  const handleRequestPhone = () => {
 
     requestHint()
       .then(e => {
         setPhone(getFormattedPhone(e));
       })
       .catch(console.log);
+
+  }
+
+  useEffect(() => {
+    getHash()
+      .then(e => setHash(e))
+      .catch(console.log);
+
   }, []);
 
   return (
@@ -138,6 +145,7 @@ const SignIn = ({ navigation, route }) => {
           inputStyle={styles.textInput}
           maxLength={10}
           errorMsg={phoneError}
+          onSubmitEditing={handleSignInRequest}
           prependComponent={
             <View
               style={{
@@ -175,6 +183,11 @@ const SignIn = ({ navigation, route }) => {
             </View>
           }
         />
+        <TouchableOpacity
+          onPress={() => handleRequestPhone()}
+        >
+          <Text style={{ textAlign: 'right', margin: SIZES.padding, marginBottom: SIZES.padding * 2, color: COLORS.danger }}> This Device Phone Number?</Text>
+        </TouchableOpacity>
         <TextButton
           label="Sign In"
           buttonContainerStyle={{
@@ -203,6 +216,7 @@ const SignIn = ({ navigation, route }) => {
           <TextIconButton
             containerStyle={{
               height: 40,
+              opacity: .5,
               alignItems: 'center',
               // marginTop: SIZES.radius2,
               borderRadius: SIZES.radius2,

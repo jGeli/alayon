@@ -47,7 +47,7 @@ export default function Conversation({ route, navigation: { goBack } }) {
   //             Alert.alert('error', error.message);
   //             return;
   //         }
-          
+
   //         sound.play(() => {
   //             // Success counts as getting to the end
   //             // Release when it's done so we're not using up resources
@@ -60,31 +60,21 @@ export default function Conversation({ route, navigation: { goBack } }) {
 
   const handleSubmit = async (e) => {
     const otherUser = conversation.sender._id == user._id ? conversation.receiver._id : conversation.sender._id
-    
+
     e.preventDefault();
-    console.log('THIS IS MESSAGE',value)
+    console.log('THIS IS MESSAGE', value)
     console.log('THIS IS OTHER USER', otherUser)
-   let newConvo = await dispatch(createChat(otherUser, { message: value }))
-        if(newConvo){
-          handleGetConvoSummary(newConvo);
-        }
+    let newConvo = await dispatch(createChat(otherUser, { message: value }))
+    if (newConvo) {
+      handleGetConvoSummary(newConvo);
+    }
     setValue("")
   }
 
 
-  // let messages = chatList.find(a => {
-  //   a.shop_name === shop
-
-  //   let newObj = {
-
-  //   }
-
-
-  //   return a
-  // })
   const handleGetConvoSummary = async (convo) => {
-      let newConvo = await dispatch(getConversation(convo._id))
-      console.log('INIT CONVO', newConvo)
+    let newConvo = await dispatch(getConversation(convo._id))
+    console.log('INIT CONVO', newConvo)
     if (newConvo) {
       setConversations(newConvo.threads)
 
@@ -99,8 +89,8 @@ export default function Conversation({ route, navigation: { goBack } }) {
 
   useEffect(() => {
     if (conversations) {
-      
-      
+
+
       handleGetConvoSummary(conversation)
       socket.on('newMessage', (data) => {
         handleGetConvoSummary(data)
@@ -150,7 +140,7 @@ export default function Conversation({ route, navigation: { goBack } }) {
           }}
         >
           <Image
-            source={{ uri: conversation.receiver.bannerUrl}}
+            source={{ uri: conversation.receiver.bannerUrl }}
             resizeMode='contain'
             style={{
               height: 40,
@@ -201,7 +191,7 @@ export default function Conversation({ route, navigation: { goBack } }) {
       console.log('USERSOCK', item.sender == user._id)
       console.log(item.sender)
       console.log(user._id)
-      
+
       return (
         <View
           style={{
@@ -217,7 +207,7 @@ export default function Conversation({ route, navigation: { goBack } }) {
               paddingHorizontal: SIZES.padding,
               borderWidth: 1,
               borderColor: COLORS.lightGray,
-              backgroundColor: item.sender == user._id ?  COLORS.primaryTransparent : COLORS.white,
+              backgroundColor: item.sender == user._id ? COLORS.primaryTransparent : COLORS.white,
               borderBottomRightRadius: item.sender == user._id ? 0 : SIZES.radius,
               borderBottomLeftRadius: item.sender == user._id ? SIZES.radius : 0,
               borderTopLeftRadius: SIZES.radius,
@@ -248,7 +238,7 @@ export default function Conversation({ route, navigation: { goBack } }) {
                 }}
               >
                 <Text
-                  style={{ ...FONTS.body3, color: item.sender == user._id ? COLORS.white : COLORS.black}}
+                  style={{ ...FONTS.body3, color: item.sender == user._id ? COLORS.white : COLORS.black }}
                 >
                   {item.message}
                 </Text>
@@ -316,9 +306,9 @@ export default function Conversation({ route, navigation: { goBack } }) {
             }}
             onPress={() => setValue('ANY VACANCY?')}
           >
-          <Text>
-            ANY VACANCY?
-          </Text>
+            <Text>
+              ANY VACANCY?
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -329,9 +319,9 @@ export default function Conversation({ route, navigation: { goBack } }) {
             }}
             onPress={() => setValue('PICK-UP & DELIVERY')}
           >
-          <Text>
-            PICK-UP & DELIVERY.
-          </Text>
+            <Text>
+              PICK-UP & DELIVERY.
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{
@@ -342,9 +332,9 @@ export default function Conversation({ route, navigation: { goBack } }) {
             }}
             onPress={() => setValue('THANK YOU!')}
           >
-          <Text>
-            THANK YOU!
-          </Text>
+            <Text>
+              THANK YOU!
+            </Text>
           </TouchableOpacity>
         </View>
         <View
@@ -354,36 +344,36 @@ export default function Conversation({ route, navigation: { goBack } }) {
             justifyContent: 'flex-end'
           }}
         >
-        <FormInput 
-          containerStyle={{
-            bottom: 10,
-            borderColor: COLORS.lightGray,
-            width: '90%',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-          value={value}
-          onChange={e => setValue(e)}
-          onSubmitEditing={handleSubmit}
-          appendComponent={
-            <TouchableOpacity
-              style={{
-                // flex: 1,
-                justifyContent: "center",
-                alignItems: 'center'
-              }}
-            >
-              <Image
-                source={icons.emojis}
-                resizeMode='contain'
+          <FormInput
+            containerStyle={{
+              bottom: 10,
+              borderColor: COLORS.lightGray,
+              width: '90%',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+            value={value}
+            onChange={e => setValue(e)}
+            onSubmitEditing={handleSubmit}
+            appendComponent={
+              <TouchableOpacity
                 style={{
-                  height: 25,
-                  width: 25,
+                  // flex: 1,
+                  justifyContent: "center",
+                  alignItems: 'center'
                 }}
-              />
-            </TouchableOpacity>
-          }
-        />
+              >
+                <Image
+                  source={icons.emojis}
+                  resizeMode='contain'
+                  style={{
+                    height: 25,
+                    width: 25,
+                  }}
+                />
+              </TouchableOpacity>
+            }
+          />
         </View>
       </View>
       {/* <View

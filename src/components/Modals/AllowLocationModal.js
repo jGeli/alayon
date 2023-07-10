@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCloths } from '../../redux/actions/data.actions';
 import { createClothType, deleteCloths } from '../../redux/actions/admin.actions';
 import { updateServiceClothPricing } from '../../redux/actions/merchant.actions';
-import { CLOSE_ALLOW_LOCATION_MODAL, SET_ALLOW_LOCATION, SET_ALLOW_LOCATION_MODAL, SET_SELECTED_LAUNDRY_SERVICE } from '../../redux/actions/type';
+import { CLOSE_ALLOW_LOCATION_MODAL, SET_ALLOW_LOCATION } from '../../redux/actions/type';
 
 // create a component
 

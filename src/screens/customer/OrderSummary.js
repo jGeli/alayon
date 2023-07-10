@@ -39,6 +39,7 @@ export default function OrderSummary({ navigation, route }) {
   const { shopId, rnd, selectedBaskets } = route.params;
   const { errors } = useSelector(({ ui }) => ui)
   const { basket, baskets, customer: { locations } } = useSelector(({ customer }) => customer)
+  const { selectedShop } = useSelector(({ data }) => data)
   const [checkoutItems, setCheckoutItems] = useState([]);
 
 
@@ -86,7 +87,9 @@ export default function OrderSummary({ navigation, route }) {
         }}>
         <TouchableOpacity
           style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
-          onPress={() => navigation.goBack()}>
+          onPress={() =>
+            navigation.navigate('ShopServices', { shopId: selectedShop._id })
+          }>
           <Image
             source={icons.back}
             style={{ height: 20, width: 20, tintColor: COLORS.primary }}

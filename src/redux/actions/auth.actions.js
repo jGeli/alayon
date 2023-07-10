@@ -25,13 +25,13 @@ export const requestSignin = (data, navigation, params) => dispatch => {
   axios
     .post(`${varEnv.apiUrl}/auth/request`, data)
     .then(res => {
-      let { user } = res.data;
+      let { user, redirection } = res.data;
+      console.log('SIGNIN REQUEST', redirection)
+      if (redirection && params.redirection !== 'OrderSummary') {
+        params.redirection = redirection;
+      }
 
-      // if (redirection) {
-      //   params.redirection = redirection;
-      // }
-
-      navigation.navigate('Otp', { ...res.data, ...params, user: { ...user, ...data } });
+      navigation && navigation.navigate('Otp', { ...res.data, ...params, user: { ...user, ...data } });
     })
     .catch(err => {
       console.log(err.response);

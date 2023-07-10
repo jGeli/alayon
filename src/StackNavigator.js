@@ -160,6 +160,7 @@ const StackNavigator = () => {
             tabBarShowLabel: true,
             tabBarLabel: 'My Orders',
             headerShown: false,
+            tabBarButton: (props) => isAuthenticated ? <TouchableOpacity {...props} /> : <TouchableOpacity {...props} onPress={() => navigation.navigate('SignIn', { redirection: 'CustomerOrders' })} />,
             tabBarIcon: ({ focused }) =>
               focused ? (
                 <Image
@@ -192,6 +193,7 @@ const StackNavigator = () => {
             tabBarLabel: 'Notifications',
             headerShown: false,
             tabBarShowLabel: true,
+            tabBarButton: (props) => isAuthenticated ? <TouchableOpacity {...props} /> : <TouchableOpacity {...props} onPress={() => navigation.navigate('SignIn', { redirection: 'CustomerNotifications' })} />,
             tabBarIcon: ({ focused }) =>
               focused ? (
                 <Image
@@ -317,6 +319,11 @@ const StackNavigator = () => {
             />
 
             <Stack.Screen
+              name="Search"
+              component={RecentSearch}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
               name="Filter"
               component={Filter}
               options={{ headerShown: false }}
@@ -377,7 +384,7 @@ const StackNavigator = () => {
               component={Map3}
               options={{ headerShown: false }}
             />
-             <Stack.Screen
+            <Stack.Screen
               name="CustomerReview"
               component={CustomerReviewScreen}
               options={{ headerShown: false }}

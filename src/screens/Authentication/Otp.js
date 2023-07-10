@@ -34,7 +34,6 @@ const Otp = ({ navigation, route }) => {
 
   const handleVerify = code => {
     let { baskets } = param ? param : { baskets: [] }
-
     dispatch(verifyOTP({ code, id: user.id }, null))
       .then(res => {
         if (redirection === 'OrderSummary' && baskets.length !== 0) {
@@ -45,6 +44,7 @@ const Otp = ({ navigation, route }) => {
         } else {
           navigation.navigate(redirection, param)
         }
+
       })
       ;
   };

@@ -85,6 +85,7 @@ export default function OrderStatus({navigation, route}) {
   const { order, navType } = route.params;
   const [currentPage, setCurrentPage] = React.useState<number>(0);
 
+  console.log("order", order.shop)
   const onStepPress = (position: number) => {
   
     setCurrentPage(position > 6 ? 6 : position < 0 ? 0 : position);
@@ -361,7 +362,7 @@ export default function OrderStatus({navigation, route}) {
             marginRight: SIZES.padding,
             tintColor: COLORS.gold
         }}
-        onPress={() => onStepPress(currentPage + 1)}
+        onPress={() => {onStepPress(currentPage + 1), navigation.navigate("CustomerReview",{shop: order})}}
 
     />:
     <TextIconButton

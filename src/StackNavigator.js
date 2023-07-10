@@ -17,7 +17,7 @@ import Filter from './screens/customer/Filter';
 import AddressLocation from './screens/customer/AddressLocation';
 import MapScreen from './components/Cards/Map/Map';
 import MyAccount from './screens/customer/MyAccount';
-
+import CustomerReviewScreen from './screens/customer/CustomerReviewScreen';
 import OnBoarding from './screens/OnBoarding/OnBoarding';
 import SignIn from './screens/Authentication/SignIn';
 // import ForgotPassword from './screens/Authentication/ForgotPassword';
@@ -377,7 +377,11 @@ const StackNavigator = () => {
               component={Map3}
               options={{ headerShown: false }}
             />
-
+             <Stack.Screen
+              name="CustomerReview"
+              component={CustomerReviewScreen}
+              options={{ headerShown: false }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       }

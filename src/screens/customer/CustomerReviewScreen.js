@@ -1,33 +1,66 @@
-import { React,useState } from 'react'
+import { React, useEffect, useState } from 'react'
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image, TextInput, FlatList } from 'react-native'
-import { COLORS, FONTS, SIZES, icons, styles, constants } from '../../constants'
+import {
+  COLORS, FONTS, SIZES, icons, styles, constants
+} from '../../constants'
 import { userData, userData2, myAccount, userData4 } from '../../globals/data'
 import axios from 'axios'
 import { FormInput } from '../../components'
 import { useDispatch, useSelector } from 'react-redux'
-
+import { getShopById } from '../../redux/actions/merchant.actions'
+import { RatingInput} from 'react-native-stock-star-rating'
 
 const varEnv = constants.varEnv;
 
 export default function CustomerReviewScreen({ navigation, route }) {
- 
+
   let { shop } = route.params.shop;
   const dispatch = useDispatch();
-  const {user} = useSelector(({auth}) => auth)
-  
+  const { user } = useSelector(({ auth }) => auth)
+  const [details, setDetails] = useState();
+  const [rating, setRating ] = useState(0);
 
-
+ 
   console.log(user, "user")
+  console.log(rating, "Rating")
+
+
+
+  const handleShopDetails = async (e) => {
+    let shopDetails = await dispatch(getShopById(shop))
+    e.preventDefault();
+
+      // setDetails(shopDetails)
+      console.log(shopDetails, "SHOP DETALYEEE")
+ 
+      setDetails(shopDetails.data)
+      
+      
   
+    }
   
-  console.log("shop", shop)
+    console.log(details, "DETAILS HERE EFFECT!")
+
+  useEffect(() => {
+      
+    handleShopDetails()
+
+  }, []);
+
+
+  
+ 
+
+  console.log("ratings", rating)
   const [value, setValue] = useState([]);
-  
+
   const payload = {
+    ratings: rating,
     message: value
   }
+  console.log(payload, "payload")
   const handleSubmit = async (e) => {
-
+  console.log(payload, "payload")
     e.preventDefault();
     axios
       .post(`${varEnv.apiUrl}/customers/review/${shop}`, payload,
@@ -45,50 +78,49 @@ export default function CustomerReviewScreen({ navigation, route }) {
         return null;
       });
 
-    }
-    
-    console.log(shop)
-
-
-    
-    
-    function renderHeader() {
-      return (
-      <View style={{ ...FONTS.h4, color: COLORS.black, fontWeight: 'bold',}}> 
-        <View
-        style={{
-            alignItems: "center",
-            justifyContent: 'center',
-            flexDirection: 'row',
-            width: '100%'
-        }}
-    >
-<Text style={{ ...FONTS.h3, color: COLORS.black, fontWeight: 'bold',}}>Rate Us</Text>
-    </View>
-  <View style={{marginLeft: SIZES.padding * 1, alignItems:'center', marginVertical: SIZES.padding * 1}}>
-  <Text
-  style={{ ...FONTS.h5, color: COLORS.black, fontWeight: '600',}}
-  >
-  Thank you for giving us a change to serve you
-  </Text>
-  </View>
-  <View style={{marginLeft: SIZES.padding * 1, alignItems:'center', marginVertical: SIZES.padding * 1}}>
-  <Text
-  style={{ ...FONTS.h5, color: COLORS.black, fontWeight: '600'}}
-  >
-  Kindly rate your laundry exprience so that we 
-  </Text>
-  <Text
-  style={{ ...FONTS.h5, color: COLORS.black, fontWeight: '600'}}
-  >
- can imporove our quality services
-  </Text>
-  </View>
-  </View>
-
-      )
   }
+ 
+  console.log(shop)
 
+
+
+
+  // function renderHeader() {
+  //   return (
+  //     <View style={{ ...FONTS.h4, color: COLORS.black, fontWeight: 'bold', }}>
+  //       <View
+  //         style={{
+  //           alignItems: "center",
+  //           justifyContent: 'center',
+  //           flexDirection: 'row',
+  //           width: '100%'
+  //         }}
+  //       >
+  //         <Text style={{ ...FONTS.h3, color: COLORS.black, fontWeight: 'bold', }}>Rate Us</Text>
+  //       </View>
+  //       <View style={{ marginLeft: SIZES.padding * 1, alignItems: 'center', marginVertical: SIZES.padding * 1 }}>
+  //         <Text
+  //           style={{ ...FONTS.h5, color: COLORS.black, fontWeight: '600', }}
+  //         >
+  //           Thank you for giving us a change to serve you
+  //         </Text>
+  //       </View>
+  //       <View style={{ marginLeft: SIZES.padding * 1, alignItems: 'center', marginVertical: SIZES.padding * 1 }}>
+  //         <Text
+  //           style={{ ...FONTS.h5, color: COLORS.black, fontWeight: '600' }}
+  //         >
+  //           Kindly rate your laundry exprience so that we
+  //         </Text>
+  //         <Text
+  //           style={{ ...FONTS.h5, color: COLORS.black, fontWeight: '600' }}
+  //         >
+  //           can imporove our quality services
+  //         </Text>
+  //       </View>
+  //     </View>
+
+  //   )
+  // }
 
   //   function renderShop() {
   //     const renderItem = ({item}) => {
@@ -98,7 +130,7 @@ export default function CustomerReviewScreen({ navigation, route }) {
   //                 fontSize: SIZES.base * 2,
   //                 fontWeight: 'bold',
   //                 color: COLORS.black
-                  
+
   //             }}
   //             >
   //           {item.shop_name}
@@ -114,15 +146,15 @@ export default function CustomerReviewScreen({ navigation, route }) {
 
   //                     }}
   //                 />
-             
-  //             </View> 
-      
 
-        
+  //             </View> 
+
+
+
   //         )
   //     }
   //     return (
-        
+
   //         <FlatList
   //             keyExtractor={(item, index) => `${index}`}
   //             data={selectedShop}
@@ -133,64 +165,70 @@ export default function CustomerReviewScreen({ navigation, route }) {
   //         />
   //     )
   // }
-
   function renderShop() {
     return (
       <View
         style={{
           justifyContent: 'center',
           alignItems: 'flex-start',
-          height: 70,
+          height: 100,
+          alignItems:'center',
+          justifyContent:'center',
+          marginTop: 50,
+      
         }}>
-         
-        <FlatList
-          horizontal
-          contentContainerStyle={{
-            justifyContent: 'center',
-            paddingRight: 20,
-            paddingLeft: 10,
-            alignItems: 'center',
-          }}
-          data={shop}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item, index }) => (
+          <View
+            style={{
+              borderRadius: SIZES.radius,
+              height: 100,
+              width: 100,
+              backgroundColor: COLORS.lightGray3
+            }}
+          >
+          <Image 
+            source={{uri: details?.bannerUrl}}
+            resizeMode='contain'
+            style={{
+              height: 40,
+              width: 40,
+              borderRadius: SIZES.radius
+            }}
+          />
+          </View>
+          <Text>
+            {details?.shop_name}
             
-              <Text
-                style={{
-                  // ...FONTS.h3,
-                  fontSize: SIZES.h4,
-                  fontWeight: 'bold',
-                  color: COLORS.black,
-                }}>
-                {item.name}
-              </Text>
-  
-          )}
-        />
+          </Text>
       </View>
     );
   }
-    function renderForm() {
-      return (
-        <View
+  function renderForm() {
+    return (
+      <View
+        style={{
+          width: SIZES.width,
+          alignItems: "center",
+        
+        }}
+      >
+        <RatingInput
+        rating={rating}
+        setRating={setRating}
+        maxStars={5}
+        size={50}
+        
+      />
+        <Text
           style={{
-            width: SIZES.width,
-            alignItems:"center",
-
+            flexDirection:'row',
+            alignItems:'center',
+            justifyContent:'center',
+            marginTop: 20,
           }}
         >
-
-          <Text>
-          <Text style={{
-                fontSize: SIZES.base * 2,
-                fontWeight: 'bold',
-                color: COLORS.black
-              }}
-              >
-                Rate for Pick Up Driver
-              </Text>
-          </Text>
-          <FormInput
+          Please RATE US
+        </Text>
+        <FormInput
           containerStyle={{
             width: '90%',
             justifyContent: 'center',
@@ -199,21 +237,48 @@ export default function CustomerReviewScreen({ navigation, route }) {
           value={value}
           onChange={e => setValue(e)}
           onSubmitEditing={handleSubmit}
-          />
-        </View>
-      )
-    }
+        />
+           <View style={{ paddingTop: SIZES.padding, marginTop: SIZES.radius * 1, width: '100%', alignItems:'center', justifyContent:'center'}}>
+
+        <TouchableOpacity
+        activeOpacity={0.7}
+              style={{
+
+                backgroundColor: COLORS.primary,
+                borderRadius: SIZES.radius,
+                width: '50%',
+                
+              }}
+              onPress={(e) => {handleSubmit(e), navigation.navigate("CustomerHome")}}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  padding: SIZES.padding,
+                  fontSize: SIZES.base * 3,
+                  fontWeight: '700',
+                  color: COLORS.white,
+                  justifyContent:'center',
+                  alignItems:'center',
+                }}>
+                SUBMIT
+              </Text>
+            </TouchableOpacity>
+            </View>
+      </View>
+    )
+  }
 
 
-    return (
-      <SafeAreaView>
-      {renderHeader()}
+  return (
+    <SafeAreaView>
+      {/* {renderHeader()} */}
       {renderShop()}
       {renderForm()}
-     
 
-      </SafeAreaView>
-    )}
+
+    </SafeAreaView>
+  )
+}
     // return (
     //
     //     {/* HEADER */}

@@ -22,7 +22,8 @@ const location = require('../assets/images/location.gif');
 const location2 = require('../assets/images/location2.gif');
 const map = require('../assets/images/map.gif');
 const location3 = require('../assets/images/location3.gif');
-
+const starfilled = require('../assets/images/starfilled.png');
+const starcorner = require('../assets/images/starcorner.png');
 
 export default {
     location,
@@ -50,4 +51,6 @@ export default {
     chariot,
     logo_alayun,
     status,
+    starfilled,
+    starcorner
 };

@@ -91,8 +91,9 @@ export default function OrderStatus({navigation, route}) {
 
   const handleGetOrder = async () => {
     let myOrder = await dispatch(getOrderById(order._id));
-    setOrderData({...myOrder, statusIndex: statusIndexing(myOrder.activeStatus)})
-    
+    if(myOrder){
+      setOrderData({...myOrder, statusIndex: statusIndexing(myOrder.activeStatus)})
+    }
   }
 
   console.log("order", orderData.shop)
@@ -411,12 +412,14 @@ export default function OrderStatus({navigation, route}) {
 
   React.useEffect(() => {
     handleGetOrder();
+    
     console.log(order, 'ORDER SS')
-  }, [order])
-  
-    Object.keys(orderData).map(a => {
+    Object.keys(order).map(a => {
       console.log(a, 'ORDER DATA')
     });
+  }, [order])
+  
+
   
   return (
     <SafeAreaView style={styles.container}>

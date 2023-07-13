@@ -71,13 +71,15 @@ export const createOrder = data => dispatch => {
 
 export const getOrderById = id => dispatch => {
   return axios
-    .post(`${varEnv.apiUrl}/customers/orders/${id}`)
+    .get(`${varEnv.apiUrl}/customers/orders/${id}`)
     .then(res => {
+      console.log('RES ORDER', res.data)
       // return dispatch(getCustomerShopBaskets(shop._id));
       // dispatch(getCustomerData());
       return res.data
     })
     .catch(err => {
+      console.log(err.response, 'res error')
       dispatch({
         type: SET_ERROR,
         payload: err,

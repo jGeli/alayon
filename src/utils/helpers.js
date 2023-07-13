@@ -125,3 +125,9 @@ export const totalOrders = (values) => {
 
   return grandTotal;
 };
+
+export const statusIndexing = (status) => {
+
+  let ind = ["pending", "shop_confirmed", "rider_pickup", "shop_processing", "rider_delivery", "customer_received", "cancelled", "completed"].indexOf(status)
+  return ind
+} 

@@ -6,6 +6,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { COLORS, FONTS, SIZES, icons, images } from '../../constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { LineDivider, TextButton, TextIconButton } from '../../components';
+import { useDispatch } from 'react-redux';
+import { getOrderById } from '../../redux/actions/customer.actions';
+import { statusIndexing } from '../../utils/helpers';
 
 
 
@@ -83,12 +86,19 @@ const getStepIndicatorIconConfig = ({
 
 export default function OrderStatus({navigation, route}) {
   const { order, navType } = route.params;
-  const [currentPage, setCurrentPage] = React.useState<number>(0);
+  const dispatch = useDispatch();
+  const [orderData, setOrderData] = React.useState<Object>({})
 
-  console.log("order", order.shop)
+  const handleGetOrder = async () => {
+    let myOrder = await dispatch(getOrderById(order._id));
+    setOrderData({...myOrder, statusIndex: statusIndexing(myOrder.activeStatus)})
+    
+  }
+
+  console.log("order", orderData.shop)
   const onStepPress = (position: number) => {
   
-    setCurrentPage(position > 6 ? 6 : position < 0 ? 0 : position);
+    setOrderData({ ...orderData, statusIndex: position > 6 ? 6 : position < 0 ? 0 : position});
   };
   
   
@@ -167,7 +177,7 @@ export default function OrderStatus({navigation, route}) {
   }: {
     position: number;
     stepStatus: string;
-    label: string;
+    label: object;
     currentPosition: number;
   }) => {
     return (
@@ -186,7 +196,16 @@ export default function OrderStatus({navigation, route}) {
             : styles.stepLabel
         }
       >
-        {label}
+        {label.name}
+      </Text>
+            <Text
+        style={
+          position === currentPosition
+            ? styles.stepDescriptionSelected
+            : styles.stepDescription
+        }
+      >
+        {label.description}
       </Text>
       </View>
     );
@@ -213,7 +232,7 @@ export default function OrderStatus({navigation, route}) {
             marginBottom: 20, paddingHorizontal: SIZES.padding}}
         >
             <Text style={{...FONTS.h3, color: COLORS.transparentBlack7}}>Track Order</Text>
-            <Text style={{ ...FONTS.body3, color: COLORS.gray}}>{order.transaction_id}</Text>
+            <Text style={{ ...FONTS.body3, color: COLORS.gray}}>{orderData.transaction_id}</Text>
         </View>
         <LineDivider
             lineStyle={{
@@ -231,20 +250,13 @@ export default function OrderStatus({navigation, route}) {
       <View style={styles.stepIndicator}>
         <StepIndicator
           customStyles={secondIndicatorStyles}
-          currentPosition={currentPage}
+          currentPosition={orderData.statusIndex}
           onPress={onStepPress}
           direction="vertical"
           renderLabel={renderLabel}
           stepCount={6}
           renderStepIndicator={renderStepIndicator}
-          labels={[
-            'CUSTOMER ORDER CONFIRMED',
-            'RIDER PICKED UP ORDER',
-            'SHOP RECEIVE AND PROCESS ORDER',
-            'OUT FOR DELIVERY',
-            'ORDER COMPLETED',
-            'RATE US'
-          ]}
+          labels={orderData.order_status}
         />
       </View>
       </View>
@@ -263,7 +275,7 @@ export default function OrderStatus({navigation, route}) {
             style={{flexDirection: 'row', height: 55}}
         >
         {
-        currentPage < 2 ?
+        orderData.statusIndex < 2 ?
         <TextButton
         buttonContainerStyle={{
             width: '40%',
@@ -274,7 +286,7 @@ export default function OrderStatus({navigation, route}) {
         labelStyle={{
         color: COLORS.primary
         }}
-        onPress={() => onStepPress(currentPage - 1)}
+        onPress={() => onStepPress(orderData.statusIndex - 1)}
     />  : 
     
     <TextButton
@@ -287,10 +299,10 @@ export default function OrderStatus({navigation, route}) {
     labelStyle={{
     color: COLORS.primary
     }}
-    onPress={() => onStepPress(currentPage - 1)}
+    onPress={() => onStepPress(orderData.statusIndex - 1)}
     />
         }
-       {currentPage < 4 
+       {orderData.statusIndex < 4 
        ?
         <TextIconButton
             containerStyle={{
@@ -312,11 +324,11 @@ export default function OrderStatus({navigation, route}) {
                 marginRight: SIZES.padding,
                 tintColor: COLORS.white
             }}
-            onPress={() => onStepPress(currentPage + 1)}
+            onPress={() => onStepPress(orderData.statusIndex + 1)}
 
         />
         :
-        currentPage === 4 ?
+        orderData.statusIndex === 4 ?
         <TextIconButton
         containerStyle={{
             flex: 1,
@@ -337,11 +349,11 @@ export default function OrderStatus({navigation, route}) {
             marginRight: SIZES.padding,
             tintColor: COLORS.white
         }}
-        onPress={() => onStepPress(currentPage + 1)}
+        onPress={() => onStepPress(orderData.statusIndex + 1)}
 
     />
     :
-    currentPage === 5 ?
+    orderData.statusIndex === 5 ?
         <TextIconButton
         containerStyle={{
             flex: 1,
@@ -362,7 +374,7 @@ export default function OrderStatus({navigation, route}) {
             marginRight: SIZES.padding,
             tintColor: COLORS.gold
         }}
-        onPress={() => {onStepPress(currentPage + 1), navigation.navigate("CustomerReview",{shop: order})}}
+        onPress={() => {onStepPress(orderData.statusIndex + 1), navigation.navigate("CustomerReview",{shop: order})}}
 
     />:
     <TextIconButton
@@ -385,7 +397,7 @@ export default function OrderStatus({navigation, route}) {
         marginRight: SIZES.padding,
         tintColor: COLORS.white
     }}
-    onPress={() => onStepPress(currentPage + 1)}
+    onPress={() => onStepPress(orderData.statusIndex + 1)}
 
 />
        }
@@ -397,6 +409,15 @@ export default function OrderStatus({navigation, route}) {
   
   }
 
+  React.useEffect(() => {
+    handleGetOrder();
+    console.log(order, 'ORDER SS')
+  }, [order])
+  
+    Object.keys(orderData).map(a => {
+      console.log(a, 'ORDER DATA')
+    });
+  
   return (
     <SafeAreaView style={styles.container}>
         {renderHeader()}
@@ -436,6 +457,16 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: COLORS.white3
 },
+  stepDescription: {
+    fontSize: 10,
+    textAlign: 'left',
+    color: COLORS.transparentBlack7,
+  },
+  stepDescriptionSelected: {
+    fontSize: 10,
+    textAlign: 'left',
+    color: COLORS.black,
+  },
 
   stepLabel: {
     fontSize: 12,

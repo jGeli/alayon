@@ -69,6 +69,23 @@ export const createOrder = data => dispatch => {
     });
 };
 
+export const getOrderById = id => dispatch => {
+  return axios
+    .post(`${varEnv.apiUrl}/customers/orders/${id}`)
+    .then(res => {
+      // return dispatch(getCustomerShopBaskets(shop._id));
+      // dispatch(getCustomerData());
+      return res.data
+    })
+    .catch(err => {
+      dispatch({
+        type: SET_ERROR,
+        payload: err,
+      });
+      return null;
+    });
+};
+
 export const createBasket = data => dispatch => {
   let { shop } = data;
   return axios
@@ -206,36 +223,36 @@ export const getCustomerBaskets = () => dispatch => {
 export const getConversation = id => dispatch => {
 
   return axios.get(`${varEnv.apiUrl}/chats/${id}`)
-  .then(res => {
-    return res.data
-  })
-  .catch(err => {
-    console.log('ERR ORDERS', err.response)
-    return null;
-  });
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      console.log('ERR ORDERS', err.response)
+      return null;
+    });
 };
 
 
 export const getChatLists = id => dispatch => {
   return axios.get(`${varEnv.apiUrl}/chats`)
-  .then(res => {
-    return res.data
-  })
-  .catch(err => {
-    console.log('ERR ORDERS', err.response)
-    return null;
-  });
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      console.log('ERR ORDERS', err.response)
+      return null;
+    });
 };
 
 
 export const createChat = (id, data) => dispatch => {
   return axios.post(`${varEnv.apiUrl}/chats/${id}`, data)
-  .then(res => {
-  console.log("CHAT CREATED RESP", res.data)
-    return res.data
-  })
-  .catch(err => {
-    console.log('ERR ORDERS', err.response)
-    return null;
-  });
+    .then(res => {
+      console.log("CHAT CREATED RESP", res.data)
+      return res.data
+    })
+    .catch(err => {
+      console.log('ERR ORDERS', err.response)
+      return null;
+    });
 };

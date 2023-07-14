@@ -24,6 +24,7 @@ const map = require('../assets/images/map.gif');
 const location3 = require('../assets/images/location3.gif');
 const starfilled = require('../assets/images/starfilled.png');
 const starcorner = require('../assets/images/starcorner.png');
+const delivery_man = require('../assets/images/delivery_man.png');
 
 export default {
     location,

@@ -1,9 +1,10 @@
 //import liraries
 import { React, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, SafeAreaView, FlatList, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, SafeAreaView, FlatList, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { COLORS, SIZES, icons, images, styles } from '../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { Rating } from 'react-native-stock-star-rating'
+import Ratings from './Ratings';
 
 
 
@@ -54,30 +55,46 @@ export default function Reviews() {
                                         color: COLORS.black
                                     }}
                                     >
-                                        {item.name}
+                                        {item.postedBy.firstName}
                                     </Text>
                                     <View style={{ flexDirection: 'row'}}>
 
-                                    <Rating
+                                    {/* <Rating
                                         stars={item.ratings}
                                         maxRating={5}
                                         size={25}
+                                    /> */}
+                                    <Ratings 
+                                        rating={item.ratings}
+                                        iconStyle={{
+                                            marginLeft: 3
+                                        }}
                                     />
                                     </View>
 
                                   
                                 </View>
-                                <TouchableOpacity>
+                                <TouchableOpacity
+                                    // style={{
+                                    //     marginHorizontal: SIZES.base
+                                    // }}
+                                >
                                     <Image
                                         source={icons.likes}
                                         resizeMode='contain'
                                         style={{
                                            
-                                            height: 25,
-                                            width: 25
+                                            height: 20,
+                                            width: 20
                                         }}
                                     />
                                 </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={{
+                                        // marginHorizontal: SIZES.base
+                                        marginLeft: SIZES.base
+                                    }}
+                                >
                                 <Image
                                     source={icons.dotsetting}
                                     resizeMode='contain'
@@ -87,7 +104,7 @@ export default function Reviews() {
                                         width: 25
                                     }}
                                 />
-
+                                </TouchableOpacity>
                             </View>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', margin: SIZES.padding2 }}>
@@ -142,7 +159,7 @@ export default function Reviews() {
                 keyExtractor={(item, index) => `${index}`}
                 data={selectedShop.reviews}
                 vertical
-                scrollEnabled={true}
+                scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
                 renderItem={renderItem}
                 

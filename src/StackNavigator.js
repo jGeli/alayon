@@ -48,6 +48,7 @@ import Map2 from './components/Cards/Map/Map2';
 import Map3 from './components/Cards/Map/Map3';
 import BasketsScreen from './screens/customer/BasketsScreen';
 import ProfileSetup from './screens/Authentication/ProfileSetup';
+import Maps from './components/Cards/Map/Map1';
 
 let socket = null;
 
@@ -387,6 +388,11 @@ const StackNavigator = () => {
             <Stack.Screen
               name="CustomerReview"
               component={CustomerReviewScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="MapTracking"
+              component={Maps}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

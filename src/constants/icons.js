@@ -64,7 +64,7 @@ export const puzzle = require('../assets/icons/puzzle.png');
 export const arrow_right = require('../assets/icons/arrow_right.png');
 export const pricing = require('../assets/icons/pricing.png');
 export const dotsetting = require('../assets/icons/dotsetting.png');
-export const likes = require('../assets/icons/likes.jpg');
+export const likes = require('../assets/icons/likes.png');
 export const stars = require('../assets/icons/stars.png');
 export const onBoardingBackground_01 = require('../assets/icons/OnboardBackground-01.png');
 export const onBoardingBackground_02 = require('../assets/icons/OnboardBackground-02.png');
@@ -108,11 +108,17 @@ export const order_receive = require('../assets/icons/order_receive.png');
 export const shop_processing = require('../assets/icons/shop_processing.png');
 export const shop_processing1 = require('../assets/icons/shop_processing1.png');
 export const shop_processing2 = require('../assets/icons/shop_processing2.png');
+export const navigator1 = require('../assets/icons/navigator1.png');
+export const globe = require('../assets/icons/globe.png');
+export const focus = require('../assets/icons/focus.png');
 
 
 
 
 export default {
+  focus,
+  globe,
+  navigator1,
   order_receive,
   reorder,
   reorder1,

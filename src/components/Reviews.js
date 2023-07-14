@@ -14,9 +14,12 @@ import { getShopReviews, sendLikeReact } from '../redux/actions/customer.actions
 // create a component
 export default function Reviews({ shop }) {
     const dispatch = useDispatch();
-    const { user } = useSelector(({auth}) => auth);
+    const { user } = useSelector(({ auth }) => auth);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(false);
+    const { name, imgUrl } = useSelector(({ customer }) => customer);
+    
+        
     const [refreshing, setRefreshing] = useState(false);
     console.log(user, 'AUTH USER')
     
@@ -36,22 +39,22 @@ export default function Reviews({ shop }) {
     }
 
     const handleReact = async (item) => {
-        
-            let { shopId} = item;
-             console.log('REACT THIS', item)   
+
+        let { shopId } = item;
+        console.log('REACT THIS', item)
         setLoading(true)
-        dispatch(sendLikeReact({shopId, reviewId: item._id}))
-        .then(a => {
-            setLoading(false)
-            if(a){
-                return handleGetReviews()  
-            }
-        })
-        .catch(err => {
-            console.log(err, 'REACT EROR')
-            setLoading(false)
-            
-        })
+        dispatch(sendLikeReact({ shopId, reviewId: item._id }))
+            .then(a => {
+                setLoading(false)
+                if (a) {
+                    return handleGetReviews()
+                }
+            })
+            .catch(err => {
+                console.log(err, 'REACT EROR')
+                setLoading(false)
+
+            })
     }
 
 
@@ -65,22 +68,18 @@ export default function Reviews({ shop }) {
                     style={styles.container}
                 >
 
-                    <View style={{ flexDirection: 'column', alignItems: 'flex-start', borderWidth: 1, borderColor: COLORS.lightGray, margin: SIZES.padding2 }}>
+                    <View style={{ flexDirection: 'column', alignItems: 'flex-start', borderColor: COLORS.black, margin: SIZES.padding, borderBottomWidth: 1, padding: SIZES.padding }}>
 
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Image
-                                source={item.imgUrl}
-                                resizeMode="contain"
-                                style={{
-                                    height: 40,
-                                    width: 40,
-                                    borderRadius: 200,
-                                    marginRight: 10,
-
-                                }}
-                            />
-                            <View style={{ flexDirection: 'row', alignItems: 'center', width: '80%' }}>
-                                <View style={{ flexDirection: 'column', flex: 1 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center'}}>
+                        <Image 
+                        source={icons.user}
+                         style={{
+                            height: 50,
+                            width: 50,
+                            tintColor: COLORS.lightGray3,
+                         }} />
+                            <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%' }}>
+                                <View style={{ flexDirection: 'column', flex: 1, marginLeft: SIZES.padding * 1}}>
                                     <Text style={{
 
                                         fontSize: SIZES.base * 2,
@@ -88,7 +87,7 @@ export default function Reviews({ shop }) {
                                         color: COLORS.black
                                     }}
                                     >
-                                        {item.postedBy.firstName}
+                                        {item.name}
                                     </Text>
                                     <View style={{ flexDirection: 'row' }}>
 
@@ -108,9 +107,9 @@ export default function Reviews({ shop }) {
 
                                 </View>
                                 <TouchableOpacity
-                                style={{
-                                flexDirection: 'row'
-                                }}
+                                    style={{
+                                        flexDirection: 'row'
+                                    }}
                                     disabled={loading}
                                     onPress={() => handleReact(item)}
                                 >
@@ -124,9 +123,10 @@ export default function Reviews({ shop }) {
                                             tintColor: item.likes.find(a => String(a) == String(user._id)) ? COLORS.primary : COLORS.black
                                         }}
                                     />
-<Text style={{...FONTS.body4, marginLeft: SIZES.padding
-}}>({item.likes.length})</Text>
-                                    
+                                    <Text style={{
+                                        ...FONTS.body4, marginLeft: SIZES.padding
+                                    }}>({item.likes.length})</Text>
+
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={{
@@ -146,10 +146,10 @@ export default function Reviews({ shop }) {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', margin: SIZES.padding2 }}>
-                            <View style={{ flexDirection: 'column', flex: 1, alignItems: 'center' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', margin: SIZES.padding2 }}>
+                        <View style={{ flexDirection: 'column', flex: 1, marginLeft: SIZES.padding * 4}}>
                                 <Text style={{
-                                    fontSize: SIZES.base * 2,
+                                    ...FONTS.body3,
                                     fontWeight: '600',
                                     color: COLORS.black
                                 }}
@@ -170,22 +170,6 @@ export default function Reviews({ shop }) {
                                     }}
                                 />
                             </View>
-                        </View>
-                    </View>
-                    <View style={{ flexDirection: 'column', alignItems: 'flex-start', borderWidth: 1, borderColor: COLORS.lightGray, margin: SIZES.padding2 }}>
-
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Image
-                                source={item.imageUrl}
-                                resizeMode="contain"
-                                style={{
-                                    height: 40,
-                                    width: 40,
-                                    borderRadius: 200,
-                                    marginRight: 10,
-
-                                }}
-                            />
                         </View>
                     </View>
                 </View>

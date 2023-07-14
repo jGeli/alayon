@@ -3,9 +3,6 @@ import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image, TextInpu
 import {
   COLORS, FONTS, SIZES, icons, styles, constants
 } from '../../constants'
-import { userData, userData2, myAccount, userData4 } from '../../globals/data'
-import axios from 'axios'
-import { FormInput } from '../../components'
 import { useDispatch, useSelector } from 'react-redux'
 import { getShopById } from '../../redux/actions/merchant.actions'
 import { RatingInput } from 'react-native-stock-star-rating'
@@ -115,7 +112,7 @@ export default function CustomerReviewScreen({ navigation, route }) {
             backgroundColor: COLORS.lightGray3
           }}
         >
-          <Image
+          <Image  
             source={{ uri: details?.bannerUrl }}
             resizeMode='contain'
             style={{
@@ -140,6 +137,7 @@ export default function CustomerReviewScreen({ navigation, route }) {
     return (
       <View
         style={{
+          padding: SIZES.padding,
           width: SIZES.width,
           flexDirection: 'column',
           alignItems: "center",
@@ -164,14 +162,24 @@ export default function CustomerReviewScreen({ navigation, route }) {
         >
           Please give us a feedback!
         </Text>
-        <FormInput
-          containerStyle={{
+        <TextInput
+          editable
+          multiline
+          numberOfLines={4}
+          placeholder='ENTER FEEDBACK'
+          style={{
+            textAlign:'left',
             width: '90%',
-            justifyContent: 'center',
-            alignItems: 'center',
+            padding: SIZES.padding,
+            marginVertical: SIZES.padding,
+            margin: SIZES.padding,
+            backgroundColor:COLORS.lightGray3,
+            borderColor: COLORS.darkGray,
+            borderWidth: .5,
+            borderRadius: SIZES.semiRadius,
           }}
           value={value}
-          onChange={e => setValue(e)}
+          onChangeText={e => setValue(e)}
           onSubmitEditing={handleSubmit}
         />
       

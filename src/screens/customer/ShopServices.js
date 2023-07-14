@@ -475,7 +475,7 @@ export default ShopServices = ({ navigation, route }) => {
                   color:
                     order.service == item.service ? COLORS.white : COLORS.black,
                 }}>
-                {item.name}   
+                {item.name}
               </Text>
             </TouchableOpacity>
           )}
@@ -810,9 +810,9 @@ export default ShopServices = ({ navigation, route }) => {
             {renderFooter()}
           </>
         ) : (
-
-          <Reviews />
-
+          <ScrollView>
+            <Reviews />
+          </ScrollView>
         )}
 
       </SafeAreaView>

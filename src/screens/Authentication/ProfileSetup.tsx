@@ -70,7 +70,6 @@ export default function RiderProfile({ navigation }) {
     ],
   };
 
-  const [openTime, setOpenTime] = useState(null);
 
   const handleSubmit = async () => {
     // console.log(await getData('token'));
@@ -89,14 +88,9 @@ export default function RiderProfile({ navigation }) {
 
 
   return (
-    // <ScrollView>
     <SafeAreaView
       style={{ ...styles.container}}
-    // style={{
-    //   padding: SIZES.padding * 2,
-    //   backgroundColor: COLORS.white2,
-    //   height: '100%',
-    // }}
+
     >
       <ScrollView
         style={{
@@ -197,23 +191,9 @@ export default function RiderProfile({ navigation }) {
             />
           </View>
         </View>
-        {/* Laundry Working Hours */}
-
-
-        {/* Laundry location */}
-
-        {/* Laundry Terms & Condition */}
-
 
 
       </ScrollView>
-      {/* <LineDivider
-        lineStyle={{
-          height: 1,
-          width: SIZES.width,
-          backgroundColor: COLORS.lightGray3
-        }}
-      /> */}
       <View
         style={{
           // flex: 1,
@@ -267,10 +247,8 @@ export default function RiderProfile({ navigation }) {
             </Animated.View>
           </Modal>
         </View>
-
       </View>
     </SafeAreaView>
-    // </ScrollView>
   );
 }
 

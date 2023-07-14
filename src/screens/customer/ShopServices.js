@@ -810,9 +810,7 @@ export default ShopServices = ({ navigation, route }) => {
             {renderFooter()}
           </>
         ) : (
-          <ScrollView>
-            <Reviews shop={selectedShop._id} />
-          </ScrollView>
+          <Reviews shop={selectedShop._id} />
         )}
 
       </SafeAreaView>

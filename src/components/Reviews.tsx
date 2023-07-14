@@ -1,6 +1,6 @@
 //import liraries
-import { React, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, SafeAreaView, FlatList, ScrollView, TouchableOpacity, Modal } from 'react-native';
+import { React, useState, useEffect, useCallback } from 'react';
+import { View, Text, StyleSheet, Image, SafeAreaView, FlatList, ScrollView, TouchableOpacity, Modal, RefreshControl } from 'react-native';
 import { COLORS, FONTS, SIZES, icons, images, styles } from '../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { Rating } from 'react-native-stock-star-rating'
@@ -18,10 +18,22 @@ export default function Reviews({ shop }) {
     const { user } = useSelector(({auth}) => auth);
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
     console.log(user, 'AUTH USER')
+    
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        // setReviews([]);
+        handleGetReviews()
+      }, []);
+    
     const handleGetReviews = async () => {
         let newReviews = await dispatch(getShopReviews(shop))
-       return setReviews(newReviews)
+        return setTimeout(() => {
+            setReviews(newReviews)   
+            setRefreshing(false)
+          }, 2000);
+    
     }
 
     const handleReact = async (item) => {
@@ -184,10 +196,12 @@ export default function Reviews({ shop }) {
             <View>
 
                 <FlatList
+                      refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                      }
                     keyExtractor={(item) => item._id}
                     data={data}
                     vertical
-                    scrollEnabled={false}
                     showsVerticalScrollIndicator={false}
                     renderItem={renderItem}
 

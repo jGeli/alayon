@@ -16,20 +16,13 @@ export default function Notification({ navigation }) {
   function renderHeader() {
     return (
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={icons.back} style={{ height: 20, width: 20 }} />
-        </TouchableOpacity>
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'row',
-            width: '80%',
-          }}>
+        </TouchableOpacity> */}
+
           <Text style={{ ...FONTS.h2, color: COLORS.black, fontWeight: 'bold' }}>
             Notifications
           </Text>
-        </View>
         {/* <Image source={icons.back} style={{height: 25, width: 25}} /> */}
       </View>
     );
@@ -124,16 +117,18 @@ export default function Notification({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    height: '100%',
-    flex: 1,
-    // padding: 5,
-    padding: SIZES.padding * 1,
-    backgroundColor: COLORS.lightGray4,
+    backgroundColor: COLORS.lightGray3,
+    // paddingBottom: SIZES.padding * 3,
   },
   headerContainer: {
+    height: 50,
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    backgroundColor: COLORS.white,
+    elevation: 5,
+    width: '100%',
+    // marginBottom: SIZES.padding
   },
   searchContainer: {
     marginVertical: SIZES.padding * 1,

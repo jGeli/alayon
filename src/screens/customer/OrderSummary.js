@@ -29,6 +29,7 @@ import CheckoutOrderCard from '../../components/Cards/CheckoutOrderCard';
 import { groupShopOrders, totalOrders } from '../../utils/helpers';
 import { CLEAR_ERROR, SET_CUSTOMER_BASKET, SET_ERROR } from '../../redux/actions/type';
 import { createOrder } from '../../redux/actions/customer.actions';
+import LoadingScreen from '../LoadingScreen';
 
 
 const { addressLabels } = constants;
@@ -37,11 +38,11 @@ const { addressLabels } = constants;
 export default function OrderSummary({ navigation, route }) {
   const dispatch = useDispatch();
   const { shopId, rnd, selectedBaskets } = route.params;
-  const { errors } = useSelector(({ ui }) => ui)
+  const { errors } = useSelector(({ ui }) => ui);
   const { basket, baskets, customer: { locations } } = useSelector(({ customer }) => customer)
   const { selectedShop } = useSelector(({ data }) => data)
   const [checkoutItems, setCheckoutItems] = useState([]);
-
+  const [loading, setLoading] = useState(true)
 
   const handleBookNow = (val) => {
     let { orders } = val;
@@ -445,7 +446,10 @@ export default function OrderSummary({ navigation, route }) {
     setCheckoutItems(nOrders)
 
     dispatch({ type: SET_CUSTOMER_BASKET, payload: { pickupDelivery, orders: orders } })
+    setTimeout(() => {
+      setLoading(false)
 
+    }, 2000)
   }
 
 
@@ -461,8 +465,12 @@ export default function OrderSummary({ navigation, route }) {
       style={{
         flexGrow: 1,
         flex: 1,
-        backgroundColor: COLORS.gray2
+        // backgroundColor: COLORS.gray2
       }}>
+      {loading && <LoadingScreen
+        style={{ backgroundColor: COLORS.white, opacity: .8 }}
+        source={images.setLoading}
+      />}
       {renderHeader()}
 
       <View

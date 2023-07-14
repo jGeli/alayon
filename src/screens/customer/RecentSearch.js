@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,11 +9,17 @@ import {
   TextInput,
   FlatList,
 } from 'react-native';
-import {COLORS, FONTS, SIZES, icons} from '../../constants';
-import {nearbyList} from '../../globals/data';
-import {cutString} from '../../utils/helpers';
+import { COLORS, FONTS, SIZES, icons, images } from '../../constants';
+import { nearbyList } from '../../globals/data';
+import { cutString } from '../../utils/helpers';
+import { useDispatch, useSelector } from 'react-redux';
+import { SET_LOADING, STOP_LOADING } from '../../redux/actions/type';
+import LoadingScreen from '../LoadingScreen';
+import { useEffect } from 'react';
 
-export default function RecentSearch({navigation}) {
+export default function RecentSearch({ navigation }) {
+  const dispatch = useDispatch()
+  const { loading } = useSelector(({ auth }) => auth);
   const [values, setValues] = useState('');
 
   const handleSubmit = e => {
@@ -23,11 +29,21 @@ export default function RecentSearch({navigation}) {
     console.log(e);
   };
 
+  const handleClick = () => {
+    dispatch({ type: SET_LOADING })
+    setTimeout(() => {
+      dispatch({ type: STOP_LOADING })
+    }, 5000)
+  }
+
   function renderHeader() {
     return (
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image source={icons.back} style={{height: 20, width: 20}} />
+          <Image source={icons.back} style={{ height: 20, width: 20 }} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleClick()}>
+          <Image source={icons.filter} style={{ height: 20, width: 20 }} />
         </TouchableOpacity>
         {/* <Image source={icons.back} style={{height: 25, width: 25}} /> */}
       </View>
@@ -61,7 +77,7 @@ export default function RecentSearch({navigation}) {
   }
 
   function renderRecentSearches() {
-    const renderItem = ({item}) => {
+    const renderItem = ({ item }) => {
       return (
         <TouchableOpacity
           style={{
@@ -75,7 +91,7 @@ export default function RecentSearch({navigation}) {
             borderColor: COLORS.black,
             borderWidth: 0.5,
           }}
-          // onPress={() => onSelectCategory(item)}
+        // onPress={() => onSelectCategory(item)}
         >
           <Image
             source={item.bannerUrl}
@@ -90,7 +106,7 @@ export default function RecentSearch({navigation}) {
           />
           <View style={styles.cardConatiner}>
             <View style={styles.rateBadge}>
-              <Text style={{color: COLORS.white, fontWeight: 'bold'}}>
+              <Text style={{ color: COLORS.white, fontWeight: 'bold' }}>
                 {item.ratings}
               </Text>
             </View>
@@ -106,11 +122,11 @@ export default function RecentSearch({navigation}) {
                   marginRight: SIZES.padding * 0.2,
                 }}
               />
-              <Text style={{color: COLORS.primary, fontWeight: 'bold'}}>
+              <Text style={{ color: COLORS.primary, fontWeight: 'bold' }}>
                 {item.range}
               </Text>
             </View>
-            <View style={{width: '90%'}}>
+            <View style={{ width: '90%' }}>
               <Text
                 style={{
                   ...FONTS.body4,
@@ -137,7 +153,7 @@ export default function RecentSearch({navigation}) {
                   marginRight: SIZES.padding * 0.5,
                 }}
               />
-              <Text style={{color: COLORS.black, flex: 1}}>
+              <Text style={{ color: COLORS.black, flex: 1 }}>
                 {cutString(item.location.address, 30)}
               </Text>
             </View>
@@ -158,7 +174,7 @@ export default function RecentSearch({navigation}) {
                   marginRight: SIZES.padding * 0.5,
                 }}
               />
-              <Text style={{color: COLORS.black}}>
+              <Text style={{ color: COLORS.black }}>
                 {cutString(
                   item.services
                     .map(a => {
@@ -176,7 +192,7 @@ export default function RecentSearch({navigation}) {
                 alignItems: 'center',
                 width: '90%',
               }}>
-              <Text style={{color: COLORS.danger, fontWeight: 'bold'}}>
+              <Text style={{ color: COLORS.danger, fontWeight: 'bold' }}>
                 Closed at {item.closeAt}
               </Text>
             </View>
@@ -193,7 +209,7 @@ export default function RecentSearch({navigation}) {
           paddingRight: SIZES.padding * 0.5,
           paddingLeft: SIZES.padding * 0.5,
         }}>
-        <Text style={{...FONTS.body3, color: COLORS.black, fontWeight: 'bold'}}>
+        <Text style={{ ...FONTS.body3, color: COLORS.black, fontWeight: 'bold' }}>
           Recent Searches
         </Text>
         <FlatList
@@ -210,8 +226,18 @@ export default function RecentSearch({navigation}) {
     );
   }
 
+  useEffect(() => {
+    dispatch({ type: STOP_LOADING })
+  }, [])
+
+
+  console.log(loading, 'loading')
   return (
     <SafeAreaView style={styles.container}>
+      {loading && <LoadingScreen
+        style={{ backgroundColor: COLORS.white, opacity: .8 }}
+        source={images.setLoading}
+      />}
       {/* HEADER */}
       {renderHeader()}
       {/* SEARCH INPUT FIELD */}
@@ -233,9 +259,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.lightGray4,
   },
   headerContainer: {
+    paddingHorizontal: SIZES.semiRadius,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
   },
   searchContainer: {
     marginVertical: SIZES.padding * 1,

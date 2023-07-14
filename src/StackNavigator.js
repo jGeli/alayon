@@ -38,7 +38,7 @@ import io from 'socket.io-client';
 
 
 
-import { icons, COLORS } from './constants';
+import { icons, COLORS, images } from './constants';
 import { getAuthUser } from './redux/actions/auth.actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerBasket, getCustomerLocations } from './utils/AsyncStorage';
@@ -57,18 +57,14 @@ const StackNavigator = () => {
   const dispatch = useDispatch();
   const Tab = createBottomTabNavigator();
   const Stack = createNativeStackNavigator();
-  const { isAuthenticated, user, loading } = useSelector(({ auth }) => auth);
+  const { isAuthenticated, user } = useSelector(({ auth }) => auth);
   const [mainScreen, setMainScreen] = useState(null);
-  const [textMsg, setTextMsg] = useState('');
+  const [loading, setLoading] = useState(true);
   const [rnd, setRnd] = useState(0)
   // getting data
 
 
 
-
-  const handleSocket = () => {
-    socket.emit('ping', 'HELLO WORLD!')
-  }
 
   const initScreen = async () => {
     const userToken = JSON.parse(await AsyncStorage.getItem('token'));
@@ -112,7 +108,7 @@ const StackNavigator = () => {
   useEffect(() => {
     initScreen();
     setTimeout(() => {
-      dispatch({ type: STOP_LOADING })
+      setLoading(false)
     }, 5000)
 
   }, [isAuthenticated])
@@ -262,7 +258,10 @@ const StackNavigator = () => {
   return (
     <>
       {(loading || !mainScreen) ?
-        <LoadingScreen />
+        <LoadingScreen
+          style={{ backgroundColor: COLORS.white }}
+          source={images.setLoading}
+        />
         :
 
         <NavigationContainer>

@@ -16,6 +16,7 @@ const logo = require('../assets/images/logo.png');
 const status = require('../assets/images/status.png');
 const animatedWashing = require('../assets/images/animated-washing.gif');
 const defaultBanner = require('../assets/images/ALAYON/10.jpg');
+const loadingDots = require('../assets/images/loading-dots.gif');
 const setLoading = require('../assets/images/setLoading.gif');
 const setLoading2 = require('../assets/images/setLoading2.gif');
 const location = require('../assets/images/location.gif');
@@ -27,6 +28,7 @@ const starcorner = require('../assets/images/starcorner.png');
 const delivery_man = require('../assets/images/delivery_man.png');
 
 export default {
+    loadingDots,
     delivery_man,
     location,
     location2,

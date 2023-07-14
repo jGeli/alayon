@@ -9,6 +9,7 @@ import { LineDivider, TextButton, TextIconButton } from '../../components';
 import { useDispatch } from 'react-redux';
 import { getOrderById } from '../../redux/actions/customer.actions';
 import { statusIndexing } from '../../utils/helpers';
+import LoadingScreen from '../LoadingScreen';
 
 
 
@@ -88,7 +89,8 @@ export default function OrderStatus({navigation, route}) {
   const { order, navType } = route.params;
   const dispatch = useDispatch();
   const [orderData, setOrderData] = React.useState<Object>({})
-
+  const [loading, setLoading] = React.useState(true)
+  
   const handleGetOrder = async () => {
     let myOrder = await dispatch(getOrderById(order._id));
     if(myOrder){
@@ -96,6 +98,10 @@ export default function OrderStatus({navigation, route}) {
     console.log(statusIndexing(myOrder.activeStatus))
       setOrderData({...myOrder, statusIndex: statusIndexing(myOrder.activeStatus)})
     }
+    setTimeout(() => {
+      setLoading(false)
+
+    }, 2000)
   }
 
   console.log("order", orderData.shop)
@@ -427,6 +433,10 @@ export default function OrderStatus({navigation, route}) {
   
   return (
     <SafeAreaView style={styles.container}>
+          {loading && <LoadingScreen
+        style={{ backgroundColor: COLORS.white, opacity: .8 }}
+        source={images.setLoading}
+      />}
         {renderHeader()}
         <ScrollView
             showsVerticalScrollIndicator={false}

@@ -39,7 +39,9 @@ const Otp = ({ navigation, route }) => {
         if (redirection === 'OrderSummary' && baskets.length !== 0) {
           dispatch(createBulkBasket(baskets))
             .then((resBaskets) => {
-              navigation.navigate(redirection, { ...param, selectedBaskets: resBaskets.map(a => { return a._id }) })
+              if (resBaskets) {
+                navigation.navigate(redirection, { ...param, selectedBaskets: resBaskets.map(a => { return a._id }) })
+              }
             })
         } else {
           navigation.navigate(redirection, param)
@@ -93,7 +95,7 @@ const Otp = ({ navigation, route }) => {
           type: user.type,
           hash,
         },
-        navigation,
+        navigation, route.params
       ),
     );
     // dispatch(verifyOTP({code, id: user.id}, navigation));

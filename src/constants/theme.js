@@ -27,6 +27,8 @@ export const COLORS = {
   textButton: '#FFFAFA',
   lightGray3: '#EFEFF1',
   lightGray4: '#F8F8F9',
+  lightGray1: '#EFEFEF',
+
   transparent: 'transparent',
   darkGray: '#898C95',
   darkGray2: '#757D85',

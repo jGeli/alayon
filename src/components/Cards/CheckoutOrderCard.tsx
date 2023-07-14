@@ -19,7 +19,6 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
     function renderAddOns(order) {
         let { totalAddons, pricing, qty, service, addons, shop } = order;
 
-
         return (
             <TouchableOpacity
             // onPress={() => navigation.navigate('AddOnsScreen', { order })}
@@ -155,6 +154,8 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
             totalOrder += totalService + totalAddons;
 
         }
+        
+        console.log("ADDONS SHOP", shop.addons)
 
         return (
             <View
@@ -199,7 +200,7 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
 
                     </View>
                 </View>
-                {renderAddOns({ totalAddons, ...order })}
+                {shop.addons.length !== 0 && renderAddOns({ totalAddons, ...order })}
                 <View
                     style={{
                         flexDirection: 'row',
@@ -252,7 +253,7 @@ const CheckoutOrderCard = ({ navigation, shopData, param }) => {
     }
 
 
-    function handleDeliveryType(shop) {
+    function handleDeliveryType() {
         const { deliveryOption } = shopData;
         const { deliveryOptions } = constants;
         let deliveryOpt = deliveryOption ? deliveryOptions.find(a => a.id === deliveryOption) : { price: 0, name: 'Select', description: 'No Delivery Option Selected' }

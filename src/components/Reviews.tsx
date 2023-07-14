@@ -3,7 +3,6 @@ import { React, useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, SafeAreaView, FlatList, ScrollView, TouchableOpacity, Modal, RefreshControl } from 'react-native';
 import { COLORS, FONTS, SIZES, icons, images, styles } from '../constants';
 import { useSelector, useDispatch } from 'react-redux';
-import { Rating } from 'react-native-stock-star-rating'
 import Ratings from './Ratings';
 import { getShopReviews, sendLikeReact } from '../redux/actions/customer.actions';
 

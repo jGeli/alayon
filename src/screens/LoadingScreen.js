@@ -4,23 +4,25 @@ import { View, Text, StyleSheet, SafeAreaView, Image } from 'react-native';
 import { COLORS, SIZES, images } from '../constants';
 
 // create a component
-const LoadingScreen = () => {
+const LoadingScreen = ({ source, style }) => {
     return (
         <SafeAreaView
             style={{
-                backgroundColor: COLORS.white,
+                height: '100%',
+                backgroundColor: COLORS.lightGray1,
                 justifyContent: 'center',
                 alignItems: 'center',
                 flexGrow: 1,
+                ...style
             }}
         >
-            
-            <Image 
-                source={images.setLoading}
+
+            <Image
+                source={source ? source : images.loadingDots}
                 resizeMode='contain'
                 style={{
                     height: 100,
-                    width: SIZES.width
+                    width: SIZES.width,
                 }}
             />
 

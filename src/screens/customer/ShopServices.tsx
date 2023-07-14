@@ -42,6 +42,7 @@ import { getCustomerShopBaskets, getCustomerShopById } from '../../redux/actions
 import Reviews from '../../components/Reviews';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCustomerBaskets, setCustomerBaskets } from '../../utils/AsyncStorage';
+import LoadingScreen from '../LoadingScreen';
 
 // create a component
 export default ShopServices = ({ navigation, route }) => {
@@ -54,7 +55,7 @@ export default ShopServices = ({ navigation, route }) => {
   const [cloths, setCloths] = useState();
   const [isAddonEnabled, setAddonEnabled] = useState(false);
   const [tab, setTab] = useState('services');
-
+  const [loading, setLoading] = useState(true);
 
   const handleChat = async () => {
     await AsyncStorage.removeItem('basket')
@@ -143,6 +144,7 @@ export default ShopServices = ({ navigation, route }) => {
         payload: { service: shopData.services[0].service },
       });
     }
+    setLoading(false)
   };
 
   const handleCounter = (item, type) => {
@@ -751,8 +753,14 @@ export default ShopServices = ({ navigation, route }) => {
     );
   }
 
+  console.log('SELECTED SHOP', selectedShop, selectedShop.addons.length)
+
   return (
     <Fragment>
+      {loading && <LoadingScreen
+        style={{ backgroundColor: COLORS.white, opacity: .8 }}
+        source={images.setLoading}
+      />}
       <SafeAreaView
         style={{
           flex: 1,
@@ -771,10 +779,11 @@ export default ShopServices = ({ navigation, route }) => {
             }
           }}
         />
-        <CustomerAddOns
-          active={customerAddOns}
-          onClose={() => dispatch({ type: CLOSE_MODALS })}
-        />
+          < CustomerAddOns
+            active={customerAddOns}
+            onClose={() => dispatch({ type: CLOSE_MODALS })}
+          />
+        
         {renderHeader()}
         {tab === 'services' ? (
           <>
@@ -805,7 +814,9 @@ export default ShopServices = ({ navigation, route }) => {
                 width: '100%',
                 backgroundColor: COLORS.lightGray3,
               }}>
-              {renderAddons()}
+        {selectedShop.addons.length !== 0 &&
+              renderAddons()
+        }
             </View>
             {renderFooter()}
           </>

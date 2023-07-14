@@ -27,6 +27,7 @@ const starcorner = require('../assets/images/starcorner.png');
 const delivery_man = require('../assets/images/delivery_man.png');
 
 export default {
+    delivery_man,
     location,
     location2,
     location3,

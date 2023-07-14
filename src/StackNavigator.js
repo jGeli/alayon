@@ -49,6 +49,7 @@ import Map3 from './components/Cards/Map/Map3';
 import BasketsScreen from './screens/customer/BasketsScreen';
 import ProfileSetup from './screens/Authentication/ProfileSetup';
 import Maps from './components/Cards/Map/Map1';
+import Map1 from './components/Cards/Map/Map1';
 
 let socket = null;
 
@@ -378,6 +379,11 @@ const StackNavigator = () => {
             <Stack.Screen
               name="Map"
               component={MapScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Map1"
+              component={Map1}
               options={{ headerShown: false }}
             />
             <Stack.Screen

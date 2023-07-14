@@ -1,10 +1,11 @@
 //import liraries
 import { React, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, SafeAreaView, FlatList, ScrollView, TouchableOpacity, Modal } from 'react-native';
-import { COLORS, SIZES, icons, images, styles } from '../constants';
+import { COLORS, FONTS, SIZES, icons, images, styles } from '../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { Rating } from 'react-native-stock-star-rating'
 import Ratings from './Ratings';
+import { getShopReviews, sendLikeReact } from '../redux/actions/customer.actions';
 
 
 
@@ -12,27 +13,48 @@ import Ratings from './Ratings';
 
 
 // create a component
-export default function Reviews() {
-    const { selectedShop } = useSelector(({ data }) => data);
-   
-    
-    console.log(selectedShop.reviews, "selectedShop")
-    
-    const handleReact = async (e) => {
-        let selectedShop = await dispatch(getShopDetails(shop))
-        e.preventDefault();
+export default function Reviews({ shop }) {
+    const dispatch = useDispatch();
+    const { user } = useSelector(({auth}) => auth);
+    const [reviews, setReviews] = useState([]);
+    const [loading, setLoading] = useState(false);
+    console.log(user, 'AUTH USER')
+    const handleGetReviews = async () => {
+        let newReviews = await dispatch(getShopReviews(shop))
+       return setReviews(newReviews)
     }
 
-  
-      
-    function renderReviews() {
+    const handleReact = async (item) => {
+        
+            let { shopId} = item;
+             console.log('REACT THIS', item)   
+        setLoading(true)
+        dispatch(sendLikeReact({shopId, reviewId: item._id}))
+        .then(a => {
+            setLoading(false)
+            if(a){
+                return handleGetReviews()  
+            }
+        })
+        .catch(err => {
+            console.log(err, 'REACT EROR')
+            setLoading(false)
+            
+        })
+    }
+
+
+
+
+    function renderReviews(data) {
         const renderItem = ({ item }) => {
-            console.log(item, "items")
+            console.log(item, "items thuis")
             return (
                 <View
-                    style={styles.container}>
+                    style={styles.container}
+                >
 
-                    <View style={{ flexDirection: 'column', alignItems: 'flex-start', borderWidth: 1, borderColor: COLORS.lightGray, margin: SIZES.padding2}}>
+                    <View style={{ flexDirection: 'column', alignItems: 'flex-start', borderWidth: 1, borderColor: COLORS.lightGray, margin: SIZES.padding2 }}>
 
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Image
@@ -47,9 +69,9 @@ export default function Reviews() {
                                 }}
                             />
                             <View style={{ flexDirection: 'row', alignItems: 'center', width: '80%' }}>
-                                <View style={{ flexDirection: 'column', flex: 1}}>
+                                <View style={{ flexDirection: 'column', flex: 1 }}>
                                     <Text style={{
-                                        
+
                                         fontSize: SIZES.base * 2,
                                         fontWeight: 'bold',
                                         color: COLORS.black
@@ -57,37 +79,43 @@ export default function Reviews() {
                                     >
                                         {item.postedBy.firstName}
                                     </Text>
-                                    <View style={{ flexDirection: 'row'}}>
+                                    <View style={{ flexDirection: 'row' }}>
 
-                                    {/* <Rating
+                                        {/* <Rating
                                         stars={item.ratings}
                                         maxRating={5}
                                         size={25}
                                     /> */}
-                                    <Ratings 
-                                        rating={item.ratings}
-                                        iconStyle={{
-                                            marginLeft: 3
-                                        }}
-                                    />
+                                        <Ratings
+                                            rating={item.ratings}
+                                            iconStyle={{
+                                                marginLeft: 3
+                                            }}
+                                        />
                                     </View>
 
-                                  
+
                                 </View>
                                 <TouchableOpacity
-                                    // style={{
-                                    //     marginHorizontal: SIZES.base
-                                    // }}
+                                style={{
+                                flexDirection: 'row'
+                                }}
+                                    disabled={loading}
+                                    onPress={() => handleReact(item)}
                                 >
                                     <Image
                                         source={icons.likes}
                                         resizeMode='contain'
                                         style={{
-                                           
+
                                             height: 20,
-                                            width: 20
+                                            width: 20,
+                                            tintColor: item.likes.find(a => String(a) == String(user._id)) ? COLORS.primary : COLORS.black
                                         }}
                                     />
+<Text style={{...FONTS.body4, marginLeft: SIZES.padding
+}}>({item.likes.length})</Text>
+                                    
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={{
@@ -95,15 +123,15 @@ export default function Reviews() {
                                         marginLeft: SIZES.base
                                     }}
                                 >
-                                <Image
-                                    source={icons.dotsetting}
-                                    resizeMode='contain'
-                                    style={{
+                                    <Image
+                                        source={icons.dotsetting}
+                                        resizeMode='contain'
+                                        style={{
 
-                                        height: 25,
-                                        width: 25
-                                    }}
-                                />
+                                            height: 25,
+                                            width: 25
+                                        }}
+                                    />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -154,27 +182,30 @@ export default function Reviews() {
         }
         return (
             <View>
-           
-            <FlatList
-                keyExtractor={(item, index) => `${index}`}
-                data={selectedShop.reviews}
-                vertical
-                scrollEnabled={false}
-                showsVerticalScrollIndicator={false}
-                renderItem={renderItem}
-                
-            />
-            
+
+                <FlatList
+                    keyExtractor={(item) => item._id}
+                    data={data}
+                    vertical
+                    scrollEnabled={false}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={renderItem}
+
+                />
+
             </View>
         )
     }
 
+    useEffect(() => {
+        handleGetReviews()
+
+    }, [shop])
+
 
     return (
         <SafeAreaView>
-            <ScrollView>
-                {renderReviews()}
-            </ScrollView>
+            {renderReviews(reviews)}
         </SafeAreaView>
     );
 };

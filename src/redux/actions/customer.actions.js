@@ -258,3 +258,40 @@ export const createChat = (id, data) => dispatch => {
       return null;
     });
 };
+
+
+export const createShopReview = (id, data) => dispatch => {
+  return axios.post(`${varEnv.apiUrl}/customers/reviews/${id}`, data)
+    .then(res => {
+      console.log("Review posted successfully", res.data)
+      return res.data
+    })
+    .catch(err => {
+      console.log(err, 'RES ERROR')
+      return null;
+    });
+};
+
+export const getShopReviews = (id) => dispatch => {
+  return axios.get(`${varEnv.apiUrl}/customers/reviews/${id}`)
+    .then(res => {
+      console.log("Reviews", res.data)
+      return res.data
+    })
+    .catch(err => {
+      console.log(err, 'RES ERROR')
+      return [];
+    });
+};
+
+export const sendLikeReact = (data) => dispatch => {
+  return axios.post(`${varEnv.apiUrl}/customers/reviews/like`, data)
+    .then(res => {
+      console.log("Reviews", res.data)
+      return res.data
+    })
+    .catch(err => {
+      console.log(err, 'RES ERROR')
+      return null;
+    });
+};

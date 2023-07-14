@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import * as React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, SafeAreaView, ScrollView, Alert } from 'react-native';
 import StepIndicator from 'react-native-step-indicator';
 import { MaterialIcons } from '@expo/vector-icons';
 import { COLORS, FONTS, SIZES, icons, images } from '../../constants';
@@ -92,6 +92,8 @@ export default function OrderStatus({navigation, route}) {
   const handleGetOrder = async () => {
     let myOrder = await dispatch(getOrderById(order._id));
     if(myOrder){
+    console.log('STATUSS ORDER', myOrder.shop)
+    console.log(statusIndexing(myOrder.activeStatus))
       setOrderData({...myOrder, statusIndex: statusIndexing(myOrder.activeStatus)})
     }
   }
@@ -194,7 +196,7 @@ export default function OrderStatus({navigation, route}) {
         style={
           position === currentPosition
             ? styles.stepLabelSelected
-            : styles.stepLabel
+            :  position < currentPosition ? styles.stepLabelDone :  styles.stepLabel
         }
       >
         {label.name}
@@ -203,7 +205,7 @@ export default function OrderStatus({navigation, route}) {
         style={
           position === currentPosition
             ? styles.stepDescriptionSelected
-            : styles.stepDescription
+            : position < currentPosition ? styles.stepDescriptionDone : styles.stepDescription
         }
       >
         {label.description}
@@ -287,7 +289,7 @@ export default function OrderStatus({navigation, route}) {
         labelStyle={{
         color: COLORS.primary
         }}
-        onPress={() => onStepPress(orderData.statusIndex - 1)}
+        onPress={() => Alert.alert('CANCEL')}
     />  : 
     
     <TextButton
@@ -300,7 +302,7 @@ export default function OrderStatus({navigation, route}) {
     labelStyle={{
     color: COLORS.primary
     }}
-    onPress={() => onStepPress(orderData.statusIndex - 1)}
+    onPress={() => Alert.alert('BACK')}
     />
         }
        {orderData.statusIndex < 4 
@@ -325,7 +327,10 @@ export default function OrderStatus({navigation, route}) {
                 marginRight: SIZES.padding,
                 tintColor: COLORS.white
             }}
-            onPress={() => onStepPress(orderData.statusIndex + 1)}
+            onPress={() => {
+            navigation.navigate('Map1', {});
+            // onStepPress(orderData.statusIndex + 1);
+            }}
 
         />
         :
@@ -350,7 +355,7 @@ export default function OrderStatus({navigation, route}) {
             marginRight: SIZES.padding,
             tintColor: COLORS.white
         }}
-        onPress={() => onStepPress(orderData.statusIndex + 1)}
+        onPress={() => Alert.alert('ORDER RECEIVED!')}
 
     />
     :
@@ -375,7 +380,7 @@ export default function OrderStatus({navigation, route}) {
             marginRight: SIZES.padding,
             tintColor: COLORS.gold
         }}
-        onPress={() => {onStepPress(orderData.statusIndex + 1), navigation.navigate("CustomerReview",{shop: order})}}
+        onPress={() => {navigation.navigate("CustomerReview",{shop: orderData.shop, order: orderData._id})}}
 
     />:
     <TextIconButton
@@ -398,7 +403,7 @@ export default function OrderStatus({navigation, route}) {
         marginRight: SIZES.padding,
         tintColor: COLORS.white
     }}
-    onPress={() => onStepPress(orderData.statusIndex + 1)}
+    onPress={() => Alert.alert('RE-ORDER')}
 
 />
        }
@@ -413,7 +418,6 @@ export default function OrderStatus({navigation, route}) {
   React.useEffect(() => {
     handleGetOrder();
     
-    console.log(order, 'ORDER SS')
     Object.keys(order).map(a => {
       console.log(a, 'ORDER DATA')
     });
@@ -463,19 +467,29 @@ const styles = StyleSheet.create({
   stepDescription: {
     fontSize: 10,
     textAlign: 'left',
-    color: COLORS.transparentBlack7,
+    color: COLORS.transparentBlack1,
   },
   stepDescriptionSelected: {
     fontSize: 10,
     textAlign: 'left',
     color: COLORS.black,
   },
-
+  stepDescriptionDone: {
+    fontSize: 10,
+    textAlign: 'left',
+    color: COLORS.darkGray1,
+  },
   stepLabel: {
     fontSize: 12,
     textAlign: 'left',
     fontWeight: '500',
     color: '#999999',
+  },
+  stepLabelDone: {
+    fontSize: 12,
+    textAlign: 'left',
+    fontWeight: '500',
+    color: COLORS.primary,
   },
   stepLabelSelected: {
     fontSize: 12,

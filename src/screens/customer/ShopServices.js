@@ -811,7 +811,7 @@ export default ShopServices = ({ navigation, route }) => {
           </>
         ) : (
           <ScrollView>
-            <Reviews />
+            <Reviews shop={selectedShop._id} />
           </ScrollView>
         )}
 

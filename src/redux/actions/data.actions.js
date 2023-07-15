@@ -113,3 +113,20 @@ export const getConversation = () => dispatch => {
       });
     });
 };
+
+export const getAreaCodes = () => dispatch => {
+  return axios
+    .get(`${varEnv.apiUrl}/alayon/area`)
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      console.log(JSON.stringify(err));
+      dispatch({
+        type: SET_ERROR,
+        payload: err,
+      });
+      return null
+    });
+
+};

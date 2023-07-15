@@ -50,6 +50,7 @@ import BasketsScreen from './screens/customer/BasketsScreen';
 import ProfileSetup from './screens/Authentication/ProfileSetup';
 import Maps from './components/Cards/Map/Map1';
 import Map1 from './components/Cards/Map/Map1';
+import TestScreen from './screens/TestScreen';
 
 let socket = null;
 
@@ -398,6 +399,11 @@ const StackNavigator = () => {
             <Stack.Screen
               name="MapTracking"
               component={Maps}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="TestScreen"
+              component={TestScreen}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

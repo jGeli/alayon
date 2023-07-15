@@ -33,7 +33,7 @@ const varEnv = constants.varEnv;
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
   const { location, isLocationAllow } = useSelector(({ data }) => data);
-  const { isAuthenticated } = useSelector(({auth}) => auth)
+  const { isAuthenticated, user } = useSelector(({auth}) => auth)
   const { basket } = useSelector(({ customer }) => customer);
   const [useLocation, setUseLocation] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -76,10 +76,12 @@ export default function Home({ navigation }) {
 
   const handleLocation = () => {
     console.log('IS ALLOW LOCATION', isLocationAllow)
-    if (!isLocationAllow) {
+    console.log(user)
+    
+    if (!isLocationAllow ) {
       dispatch({ type: SET_ALLOW_LOCATION_MODAL })
     } else {
-      navigation.navigate('Map', { navType: 'current' })
+      navigation.navigate('SelectRegion', { navType: 'current' })
     }
   }
 

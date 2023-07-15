@@ -5,7 +5,7 @@ import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 
 
 // create a component
-export default function TestScreen({ navigation, route }) {
+export default function DefaultScreen({ navigation, route }) {
 
 
 

@@ -42,10 +42,16 @@ export default function RecentSearch({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={icons.back} style={{ height: 20, width: 20 }} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleClick()}>
-          <Image source={icons.filter} style={{ height: 20, width: 20 }} />
-        </TouchableOpacity>
-        {/* <Image source={icons.back} style={{height: 25, width: 25}} /> */}
+        <View
+          style={{ flexDirection: 'row' }}
+        >
+          <TouchableOpacity style={{ marginRight: SIZES.padding }} onPress={() => navigation.navigate('TestScreen', {})}>
+            <Image source={icons.dotsetting} style={{ height: 20, width: 20 }} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleClick()}>
+            <Image source={icons.filter} style={{ height: 20, width: 20 }} />
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }

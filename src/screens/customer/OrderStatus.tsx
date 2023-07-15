@@ -94,8 +94,6 @@ export default function OrderStatus({navigation, route}) {
   const handleGetOrder = async () => {
     let myOrder = await dispatch(getOrderById(order._id));
     if(myOrder){
-    console.log('STATUSS ORDER', myOrder.shop)
-    console.log(statusIndexing(myOrder.activeStatus))
       setOrderData({...myOrder, statusIndex: statusIndexing(myOrder.activeStatus)})
     }
     setTimeout(() => {
@@ -104,7 +102,6 @@ export default function OrderStatus({navigation, route}) {
     }, 2000)
   }
 
-  console.log("order", orderData.shop)
   const onStepPress = (position: number) => {
   
     setOrderData({ ...orderData, statusIndex: position > 6 ? 6 : position < 0 ? 0 : position});
@@ -251,7 +248,7 @@ export default function OrderStatus({navigation, route}) {
             
         <View
             style={{
-                height: 400,
+                height: 300,
                 marginTop: SIZES.padding,
                 paddingHorizontal: SIZES.padding
             }}
@@ -263,8 +260,8 @@ export default function OrderStatus({navigation, route}) {
           onPress={onStepPress}
           direction="vertical"
           renderLabel={renderLabel}
-          stepCount={6}
           renderStepIndicator={renderStepIndicator}
+          stepCount={6}
           labels={orderData.order_status}
         />
       </View>
@@ -424,9 +421,6 @@ export default function OrderStatus({navigation, route}) {
   React.useEffect(() => {
     handleGetOrder();
     
-    Object.keys(order).map(a => {
-      console.log(a, 'ORDER DATA')
-    });
   }, [order])
   
 

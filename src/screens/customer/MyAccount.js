@@ -101,7 +101,7 @@ export default function MyAccount({ navigation }) {
               dispatch(logoutUser(navigation));
 
             } else {
-              navigation.navigate(item.screen)
+              navigation.navigate(item.screen, {})
             }
 
           }}>

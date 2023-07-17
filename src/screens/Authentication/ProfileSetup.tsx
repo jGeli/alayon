@@ -15,27 +15,23 @@ import {
 import { COLORS, FONTS, SIZES, icons, styles } from '../../constants';
 import UploadProfileImage from '../../components/UploadProfileImage';
 import UploadImage from '../../components/UploadImage'
-import { workingHours } from '../../globals/data';
-import DatePicker from 'react-native-date-picker';
-import moment from 'moment/moment';
 import { useDispatch, useSelector } from 'react-redux';
-import { cutString } from '../../utils/helpers';
 import { createShopProfile } from '../../redux/actions/merchant.actions';
+import { getHash, requestHint } from 'react-native-otp-verify';
 
 import { getData, storeData } from '../../redux/auth-header';
 import TermsAndCondition from '../../components/Modals/TermsAndCondition/TermsAndCondition';
-import LineDivider from '../../components/LineDivider';
+import { getFormattedPhone } from '../../utils/helpers';
+import { updateUserById } from '../../redux/actions/user.actions';
 
-export default function RiderProfile({ navigation }) {
+export default function ProfileScreen({ navigation, route }) {
   const dispatch = useDispatch();
+  // console.log('ROUTESS', route)
+  const { redirection } = route.params;
   const { location } = useSelector(state => state.data);
-  const { user } = useSelector(user => user);
-  const [values, setValues] = useState({
-    business_hours: workingHours,
-    opening: null,
-    closing: null,
-    location: {},
-  });
+  const { user } = useSelector(({auth}) => auth);
+
+  const [values, setValues] = useState({});
 
   const [modalVisible, setModalVisible] = useState(false);
   const slideAnim = useState(new Animated.Value(0))[0];
@@ -73,8 +69,23 @@ export default function RiderProfile({ navigation }) {
 
   const handleSubmit = async () => {
     // console.log(await getData('token'));
-    values.token = await getData('token');
-    dispatch(createShopProfile(values, navigation));
+   let res = await dispatch(updateUserById(user._id, values))
+    if(res){
+        if(redirection){
+        
+        
+        if(redirection === 'ProfileSetup'){
+            navigation.navigate('CustomerHome', {})
+        } else {
+          navigation.navigate(redirection, route.params)
+        }
+        console.log(redirection, 'Redirections')
+        } else {
+          navigation.goBack()
+        }
+        
+        
+    }
   };
 
   const handleChanges = prop => e => {
@@ -82,20 +93,54 @@ export default function RiderProfile({ navigation }) {
   };
 
 
+  const handleRequestPhone = () => {
+
+    requestHint()
+      .then(e => {
+        setValues({...values, mobile: getFormattedPhone(e)});
+      })
+      .catch(console.log);
+
+  }
+
+
   useEffect(() => {
     setValues({ ...values, location });
   }, [location]);
 
+  useEffect(() => {
+    
+    let { email, firstName, lastName, mobile, imgUrl } = user;
+    console.log('SET USER')
+    if(user._id){
+      setValues({ email, firstName, lastName, mobile, imgUrl });
+    }
+    return () => {
+    console.log('CLEAR USER')
+        setValues({})
+    }
+  }, [user]);
+
+  console.log(user, 'USER')
 
   return (
     <SafeAreaView
       style={{ ...styles.container}}
 
     >
+    
+    <Modal
+            visible={modalVisible}
+            transparent={true}
+            animationType="none"
+            onRequestClose={handleCloseModal}>
+            <Animated.View style={[embeddedStyles.modalView, slideInFromRight]}>
+              <TermsAndCondition onPress={() => handleCloseModal()} />
+            </Animated.View>
+          </Modal>
       <ScrollView
         style={{
           padding: SIZES.padding,
-          flex: 1,
         }}
       >
         {/* Title */}
@@ -107,7 +152,10 @@ export default function RiderProfile({ navigation }) {
 
 
         <View style={styles.uploadContainer}>
-          <UploadProfileImage />
+          <UploadProfileImage 
+            image={values.imgUrl}
+            setImage={e => setValues({ ...values, imgUrl: e })}
+          />
         </View>
 
 
@@ -121,6 +169,8 @@ export default function RiderProfile({ navigation }) {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <TextInput
             placeholder="Enter First Name"
+            value={values.firstName}
+            onChangeText={handleChanges('firstName')}
             placeholderTextColor={'gray'}
             style={{
               fontSize: 18,
@@ -132,7 +182,9 @@ export default function RiderProfile({ navigation }) {
           />
 
           <TextInput
-            placeholder="Enter First Name"
+            placeholder="Enter Last Name"
+            value={values.lastName}
+            onChangeText={handleChanges('lastName')}
             placeholderTextColor={'gray'}
             style={{
               fontSize: 18,
@@ -144,25 +196,8 @@ export default function RiderProfile({ navigation }) {
           />
         </View>
         {/* Laundry Mobile Number */}
-        <View style={{ paddingTop: SIZES.padding }}>
-          <Text style={{ fontSize: 18, fontWeight: '600', color: COLORS.black }}>
-            Email Address
-          </Text>
-        </View>
-        <View style={styles.SectionStyle}>
-          <TextInput
-            placeholder="Enter Email Name"
-            placeholderTextColor={'gray'}
-            style={{
-              fontSize: 18,
-              borderBottomColor: 'gray',
-              borderBottomWidth: 1,
-              width: '100%',
-              color: COLORS.darkGray,
-            }}
-          />
-        </View>
-        <View style={{ paddingTop: SIZES.padding }}>
+      
+        <View style={{ paddingTop: SIZES.padding, marginTop: SIZES.padding }}>
           <Text style={{ fontSize: 18, fontWeight: '600', color: COLORS.black }}>
             Mobile Number
           </Text>
@@ -190,33 +225,40 @@ export default function RiderProfile({ navigation }) {
               underlineColorAndroid="transparent"
             />
           </View>
-        </View>
-
-
-      </ScrollView>
-      <View
-        style={{
-          // flex: 1,
-          // justifyContent: 'flex-end',
-          // borderWidth: 1,
-          alignItems: 'center',
-          paddingTop: SIZES.padding,
-          // paddingBottom: SIZES.padding,
-        }}>
-        <TouchableOpacity
-          style={styles.button}
-          // onPress={() => handleSubmit()}
-          onPress={() => navigation.goBack()}
+          <TouchableOpacity
+          onPress={() => handleRequestPhone()}
         >
-          <Text style={styles.buttonText}>Done</Text>
+          <Text style={{ textAlign: 'right', marginTop: SIZES.padding, color: COLORS.danger }}> This Device Phone Number?</Text>
         </TouchableOpacity>
+        </View>
+        <View style={{ paddingTop: SIZES.padding }}>
+          <Text style={{ fontSize: 18, fontWeight: '600', color: COLORS.black }}>
+            Email Address
+          </Text>
+        </View>
+        <View style={styles.SectionStyle}>
+          <TextInput
+            placeholder="Enter Email Name"
+            value={values.email}
+            onChangeText={handleChanges('email')}
+            placeholderTextColor={'gray'}
+            style={{
+              fontSize: 18,
+              borderBottomColor: 'gray',
+              borderBottomWidth: 1,
+              width: '100%',
+              color: COLORS.darkGray,
+            }}
+          />
+        </View>
         <View
-          style={{
+          style={{ 
+            flexGrow: 1,
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'flex-start',
-            // marginTop: SIZES.padding * 2,
-            marginBottom: SIZES.padding * 2,
+            marginTop: SIZES.padding,
+            // marginBottom: SIZES.padding * 2,
           }}>
           <Image source={icons.tnc} style={{ height: 30, width: 30 }} />
           <Text style={{ ...FONTS.body5, marginLeft: SIZES.padding }}>
@@ -237,17 +279,31 @@ export default function RiderProfile({ navigation }) {
               Terms and Conditions.
             </Text>
           </Pressable>
-          <Modal
-            visible={modalVisible}
-            transparent={true}
-            animationType="none"
-            onRequestClose={handleCloseModal}>
-            <Animated.View style={[embeddedStyles.modalView, slideInFromRight]}>
-              <TermsAndCondition onPress={() => handleCloseModal()} />
-            </Animated.View>
-          </Modal>
+
         </View>
+
+      <View
+        style={{
+          flexGrow: 1,
+          // flex: 1,
+          // justifyContent: 'flex-end',
+          // borderWidth: 1,
+          alignItems: 'center',
+          marginTop: SIZES.padding * 5,
+          // backgroundColor: 'gray'
+          paddingBottom: SIZES.padding * 3,
+        }}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleSubmit()}
+          // onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.buttonText}>Submit</Text>
+        </TouchableOpacity>
+     
       </View>
+      </ScrollView>
+    
     </SafeAreaView>
   );
 }

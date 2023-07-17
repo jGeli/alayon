@@ -42,6 +42,9 @@ export default function Home({ navigation }) {
     setRefreshing(true);
     setShops([]);
     handleGetShops()
+    setTimeout(() => {
+      setRefreshing(false)
+    }, 30000);
   }, []);
 
   const handleGetShops = async () => {

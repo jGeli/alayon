@@ -145,28 +145,22 @@ export const Rider1 = {
 
 export const myAccount = [
   {
-    name: 'Home',
-    screen: 'CustomerHome',
-    iconUrl: icons.home,
-  },
-  {
-    name: 'My Orders',
-    screen: 'CustomerOrders',
-    iconUrl: icons.list,
-  },
-  {
-    name: 'Live Tracking',
-    screen: 'CurrentLocation',
-    iconUrl: icons.myLiveTracking,
-  },
-  {
-    name: 'My Address',
-    screen: 'AddressLocation',
-    iconUrl: icons.myLocation,
-  },
-  {
     name: 'Account Settings',
-    screen: 'CustomerSettings',
+    screen: 'ProfileSetup',
+    iconUrl: icons.account,
+  },
+  {
+    name: 'Terms And Condition',
+    iconUrl: icons.account,
+  },
+  {
+    name: 'Privacy Policy',
+    screen: '',
+    iconUrl: icons.account,
+  },
+  {
+    name: 'Contact Us',
+    screen: 'MerchantMyAccount',
     iconUrl: icons.account,
   },
   {

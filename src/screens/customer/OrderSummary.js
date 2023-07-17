@@ -66,7 +66,6 @@ export default function OrderSummary({ navigation, route }) {
 
     dispatch(createOrder(val))
       .then(({ d }) => {
-        console.log('BOOKING', d)
         navigation.navigate('OrderStatus', { order: d })
       })
 
@@ -438,7 +437,6 @@ export default function OrderSummary({ navigation, route }) {
 
     if (!pickupDelivery && locations.length !== 0) {
       let defLoc = locations.find(a => a.isDefault);
-      console.log(defLoc, 'DEFLOCA')
       if (defLoc) {
         pickupDelivery = defLoc
       }

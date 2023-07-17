@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import {
   View,
+  Text,
   StyleSheet,
   Image,
   TouchableOpacity,
 } from 'react-native';
 import axios from 'axios';
-import { COLORS, constants, icons } from '../constants';
+import { COLORS, SIZES, constants, icons, images } from '../constants';
 import DocumentPicker from 'react-native-document-picker';
 
 
@@ -28,6 +29,7 @@ export default function UploadProfileImage({ image, setImage }) {
           headers: { 'Content-Type': 'multipart/form-data' },
         })
         .then(res => {
+          console.log(res.data);
           setImage(res.data.url);
         })
         .catch(err => {
@@ -71,10 +73,6 @@ export default function UploadProfileImage({ image, setImage }) {
     }
   };
 
-
-  console.log('IMAGE NULL')
-  console.log(icons.camera)
-  console.log(icons.user)
 
   return (
     <View style={styles.container}>

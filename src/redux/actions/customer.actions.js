@@ -12,7 +12,6 @@ import { removeData } from '../../utils/AsyncStorage';
 const varEnv = constants.varEnv;
 
 export const getCustomerData = navigation => dispatch => {
-  console.log("GET CUSTOMER DATA")
   return axios
     .get(`${varEnv.apiUrl}/customers`)
     .then(res => {
@@ -73,7 +72,6 @@ export const getOrderById = id => dispatch => {
   return axios
     .get(`${varEnv.apiUrl}/customers/orders/${id}`)
     .then(res => {
-      console.log('RES ORDER', res.data)
       // return dispatch(getCustomerShopBaskets(shop._id));
       // dispatch(getCustomerData());
       return res.data
@@ -105,11 +103,9 @@ export const createBasket = data => dispatch => {
 };
 
 export const createBulkBasket = data => dispatch => {
-  console.log('CREATE BULK BASKETS')
   return axios
     .post(`${varEnv.apiUrl}/customers/baskets/bulk`, data)
     .then(res => {
-      console.log('CREATE BULK BASKETS', res.data)
       dispatch(getCustomerData())
       return res.data;
     })
@@ -174,7 +170,6 @@ export const getLocations = () => dispatch => {
   return axios
     .get(`${varEnv.apiUrl}/customers/locations`)
     .then(res => {
-      console.log("GET LOCATIONSSS", res.data)
       dispatch({ type: SET_CUSTOMER_DATA, payload: { locations: res.data } })
     })
     .catch(err => {
@@ -192,7 +187,6 @@ export const getCustomerShopBaskets = (id) => dispatch => {
   return axios
     .get(`${varEnv.apiUrl}/customers/shops/baskets/${id}`)
     .then(res => {
-      console.log('SHOP BASKETSS', res.data)
       dispatch({ type: SET_CUSTOMER_BASKETS, payload: res.data });
       return res.data;
     })
@@ -210,7 +204,6 @@ export const getCustomerBaskets = () => dispatch => {
   return axios
     .get(`${varEnv.apiUrl}/customers/baskets`)
     .then(res => {
-      console.log('GET BASKETS', res.data)
       return res.data;
     })
     .catch(err => {
@@ -250,7 +243,6 @@ export const getChatLists = id => dispatch => {
 export const createChat = (id, data) => dispatch => {
   return axios.post(`${varEnv.apiUrl}/chats/${id}`, data)
     .then(res => {
-      console.log("CHAT CREATED RESP", res.data)
       return res.data
     })
     .catch(err => {
@@ -263,7 +255,6 @@ export const createChat = (id, data) => dispatch => {
 export const createShopReview = (id, data) => dispatch => {
   return axios.post(`${varEnv.apiUrl}/customers/reviews/${id}`, data)
     .then(res => {
-      console.log("Review posted successfully", res.data)
       return res.data
     })
     .catch(err => {
@@ -275,7 +266,6 @@ export const createShopReview = (id, data) => dispatch => {
 export const getShopReviews = (id) => dispatch => {
   return axios.get(`${varEnv.apiUrl}/customers/reviews/${id}`)
     .then(res => {
-      console.log("Reviews", res.data)
       return res.data
     })
     .catch(err => {
@@ -287,7 +277,6 @@ export const getShopReviews = (id) => dispatch => {
 export const sendLikeReact = (data) => dispatch => {
   return axios.post(`${varEnv.apiUrl}/customers/reviews/like`, data)
     .then(res => {
-      console.log("Reviews", res.data)
       return res.data
     })
     .catch(err => {

@@ -80,7 +80,6 @@ export default ShopServices = ({ navigation, route }) => {
   };
 
   const handleCheckout = (val) => {
-    console.log('CHECKOUT BASKET', val)
     if (val.length !== 0) {
       let pickupDelivery = null;
 
@@ -117,7 +116,6 @@ export default ShopServices = ({ navigation, route }) => {
 
   const handleShop = async () => {
     let shopData = await dispatch(getCustomerShopById(shopId));
-    console.log(shopData)
     if (isAuthenticated) {
       await dispatch(getCustomerShopBaskets(shopId));
     } else {
@@ -753,7 +751,6 @@ export default ShopServices = ({ navigation, route }) => {
     );
   }
 
-  console.log('SELECTED SHOP', selectedShop, selectedShop.addons.length)
 
   return (
     <Fragment>

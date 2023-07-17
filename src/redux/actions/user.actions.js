@@ -16,7 +16,7 @@ export const updateUserById = (id, data) => dispatch => {
   return axios
     .put(`${varEnv.apiUrl}/users/${id}`, data)
     .then(res => {
-      getAuthUser();
+      dispatch(getAuthUser());
       return res.data;
     })
     .catch(err => {

@@ -26,7 +26,6 @@ export const requestSignin = (data, navigation, params) => dispatch => {
     .post(`${varEnv.apiUrl}/auth/request`, data)
     .then(res => {
       let { user, redirection } = res.data;
-      console.log('SIGNIN REQUEST', redirection)
       if (redirection && params.redirection !== 'OrderSummary') {
         params.redirection = redirection;
       }
@@ -46,8 +45,7 @@ export const verifyOTP = (user, navigation) => dispatch => {
   return axios
     .post(`${varEnv.apiUrl}/auth/verify`, user)
     .then(res => {
-      let { token, user } = res.data;
-      storeToken(token);
+      let { token } = res.data;
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       dispatch({ type: SET_AUTHENTICATED })
       dispatch(getAuthUser(navigation));
@@ -69,8 +67,6 @@ export const getAuthUser = navigation => dispatch => {
       if (user.type === 'customer') {
         dispatch(getCustomerData())
       }
-      console.log('AUTH USER')
-      console.log(res.data)
 
       // navigation && navigation.navigate(screen, {});
     })
@@ -87,7 +83,6 @@ export const getAuthUser = navigation => dispatch => {
 
 
 export const updateAuthUser = data => dispatch => {
-  console.log('Update Auth');
   axios
     .put(`${varEnv.apiUrl}/auth`, data)
     .then(res => {

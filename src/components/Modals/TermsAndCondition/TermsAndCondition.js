@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,8 @@ import {
   Animated,
   SafeAreaView,
   StyleSheet,
-  Image
+  Image,
+  FlatList
 } from 'react-native';
 
 
@@ -21,84 +22,83 @@ import {
 
 import LabeledText from '../../LabeledText';
 import LineDivider from '../../LineDivider';
-import { FlatList } from 'react-native-gesture-handler';
 import { termsAndCondition } from '../../../globals/data';
 
-export default function TermsAndCondition({ onPress}) {
+export default function TermsAndCondition({ onPress }) {
   const [myList, setMyList] = React.useState([])
 
   function renderHeader() {
     return (
-    <View
-      style={{
-        alignItems: 'center',
-      }}
-    >
       <View
         style={{
-          width: '100%',
-          alignItems: 'flex-start',
-          right: 10,
-          bottom: 10,
+          alignItems: 'center',
         }}
       >
-      <TouchableOpacity
-        onPress={onPress}
-      >
-      <Image 
-        source={icons.cross}
-        resizeMode='contain'
-        style={{
-          height: 20,
-          width: 20,
-        }}
-      />
-      </TouchableOpacity>
-      </View>
-        
+        <View
+          style={{
+            width: '100%',
+            alignItems: 'flex-start',
+            right: 10,
+            bottom: 10,
+          }}
+        >
+          <TouchableOpacity
+            onPress={onPress}
+          >
+            <Image
+              source={icons.cross}
+              resizeMode='contain'
+              style={{
+                height: 20,
+                width: 20,
+              }}
+            />
+          </TouchableOpacity>
+        </View>
+
         <Text
-        style={embeddedStyles.header}
-      >
-        TERMS AND CONDITIONS
-      </Text>
-      <LineDivider 
-        lineStyle={{
-          marginTop: SIZES.base / 2,
-          height: 0.5,
-          backgroundColor: COLORS.lightGray3
-        }}
-      />
-    </View>
+          style={embeddedStyles.header}
+        >
+          TERMS AND CONDITIONS
+        </Text>
+        <LineDivider
+          lineStyle={{
+            marginTop: SIZES.base / 2,
+            height: 0.5,
+            backgroundColor: COLORS.lightGray3
+          }}
+        />
+      </View>
     )
   }
 
   function renderContent() {
-    const renderItem = ({item}) => {
+    const renderItem = ({ item }) => {
       return (
         <View
-        style={{
-          // alignItems: 'flex-start',
-          // justifyContent: 'flex-start',
-          width: '100%',
-          alignItems: 'flex-start',
-          // borderWidth: 1
-        }}
-      >
-        <LabeledText 
-          label={item.title.toString()}
-          labelStyle={embeddedStyles.title}
-          // textValue={'Welcome to Bugtech Solutions Laundry Service On-Demand Mobile App. These terms and conditions govern your use of the mobile app and the services provided by Bugtech Solutions. By accessing or using the app, you agree to comply with these terms and conditions. Please read them carefully before proceeding.'}
-          textValue={item.description}
-          textStyle={embeddedStyles.description}
-        />
-        {/* <Text
+          style={{
+            // alignItems: 'flex-start',
+            // justifyContent: 'flex-start',
+            width: '100%',
+            alignItems: 'flex-start',
+            // borderWidth: 1
+          }}
+        >
+          <LabeledText
+            label={item.title.toString()}
+            labelStyle={embeddedStyles.title}
+            // textValue={'Welcome to Bugtech Solutions Laundry Service On-Demand Mobile App. These terms and conditions govern your use of the mobile app and the services provided by Bugtech Solutions. By accessing or using the app, you agree to comply with these terms and conditions. Please read them carefully before proceeding.'}
+            textValue={item.description}
+            textStyle={embeddedStyles.description}
+          />
+          {/* <Text
           style={{
             fontSize: SIZES.radius2,
           }}
         >
         Welcome to Bugtech Solutions' Laundry Service On-Demand Mobile App. These terms and conditions govern your use of the mobile app and the services provided by Bugtech Solutions. By accessing or using the app, you agree to comply with these terms and conditions. Please read them carefully before proceeding.
         </Text> */}
-      </View>
+        </View>
       )
     }
     return (
@@ -122,7 +122,7 @@ export default function TermsAndCondition({ onPress}) {
           textStyle={styles.description}
         /> */}
 
-        <FlatList 
+        <FlatList
           data={termsAndCondition}
           renderItem={renderItem}
           vertical
@@ -132,17 +132,17 @@ export default function TermsAndCondition({ onPress}) {
             // height: SIZES.height
           }}
         />
-        </View>
+      </View>
     )
   }
-  
+
   return (
     <SafeAreaView
-      style={{backgroundColor: COLORS.white}}
+      style={{ backgroundColor: COLORS.white }}
     >
       {/* Header Title */}
       {renderHeader()}
-      
+
 
       {/* Contents */}
       {renderContent()}
@@ -171,7 +171,7 @@ const embeddedStyles = StyleSheet.create({
   description: {
     fontSize: SIZES.padding2,
     marginLeft: SIZES.base / 2,
-    marginTop:  SIZES.base / 2,
+    marginTop: SIZES.base / 2,
     lineHeight: SIZES.font
   }
 })

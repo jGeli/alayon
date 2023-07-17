@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import { getAreaCodes } from '../../redux/actions/data.actions';
 import TestScreen from '../TestScreen';
 import { ScrollView } from 'react-native';
+import AreaStep from '../../components/AreaStep';
 
 
 // create a component
@@ -28,9 +29,12 @@ const SelectRegion = ({ navigation, route }) => {
     
     
     const handleStepInput = (e) => {
+        setCurrentStep(e)
+    
         if(e === 0){
             setStepInput([])
             setAreaOptions([])
+            return
         } 
         
         if(e === 1){
@@ -48,7 +52,6 @@ const SelectRegion = ({ navigation, route }) => {
         setStepInput(Object.entries(areaValue).filter(([key, val]) => {
             return (key === 'region' || key === 'province' || key === 'cityMun' || key === 'barangay') && val;
         }).map(([key, val]) =>  { return val}))
-            setCurrentStep(e)
     }
 
     const handleRegions = async () => {
@@ -79,8 +82,14 @@ const SelectRegion = ({ navigation, route }) => {
     const handleSelectRegion = async (item, index) => {
         setAreaOptions(item.provinces)
         setCurrentStep(1)
+        if(item.name != areaValue.region){
         setStepInput([item.name, 'Select Province'])
         setAreaValue({...areaValue, region: item.name, regCode: index, province: null, cityMun: null, barangay: null, provCode: null, cityMunCode: null, barangayCode: null})
+        } else {
+            setStepInput(Object.entries(areaValue).filter(([key, val]) => {
+                return (key === 'region' || key === 'province' || key === 'cityMun' || key === 'barangay') && val;
+            }).map(([key, val]) =>  { return val}))
+        }
     }
 
     const handleSelect = async (item, index) => {
@@ -168,7 +177,7 @@ const SelectRegion = ({ navigation, route }) => {
                 }}
             >
       
-                <TestScreen 
+                <AreaStep 
                     currentPage={currentStep}
                     handleStepInput={handleStepInput}
                     stepInput={stepInput}

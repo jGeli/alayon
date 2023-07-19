@@ -169,6 +169,32 @@ export const myAccount = [
     
   },
 ];
+export const CustomerMyAccount = [
+  {
+    name: 'Account Settings',
+    screen: 'CustomerSettings',
+    
+  },
+  {
+    name: 'Terms And Condition',
+    
+  },
+  {
+    name: 'Privacy Policy',
+    screen: '',
+   
+  },
+  {
+    name: 'Contact Us',
+    screen: 'MerchantMyAccount',
+    
+  },
+  {
+    name: 'Logout',
+    screen: 'Main',
+    
+  },
+];
 
 export const merchantMyAccount = [
   {
@@ -212,30 +238,7 @@ export const merchantMyAccount = [
 
 ];
 
-export const customerMyAccount = [
-  {
-    name: 'Account Settings',
-    screen: 'MerchantMyAccount',
-  },
-  {
-    name: 'Terms And Condition',
-    iconUrl: icons.account,
-  },
-  {
-    name: 'Privacy Policy',
-    screen: '',
-  },
-  {
-    name: 'Contact Us',
-    screen: 'MerchantMyAccount',
 
-  },
-  {
-    name: 'Logout',
-    screen: 'Main',
-    iconUrl: icons.logout,
-  },
-]
 export const RiderAccount = [
   {
     name: 'My Orders',

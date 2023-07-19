@@ -11,11 +11,9 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { COLORS, SIZES, FONTS, images, styles } from '../../constants';
-import { customerMyAccount, myAccount } from '../../globals/data';
-import UploadProfileImage from '../../components/UploadProfileImage';
+import { CustomerMyAccount } from '../../globals/data';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../redux/actions/auth.actions';
-import { clearData } from '../../utils/AsyncStorage';
 import LabeledText from '../../components/LabeledText';
 import TermsAndCondition from '../../components/Modals/TermsAndCondition/TermsAndCondition';
 
@@ -28,7 +26,7 @@ export default function MyAccount({ navigation }) {
   const { user, isAuthenticated } = useSelector(({ auth }) => auth);
   const [modalVisible, setModalVisible] = useState(false);
   const slideAnim = useState(new Animated.Value(0))[0];
-  // const [values, setValues] = useState({});
+
 
 
   console.log(user, "USER")
@@ -67,31 +65,14 @@ export default function MyAccount({ navigation }) {
   };
 
 
-  // useEffect(() => {
-    
-  //   let { email, firstName, lastName, mobile, imgUrl } = user;
-  //   console.log('SET USER')
-  //   if(user._id){
-  //     setValues({ email, firstName, lastName, mobile, imgUrl });
-  //   }
-  //   return () => {
-  //   console.log('CLEAR USER')
-  //       setValues({})
-  //   }
-  // }, [user]);
-
-  console.log(user, 'USER')
 
   const handleLogout = () => {
     dispatch(logoutUser(navigation));
-    
+
   };
 
-  
+
   function renderHeader() {
-
-
-
 
     return (
       <View
@@ -101,7 +82,7 @@ export default function MyAccount({ navigation }) {
           // borderWidth: 1,
           width: '100%',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-start',
           paddingHorizontal: SIZES.padding2 * 2,
           paddingTop: SIZES.padding2 * 2,
           left: 0,
@@ -120,7 +101,7 @@ export default function MyAccount({ navigation }) {
         >
           <Image
             source={{ uri: user.imgUrl }}
-            resizeMode='contain'  
+            resizeMode='contain'
             style={{
               height: 120,
               width: 120,
@@ -128,18 +109,25 @@ export default function MyAccount({ navigation }) {
             }}
           />
         </View>
-        <LabeledText
-          label={user.firstName + ' ' + user.lastName}
-          labelStyle={{
-            color: COLORS.primary,
-            fontSize: SIZES.base * 3,
+        <View
+          style={{
+            borderColor: COLORS.lightGray3,
+            borderRadius: SIZES.radius,
+            marginLeft: SIZES.padding,
           }}
-          textValue={(user.email)}
-          textStyle={{
-            color: COLORS.black,
-          }}
-        />
-
+        >
+          <LabeledText
+            label={user.firstName + ' ' + user.lastName}
+            labelStyle={{
+              color: COLORS.primary,
+              fontSize: SIZES.base * 3,
+            }}
+            textValue={(user.email)}
+            textStyle={{
+              color: COLORS.black,
+            }}
+          />
+        </View>
 
       </View>
 
@@ -218,7 +206,7 @@ export default function MyAccount({ navigation }) {
         style={{ width: '100%', flexGrow: 1, padding: SIZES.padding }}
       >
         <FlatList
-          data={customerMyAccount}
+          data={CustomerMyAccount}
           vertical
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => `${index}`}
@@ -233,7 +221,7 @@ export default function MyAccount({ navigation }) {
   }
   useEffect(() => {
     if (!isAuthenticated) {
-      // navigation.navigate('SignIn', {})
+      navigation.navigate('SignIn', {})
     }
 
   }, [])

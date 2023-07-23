@@ -15,8 +15,10 @@ import { COLORS, FONTS, GOOGLE_API_KEY, SIZES, constants, icons, images } from '
 import dummyData from '../../../constants/dummyData';
 
 
-const Map1 = ({ navigation }) => {
+const Map1 = ({ navigation, route }) => {
+  const { order } = route.params;
   const mapView = useRef()
+
   const [region, setRegion] = useState(null)
   const [toLoc, setToLoc] = useState(null)
   const [fromLoc, setFromLoc] = useState(null)
@@ -26,6 +28,8 @@ const Map1 = ({ navigation }) => {
   const [duration, setDuration] = useState('')
 
   useEffect(() => {
+    // if (order) {
+    let { shop: { location }, pickupDelivery, owner } = order;
     let initialRegion = {
       latitude: 11.231742101192534,
       longitude: 125.00245545087691,
@@ -33,17 +37,16 @@ const Map1 = ({ navigation }) => {
       longitudeDelta: 0.0034
     }
 
-    let destination = {
-      latitude: 11.231742101192534,
-      longitude: 125.00245545087691,
-    }
-
-
-    setToLoc(destination)
-    setFromLoc(dummyData.fromLocs[1])
-
+    console.log(owner, 'OWNER')
     setRegion(initialRegion)
-  }, [])
+    setToLoc({ latitude: Number(location.latitude), longitude: Number(location.longitude) })
+    setFromLoc({ latitude: Number(pickupDelivery.latitude), longitude: Number(pickupDelivery.longitude) })
+
+
+
+
+
+  }, [order])
 
   function calculateAngle(coordinates) {
     let startLat = coordinates[0]["latitude"]
@@ -95,6 +98,7 @@ const Map1 = ({ navigation }) => {
           }}
         >
           <TouchableOpacity
+            onPress={() => navigation.push('TestScreen', {})}
             style={{
               width: 40,
               height: 40,
@@ -145,7 +149,6 @@ const Map1 = ({ navigation }) => {
     )
   }
 
-  console.log(angle, 'ANGLE')
   function renderMap() {
     return (
       <MapView
@@ -168,8 +171,8 @@ const Map1 = ({ navigation }) => {
           >
             <View style={styles.washing}>
               <Image
-                source={images.delivery_man}
-              // style={{ height: 35, width: 25 }}
+                source={icons.washingMachinePin}
+                style={{ height: 55, width: 40 }}
               />
             </View>
           </Marker>
@@ -183,8 +186,15 @@ const Map1 = ({ navigation }) => {
             tracksViewChanges={false}
             // icon={icons.myLocation}
             rotation={angle}
-            anchor={{ x: 0.5, y: 0.5 }}
-          />
+          // anchor={{ x: .4, y: 1.2 }}
+          >
+            <View style={styles.washing}>
+              <Image
+                source={icons.washingMachinePin}
+                style={{ height: 55, width: 40 }}
+              />
+            </View>
+          </Marker>
 
         }
         <MapViewDirections
@@ -193,19 +203,19 @@ const Map1 = ({ navigation }) => {
           apikey={GOOGLE_API_KEY}
           strokeWidth={5}
           strokeColor={COLORS.primary}
-          optimizeWaypoints={true}
+          optimizeWaypoints={false}
           onReady={result => {
             setDuration(Math.ceil(result.duration))
 
             if (!isReady) {
               // Fit the map based on the route
               mapView.current.fitToCoordinates(result.coordinates, {
-                // edgePending: {
-                //   right: SIZES.width * 0.5,
-                //   bottom: 1000,
-                //   left: SIZES.width * 0.5,
-                //   top: SIZES.width * 0.5,
-                // }
+                edgePending: {
+                  right: SIZES.width * 0.5,
+                  bottom: 1000,
+                  left: SIZES.width * 0.5,
+                  top: SIZES.width * 0.5,
+                }
               })
 
               // Reposition the navigator

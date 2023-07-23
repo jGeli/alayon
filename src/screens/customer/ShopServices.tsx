@@ -48,21 +48,28 @@ import LoadingScreen from '../LoadingScreen';
 export default ShopServices = ({ navigation, route }) => {
   const { shopId } = route.params;
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector(({ auth }) => auth);
-  const { shop, order, baskets, basket, customer: { locations } } = useSelector(({ customer }) => customer);
-  const { selectedShop } = useSelector(({ data }) => data);
+  const { isAuthenticated, user } = useSelector(({ auth }) => auth);
+  const { order, baskets, basket, customer: { locations } } = useSelector(({ customer }) => customer);
   const { customerAddOns, basketModal } = useSelector(({ ui }) => ui);
+  const [selectedShop, setSelectedShop] = useState({
+    addons: []
+  });
   const [cloths, setCloths] = useState();
   const [isAddonEnabled, setAddonEnabled] = useState(false);
   const [tab, setTab] = useState('services');
   const [loading, setLoading] = useState(true);
 
   const handleChat = async () => {
-    await AsyncStorage.removeItem('basket')
-    await AsyncStorage.removeItem('baskets')
-    dispatch({ type: CLEAR_CUSTOMER_BASKET })
-    dispatch({ type: CLEAR_CUSTOMER_BASKETS })
-
+    // await AsyncStorage.removeItem('basket')
+    // await AsyncStorage.removeItem('baskets')
+    // dispatch({ type: CLEAR_CUSTOMER_BASKET })
+    // dispatch({ type: CLEAR_CUSTOMER_BASKETS })
+    console.log(selectedShop, 'SELECTED')
+    let newChat = {
+      sender: { _id: user._id},
+      receiver: { _id: selectedShop.user }
+    }
+     navigation.navigate('Conversation', { conversation: newChat })
   }
 
   const toggleSwitch = () => {
@@ -133,6 +140,8 @@ export default ShopServices = ({ navigation, route }) => {
           setCloths(service.cloths);
         }
       }
+      setSelectedShop(shopData)
+      
       dispatch({
         type: SET_SELECTED_SHOP,
         payload: shopData,
@@ -218,7 +227,7 @@ export default ShopServices = ({ navigation, route }) => {
     if (shopId) {
       dispatch({ type: CLEAR_CUSTOMER_BASKET })
       dispatch({ type: CLEAR_CUSTOMER_BASKETS })
-      handleShop(selectedShop._id);
+      handleShop(shopId);
     }
 
     return () => {
@@ -755,7 +764,7 @@ export default ShopServices = ({ navigation, route }) => {
   return (
     <Fragment>
       {loading && <LoadingScreen
-        style={{ backgroundColor: COLORS.white, opacity: .8 }}
+        // style={{ backgroundColor: COLORS.white, opacity: .8 }}
         source={images.setLoading}
       />}
       <SafeAreaView

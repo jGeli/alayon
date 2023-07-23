@@ -36,6 +36,35 @@
     },
     {
       "client_info": {
+        "mobilesdk_app_id": "1:403718726191:android:6238ba3e3102842961dcda",
+        "android_client_info": {
+          "package_name": "com.alayunapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "403718726191-46at1els03tj3i1h4al884u6bmv0q76u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi6fstzsRW5sWqXPsfOLcTRopPnoytc9o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "403718726191-46at1els03tj3i1h4al884u6bmv0q76u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:403718726191:android:90adea706488993161dcda",
         "android_client_info": {
           "package_name": "com.pushnotif"

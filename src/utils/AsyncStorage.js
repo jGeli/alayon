@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 
-
 export const clearData = async key => {
     try {
         await AsyncStorage.removeItem('locations');
@@ -155,6 +154,30 @@ export const getCustomerBasket = async () => {
     }
 };
 
+export const setCustomerLocation = async (data) => {
+    try {
+
+        await AsyncStorage.setItem(`location`, JSON.stringify(data))
+        return data
+    } catch (error) {
+        console.log(error);
+        return null
+    }
+};
+
+export const getCustomerLocation = async () => {
+    try {
+        const location = JSON.parse(await AsyncStorage.getItem('location'));
+        if (location) {
+            return location
+        } else {
+            return {}
+        }
+    } catch (error) {
+        console.log(error);
+        return []
+    }
+};
 
 
 export const setCustomerLocations = async (data) => {

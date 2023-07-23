@@ -257,7 +257,7 @@ export default function OrderStatus({navigation, route}) {
         <StepIndicator
           customStyles={secondIndicatorStyles}
           currentPosition={orderData.statusIndex}
-          onPress={onStepPress}
+          // onPress={onStepPress}
           direction="vertical"
           renderLabel={renderLabel}
           renderStepIndicator={renderStepIndicator}
@@ -331,7 +331,7 @@ export default function OrderStatus({navigation, route}) {
                 tintColor: COLORS.white
             }}
             onPress={() => {
-            navigation.navigate('Map1', {});
+            navigation.navigate('Map1', {order: orderData});
             // onStepPress(orderData.statusIndex + 1);
             }}
 
@@ -428,7 +428,7 @@ export default function OrderStatus({navigation, route}) {
   return (
     <SafeAreaView style={styles.container}>
           {loading && <LoadingScreen
-        style={{ backgroundColor: COLORS.white, opacity: .8 }}
+        // style={{ backgroundColor: COLORS.white, opacity: .8 }}
         source={images.setLoading}
       />}
         {renderHeader()}

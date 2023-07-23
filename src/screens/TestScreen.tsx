@@ -1,100 +1,223 @@
-//import liraries
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, Switch } from 'react-native';
-import { COLORS, FONTS, SIZES, icons, constants } from '../constants';
-import { showNotification, handleScheduleNotification, handleCancel } from '../utils/notification.android'
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ * @flow
+ */
 
-// create a component
-export default function App({ navigation, route }) {
+import React from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Platform,
+  PermissionsAndroid
+} from "react-native";
+import MapView, {
+  Marker,
+  AnimatedRegion,
+  Polyline,
+  PROVIDER_GOOGLE
+} from "react-native-maps";
+import haversine from "haversine";
+import Geolocation from 'react-native-geolocation-service';
 
 
+// const LATITUDE = 29.95539;
+// const LONGITUDE = 78.07513;
+const LATITUDE_DELTA = 0.009;
+const LONGITUDE_DELTA = 0.009;
+const LATITUDE = 11.2317012;
+const LONGITUDE = 125.0024682;
 
+class TestScreen extends React.Component {
+  constructor(props) {
+    super(props);
 
-  function renderHeader() {
+    this.state = {
+      latitude: LATITUDE,
+      longitude: LONGITUDE,
+      routeCoordinates: [],
+      distanceTravelled: 0,
+      prevLatLng: {},
+      coordinate: new AnimatedRegion({
+        latitude: LATITUDE,
+        longitude: LONGITUDE,
+        latitudeDelta: 0,
+        longitudeDelta: 0
+      })
+    };
+  }
+
+  componentDidMount() {
+    const { coordinate } = this.state;
+    
+    
+      this.watchID = Geolocation.watchPosition(
+        position => {
+            const { routeCoordinates, distanceTravelled } = this.state;
+            const { latitude, longitude } = position.coords;
+
+            const newCoordinate = {
+                latitude,
+                longitude
+            };
+
+            if (Platform.OS === "android") {
+                if (this.marker) {
+                    console.log(this.marker)
+                    Object.keys(this.marker).map(a => {
+                        console.log(a)
+                    })
+                    this.marker.animateMarkerToCoordinate(
+                        newCoordinate,
+                        500
+                    );
+                }
+            } else {
+                coordinate.timing(newCoordinate).start();
+            }
+            this.setState({
+                latitude,
+                longitude,
+                routeCoordinates: routeCoordinates.concat([newCoordinate]),
+                distanceTravelled:
+                    distanceTravelled + this.calcDistance(newCoordinate),
+                prevLatLng: newCoordinate
+            });
+        },
+        error => console.log(error),
+        {
+            enableHighAccuracy: true,
+            timeout: 20000,
+            maximumAge: 1000,
+            distanceFilter: 10
+        }
+    );
+    
+    // this.watchID = navigator.geolocation.watchPosition(
+    //   position => {
+    //     const { routeCoordinates, distanceTravelled } = this.state;
+    //     const { latitude, longitude } = position.coords;
+
+    //     const newCoordinate = {
+    //       latitude,
+    //       longitude
+    //     };
+
+    //     if (Platform.OS === "android") {
+    //       if (this.marker) {
+    //         this.marker._component.animateMarkerToCoordinate(
+    //           newCoordinate,
+    //           500
+    //         );
+    //       }
+    //     } else {
+    //       coordinate.timing(newCoordinate).start();
+    //     }
+
+    //     this.setState({
+    //       latitude,
+    //       longitude,
+    //       routeCoordinates: routeCoordinates.concat([newCoordinate]),
+    //       distanceTravelled:
+    //         distanceTravelled + this.calcDistance(newCoordinate),
+    //       prevLatLng: newCoordinate
+    //     });
+    //   },
+    //   error => console.log(error),
+    //   {
+    //     enableHighAccuracy: true,
+    //     timeout: 20000,
+    //     maximumAge: 1000,
+    //     distanceFilter: 10
+    //   }
+    // );
+    
+  }
+
+  componentWillUnmount() {
+    // navigator.geolocation.clearWatch(this.watchID);
+    Geolocation.clearWatch(this.watchID);
+
+  }
+
+  getMapRegion = () => ({
+    latitude: this.state.latitude,
+    longitude: this.state.longitude,
+    latitudeDelta: LATITUDE_DELTA,
+    longitudeDelta: LONGITUDE_DELTA
+  });
+
+  calcDistance = newLatLng => {
+    const { prevLatLng } = this.state;
+    return haversine(prevLatLng, newLatLng) || 0;
+  };
+
+  render() {
     return (
-      <View
-        style={styles.header}>
-        <TouchableOpacity
-          style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
-          onPress={() => navigation.goBack()}>
-          <Image
-            source={icons.back}
-            style={{ height: 20, width: 20, tintColor: COLORS.primary }}
+      <View style={styles.container}>
+        <MapView
+          style={styles.map}
+          provider={PROVIDER_GOOGLE}
+          showUserLocation
+          followUserLocation
+          loadingEnabled
+          region={this.getMapRegion()}
+        >
+          <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} />
+          <Marker.Animated
+            ref={marker => {
+              this.marker = marker;
+            }}
+            coordinate={this.state.coordinate}
           />
-        </TouchableOpacity>
-        <Text
-          style={{
-            ...FONTS.body2,
-            color: COLORS.black,
-            // fontWeight: 'bold',
-          }}>
-          Test Screen
-        </Text>
-
-        <View></View>
+        </MapView>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={[styles.bubble, styles.button]}>
+            <Text style={styles.bottomBarContent}>
+              {parseFloat(this.state.distanceTravelled).toFixed(2)} km
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
+}
 
-
-
-  return (
-    <SafeAreaView style={styles.container}>
-      {renderHeader()}
-      <View style={styles.contentContainer}>
-        <Text style={{ ...FONTS.h4 }}>Push Notification</Text>
-        <TouchableOpacity activeOpacity={0.6} onPress={() => showNotification('ORDER REQUEST SENT', 'Waiting for shop confirmation')}>
-          <View style={styles.button}>
-            <Text style={styles.buttonTitle}>Click me to get notification</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.6} onPress={() => handleScheduleNotification('ORDER SCHEDULE', 'SCHEDULED ORDER REQUEST!')}>
-          <View style={styles.button}>
-            <Text style={styles.buttonTitle}>Click me to get notification after 5 seconds</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.6} onPress={() => handleCancel()}>
-          <View style={styles.button}>
-            <Text style={styles.buttonTitle}>Click me to cancel all notifications</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
-  );
-};
-
-// define your styles
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    // flex: 1,
-    backgroundColor: COLORS.lightGray3,
-    paddingBottom: SIZES.padding * 3,
-    // alignItems: 'center'
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "flex-end",
+    alignItems: "center"
   },
-  header: {
-    height: 50,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: COLORS.white,
-    elevation: 5,
-    width: '100%'
+  map: {
+    ...StyleSheet.absoluteFillObject
   },
-  contentContainer: {
+  bubble: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    backgroundColor: "rgba(255,255,255,0.7)",
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 20
+  },
+  latlng: {
+    width: 200,
+    alignItems: "stretch"
   },
   button: {
-    padding: 16,
-    backgroundColor: COLORS.primary,
-    borderRadius: 24,
-    marginTop: 16
+    width: 80,
+    paddingHorizontal: 12,
+    alignItems: "center",
+    marginHorizontal: 10
   },
-  buttonTitle: {
-    color: COLORS.white
+  buttonContainer: {
+    flexDirection: "row",
+    marginVertical: 20,
+    backgroundColor: "transparent"
   }
-
 });
 
+export default TestScreen;

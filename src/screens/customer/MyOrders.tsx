@@ -1,18 +1,31 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image, FlatList, Button } from 'react-native'
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, Image, FlatList, Button, RefreshControl } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { userData2 } from '../../globals/data'
 import { COLORS, FONTS, SIZES, icons, images } from '../../constants'
 import { TextButton } from '../../components'
 import CustomerOrders from '../../components/Cards/CustomerOrder'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { ScrollView } from 'react-native'
+import { getOrders } from '../../redux/actions/customer.actions'
 
 
 export default function MerchantHomeScreen({ navigation }) {
+  const dispatch = useDispatch()
   const { customer: { orders } } = useSelector(({customer}) => customer) 
   const [isOnline, setIsOnline] = useState(false);
   const [myList, setMyList] = useState([]);
   const [selectedServiceStatus, setSelectedServiceStatus] = useState(1);
+  const [ordersData, setOrdersData] = useState([])
+  const [refreshing, setRefreshing] = useState(false);
+
+  
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    // setShops([]);
+    // handleGetShops()
+    handleOrders()    
+ 
+  }, []);
 
 
 
@@ -24,11 +37,21 @@ export default function MerchantHomeScreen({ navigation }) {
     // console.log(selectedCloth)
 
   }
+  
+  const handleOrders = async () => {
+     await dispatch(getOrders())
+        .then((orders) => {
+          setOrdersData(orders);
+          setTimeout(() => {
+            setRefreshing(false)
+          }, 2000);
+        })
+  }
 
 
-  // useEffect(() => {
-  //   handleChangeService(selectedServiceStatus)
-  // }, [])
+  useEffect(() => {
+    handleOrders()
+  }, [])
 
 
 
@@ -129,24 +152,6 @@ export default function MerchantHomeScreen({ navigation }) {
   }
 
 
-
-  function renderOrderDetails() {
-    return (
-      <View
-        style={{
-          padding: SIZES.padding
-        }}
-      >
-      {orders.map(a => {
-      
-        return <View key={a._id}><CustomerOrders navigation={navigation} order={a}
-        /></View>
-      })}
-        
-      </View>
-    )
-  }
-  
   
   console.log("CUSTOMER ORDER", orders)
 
@@ -164,9 +169,21 @@ export default function MerchantHomeScreen({ navigation }) {
     >
       {renderHeader()}
       {renderOrders()}
-      <ScrollView>
-      {renderOrderDetails()}
-      </ScrollView>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+       refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+          style={{marginTop: SIZES.padding * 2}}
+          data={ordersData}
+          renderItem={({item}) => {
+          console.log(item, "ITEM")
+          return(
+            <CustomerOrders navigation={navigation} order={item}/>
+            )
+          }}
+          keyExtractor={(item) => item._id}
+        />
     </SafeAreaView>
   )
 }

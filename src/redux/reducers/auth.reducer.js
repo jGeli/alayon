@@ -3,6 +3,7 @@ import { CLEAR_USER, SET_ALLOW_LOCATION, SET_AUTHENTICATED, SET_LOADING, SET_TOK
 const initialState = {
   isAuthenticated: false,
   user: {
+    location: {},
     locations: []
   },
   userType: 'customer',

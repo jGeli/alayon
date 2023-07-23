@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import StackNavigator from './src/StackNavigator';
 import { Provider } from 'react-redux';
 import { store } from './src/redux/store';
+import PushController from './src/utils/PushController';
 
 export default function App() {
 
@@ -13,6 +14,8 @@ export default function App() {
 
   return (
     <Provider store={store}>
+      <PushController />
+
       <StackNavigator />
     </Provider>
   );

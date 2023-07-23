@@ -151,6 +151,8 @@ export default function MyAccount({ navigation }) {
 
   }, [])
 
+  console.log(user, 'USERR')
+
 
   return (
     <SafeAreaView style={styles.container}>

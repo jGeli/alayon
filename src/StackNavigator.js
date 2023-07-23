@@ -41,8 +41,8 @@ import io from 'socket.io-client';
 import { icons, COLORS, images } from './constants';
 import { getAuthUser } from './redux/actions/auth.actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCustomerBasket, getCustomerLocations } from './utils/AsyncStorage';
-import { SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, STOP_LOADING } from './redux/actions/type';
+import { getCustomerBasket, getCustomerLocation, getCustomerLocations } from './utils/AsyncStorage';
+import { SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, SET_USER, STOP_LOADING } from './redux/actions/type';
 import OrderStatus from './screens/customer/OrderStatus';
 import Map2 from './components/Cards/Map/Map2';
 import Map3 from './components/Cards/Map/Map3';
@@ -51,8 +51,8 @@ import ProfileSetup from './screens/Authentication/ProfileSetup';
 import Maps from './components/Cards/Map/Map1';
 import Map1 from './components/Cards/Map/Map1';
 import TestScreen from './screens/TestScreen';
+import socket from './utils/socket';
 
-let socket = null;
 
 const StackNavigator = () => {
   const dispatch = useDispatch();
@@ -68,9 +68,10 @@ const StackNavigator = () => {
 
 
   const initScreen = async () => {
-    const userToken = JSON.parse(await AsyncStorage.getItem('token'));
+    const userToken = await AsyncStorage.getItem('token');
     const basket = await getCustomerBasket();
     const locations = await getCustomerLocations();
+    const location = await getCustomerLocation();
     const onBoarded = await AsyncStorage.getItem('onBoarded');
 
 
@@ -86,7 +87,6 @@ const StackNavigator = () => {
 
     if (userToken) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
-      setRnd(Math.random())
       dispatch(getAuthUser())
     } else {
 
@@ -99,15 +99,27 @@ const StackNavigator = () => {
         dispatch({ type: SET_CUSTOMER_DATA, payload: { locations } });
       }
 
-
-
-
+      if (location && !isAuthenticated) {
+        dispatch({ type: SET_USER, payload: { location } });
+      }
     }
-
   }
 
   useEffect(() => {
     initScreen();
+    console.log(isAuthenticated, 'IS AUTH?')
+    if (isAuthenticated) {
+      console.log(user._id)
+      socket.auth.token = user._id;
+      socket.disconnect().connect();
+      socket.on("connection", (socket) => {
+        console.log(`connected! ${socket}`)
+        // console.log(socket.handshake.auth); // prints { token: "abcd" }
+      });
+
+    }
+
+
     setTimeout(() => {
       setLoading(false)
     }, 5000)
@@ -260,7 +272,7 @@ const StackNavigator = () => {
     <>
       {(loading || !mainScreen) ?
         <LoadingScreen
-          style={{ backgroundColor: COLORS.white }}
+          // style={{ backgroundColor: COLORS.white }}
           source={images.setLoading}
         />
         :

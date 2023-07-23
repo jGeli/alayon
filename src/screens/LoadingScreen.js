@@ -8,12 +8,16 @@ const LoadingScreen = ({ source, style }) => {
     return (
         <SafeAreaView
             style={{
+
                 height: '100%',
+                position: 'absolute',
                 backgroundColor: COLORS.lightGray1,
                 justifyContent: 'center',
                 alignItems: 'center',
                 flexGrow: 1,
+                zIndex: 100,
                 ...style
+
             }}
         >
 
@@ -21,7 +25,7 @@ const LoadingScreen = ({ source, style }) => {
                 source={source ? source : images.loadingDots}
                 resizeMode='contain'
                 style={{
-                    height: 100,
+                    height: 50,
                     width: SIZES.width,
                 }}
             />
@@ -36,7 +40,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#2c3e50',
+        // backgroundColor: '#2c3e50',
     },
 });
 

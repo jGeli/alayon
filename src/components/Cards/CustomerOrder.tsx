@@ -15,14 +15,16 @@ import TextIconButton from '../TextIconButton';
 
 
 const CustomerOrders = ({ navigation, order }) => {
-    let { orders } = order
+    let { orders, shop } = order;
 
 
 
     // navigation.navigate('OrderSummary', { selectedBaskets: orders });
 
-
-
+    console.log(order.shop?.shop_name, 'SHOP NI')
+    Object.keys(order).forEach(a => {
+        console.log(a)
+    })
     return (
         <View
             style={{
@@ -94,12 +96,12 @@ const CustomerOrders = ({ navigation, order }) => {
                     }}
                 >
                     <Image
-                        source={userData4.imageUrl}
+                        source={{uri: order?.shop?.bannerUrl}}
                         resizeMode="contain"
                         style={{
                             height: 50,
                             width: 50,
-                            borderRadius: 200,
+                            borderRadius: 50,
                             marginRight: 5,
                             flexDirection: 'row'
 
@@ -121,8 +123,7 @@ const CustomerOrders = ({ navigation, order }) => {
                             color: COLORS.primary
                         }}
                         >
-                            {userData4.nameOfShop
-                            }
+                            {order.shop?.shop_name}
                         </Text>
                         <Text style={{
                             fontSize: SIZES.base * 2,
@@ -130,8 +131,7 @@ const CustomerOrders = ({ navigation, order }) => {
                             color: COLORS.gray
                         }}
                         >
-                            {userData4.address
-                            }
+                            {order.shop?.location?.address}
                         </Text>
 
                     </View>

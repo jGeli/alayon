@@ -32,10 +32,8 @@ const varEnv = constants.varEnv;
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
-  const { location, isLocationAllow } = useSelector(({ data }) => data);
-  const { isAuthenticated, user } = useSelector(({auth}) => auth)
-  const { basket } = useSelector(({ customer }) => customer);
-  const [useLocation, setUseLocation] = useState(false);
+  const { isLocationAllow } = useSelector(({ data }) => data);
+  const { isAuthenticated, user: { location } } = useSelector(({auth}) => auth)
   const [refreshing, setRefreshing] = useState(false);
   const [shops, setShops] = useState([])
   const onRefresh = React.useCallback(() => {
@@ -57,9 +55,10 @@ export default function Home({ navigation }) {
           setRefreshing(false)
         }, 2000);
       }).catch(err => {
-        setTimeout(() => {
-          setRefreshing(false)
-        }, 2000);
+        console.log(err)
+        // setTimeout(() => {
+        //   setRefreshing(false)
+        // }, 2000);
       })
 
 
@@ -79,12 +78,11 @@ export default function Home({ navigation }) {
 
   const handleLocation = () => {
     console.log('IS ALLOW LOCATION', isLocationAllow)
-    console.log(user)
     
     if (!isLocationAllow ) {
       dispatch({ type: SET_ALLOW_LOCATION_MODAL })
     } else {
-      navigation.navigate('SelectRegion', { navType: 'current' })
+      navigation.navigate('SelectRegion', { navType: 'current', location })
     }
   }
 
@@ -94,7 +92,6 @@ export default function Home({ navigation }) {
     return (
       <View style={styles.headerContainer}>
         <TouchableOpacity
-          disabled={useLocation}
           onPress={() => handleLocation()}
           style={{
             flexDirection: 'row',
@@ -501,10 +498,8 @@ export default function Home({ navigation }) {
     checkPermission()
 
     return () => {
-      setShops([])
-      dispatch({ type: SET_LAUNDRY_SHOPS, payload: [] });
-      dispatch({ type: CLOSE_MODALS });
-
+      // dispatch({ type: SET_LAUNDRY_SHOPS, payload: [] });
+      // dispatch({ type: CLOSE_MODALS });
     };
   }, []);
 

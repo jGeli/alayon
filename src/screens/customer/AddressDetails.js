@@ -12,7 +12,7 @@ const AddressDetails = ({ navigation, route }) => {
     const handleNext = () => {
         let newAddress = address ? address : {};
         newAddress.address = values;
-        navigation.navigate("Map", { address: newAddress, navType })
+        navigation.navigate("Map", { ...route.params, address: newAddress })
 
     }
 
@@ -58,7 +58,7 @@ const AddressDetails = ({ navigation, route }) => {
                 <View style={styles.textInputContainer}>
                     <TextInput
                         editable
-                        placeholder='Street Name, Building, House No.'
+                        placeholder='House No., Building, Street Name.'
                         onChangeText={text => setValues(text)}
                         value={values}
                         multiline={true}

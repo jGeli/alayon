@@ -68,6 +68,25 @@ export const createOrder = data => dispatch => {
     });
 };
 
+export const getOrders = id => dispatch => {
+  return axios
+    .get(`${varEnv.apiUrl}/customers/orders`)
+    .then(res => {
+      // return dispatch(getCustomerShopBaskets(shop._id));
+      // dispatch(getCustomerData());
+      return res.data
+    })
+    .catch(err => {
+      console.log(err.response, 'res error')
+      dispatch({
+        type: SET_ERROR,
+        payload: err,
+      });
+      return null;
+    });
+};
+
+
 export const getOrderById = id => dispatch => {
   return axios
     .get(`${varEnv.apiUrl}/customers/orders/${id}`)
@@ -222,7 +241,7 @@ export const getConversation = id => dispatch => {
       return res.data
     })
     .catch(err => {
-      console.log('ERR ORDERS', err.response)
+      console.log('ERR ORDERS', err)
       return null;
     });
 };
@@ -246,7 +265,7 @@ export const createChat = (id, data) => dispatch => {
       return res.data
     })
     .catch(err => {
-      console.log('ERR ORDERS', err.response)
+      console.log('ERR ORDERS', err)
       return null;
     });
 };

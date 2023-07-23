@@ -37,47 +37,36 @@ export default function Conversation({ route, navigation: { goBack } }) {
 
   console.log(route.params, "ROUTE")
   const [conversations, setConversations] = useState([])
+  const [convo, setConvo] = useState({
+    sender: {},
+    receiver: {}
+  })
   const [value, setValue] = useState('')
-  // const soundRef = useRef();
-
-  // function playSound(testInfo) {
-  //   soundRef.current = null;
-  //     const callback = (error, sound) => {
-  //         if (error) {
-  //             Alert.alert('error', error.message);
-  //             return;
-  //         }
-
-  //         sound.play(() => {
-  //             // Success counts as getting to the end
-  //             // Release when it's done so we're not using up resources
-  //             sound.release();
-  //         });
-  //     };
-  //     let sound = new Sound(testInfo.url, testInfo.basePath, error => callback(error, sound));
-  // }
 
 
   const handleSubmit = async (e) => {
-    const otherUser = conversation.sender._id == user._id ? conversation.receiver._id : conversation.sender._id
+    const otherUser = conversation.receiver;
 
     e.preventDefault();
     console.log('THIS IS MESSAGE', value)
     console.log('THIS IS OTHER USER', otherUser)
-    let newConvo = await dispatch(createChat(otherUser, { message: value }))
+    let newConvo = await dispatch(createChat(otherUser._id, { message: value }))
     if (newConvo) {
-      handleGetConvoSummary(newConvo);
+      handleGetConvoSummary();
     }
     setValue("")
   }
 
 
-  const handleGetConvoSummary = async (convo) => {
-    let newConvo = await dispatch(getConversation(convo._id))
+  const handleGetConvoSummary = async () => {
+    const otherUser = conversation.receiver
+    console.log('OTHER USER', otherUser)
+    console.log(convo)
+    let newConvo = await dispatch(getConversation(otherUser._id))
     console.log('INIT CONVO', newConvo)
     if (newConvo) {
       setConversations(newConvo.threads)
-
+      setConvo(newConvo)
     }
 
 
@@ -88,10 +77,11 @@ export default function Conversation({ route, navigation: { goBack } }) {
 
 
   useEffect(() => {
-    if (conversations) {
 
-
+    if (conversation) {
       handleGetConvoSummary(conversation)
+
+
       socket.on('newMessage', (data) => {
         handleGetConvoSummary(data)
         // playSound(
@@ -140,7 +130,7 @@ export default function Conversation({ route, navigation: { goBack } }) {
           }}
         >
           <Image
-            source={{ uri: conversation.receiver.bannerUrl }}
+            source={{ uri: convo.receiver.bannerUrl ? convo.receiver.bannerUrl : convo.receiver.imgUrl }}
             resizeMode='contain'
             style={{
               height: 40,
@@ -156,7 +146,7 @@ export default function Conversation({ route, navigation: { goBack } }) {
                 color: COLORS.black,
                 fontWeight: 'bold'
               }}
-            >{conversation.name}</Text>
+            >{convo.name}</Text>
             <Text
               style={{
                 color: COLORS.gray
@@ -376,106 +366,6 @@ export default function Conversation({ route, navigation: { goBack } }) {
           />
         </View>
       </View>
-      {/* <View
-        style={{
-          // width: '100%',
-          // borderWidth: 1,
-          // borderColor: COLORS.lightGray3,
-          //  backgroundColor: COLORS.black,
-          justifyContent: 'flex-end',
-          paddingHorizontal: SIZES.base,
-        }}
-      >
-        <View
-          style={{
-            position: 'absolute',
-            flex: 1,
-            borderWidth: 1,
-            width: '100%',
-            alignItems: 'flex-start'
-          }}
-        >
-          <TouchableOpacity
-          style={{
-            borderWidth: 1,
-            padding: SIZES.base,
-            width: '30%',
-          }}
-        >
-            <Text>
-              Any vacancy?
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%'
-          }}
-        >
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '20%',
-              right: 5,
-              bottom: 0
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                padding: SIZES.base / 2,
-                borderWidth: 1,
-                borderRadius: SIZES.radius,
-                tintColor: COLORS.darkGray
-
-              }}
-            >
-              <Image
-                source={icons.add}
-                resizeMode='contain'
-                style={{
-                  height: 20,
-                  width: 20,
-                  tintColor: COLORS.primary
-                }}
-              />
-            </TouchableOpacity>
-          </View>
-          <FormInput
-            containerStyle={{
-              bottom: 10,
-              width: '90%',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-            value={value}
-            onChange={e => setValue(e)}
-            onSubmitEditing={handleSubmit}
-            appendComponent={
-              <TouchableOpacity
-                style={{
-                  // flex: 1,
-                  justifyContent: "center",
-                  alignItems: 'center'
-                }}
-              >
-                <Image
-                  source={icons.emojis}
-                  resizeMode='contain'
-                  style={{
-                    height: 25,
-                    width: 25,
-                  }}
-                />
-              </TouchableOpacity>
-            }
-          />
-        </View>
-
-      </View> */}
     </SafeAreaView>
   )
 }

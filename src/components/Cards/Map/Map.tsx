@@ -16,8 +16,10 @@ import Geocoder from 'react-native-geocoding';
 import { useDispatch, useSelector } from 'react-redux';
 import { getShops } from '../../../redux/actions/data.actions';
 import MapPlaces from './MapPlaces';
-import { SET_MAP_LOCATION } from '../../../redux/actions/type';
+import { SET_MAP_LOCATION, SET_USER } from '../../../redux/actions/type';
 import { gapikey } from '../../../globals/env';
+import { updateUserById } from '../../../redux/actions/user.actions';
+import { setCustomerLocation } from '../../../utils/AsyncStorage';
 
 Geocoder.init(gapikey); // use a valid API key
 
@@ -25,6 +27,7 @@ Geocoder.init(gapikey); // use a valid API key
 export default function Map({ navigation, route }) {
   const { address, navType } = route.params
   const dispatch = useDispatch();
+  const { user, isAuthenticated } = useSelector(({ auth }) => auth);
   const { shops } = useSelector(({ data }) => data);
   const { width, height } = Dimensions.get('window');
   const ASPECT_RATIO = width / height;
@@ -64,7 +67,7 @@ export default function Map({ navigation, route }) {
   }
 
   const onCenter = (latitude, longitude) => {
-    mapRef.current.animateToRegion({
+    mapRef.current?.animateToRegion({
       latitude: latitude,
       longitude: longitude,
       latitudeDelta: LATITUDE_DELTA,
@@ -112,7 +115,7 @@ export default function Map({ navigation, route }) {
   function renderSearch() {
     return (
       <View style={styles.searchContainer}>
-        {navType === 'pickupDelivery' || navType === 'returnDelivery' ?
+        {navType === 'pickupDelivery' || navType === 'returnDelivery'  || navType === 'current' ?
           <View
             style={styles.addressContainer}
           >
@@ -172,29 +175,59 @@ export default function Map({ navigation, route }) {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
 
-    // dispatch({
-    //   type: SET_MAP_LOCATION,
-    //   payload: newAddress,
-    // });
+
     if (navType === 'pickupDelivery' || navType === 'returnDelivery') {
       let newAddress = { ...address, ...region }
       navigation.navigate('AddressLocationForm', { address: newAddress, navType });
     }
-    if (navType === 'findLocation' || navType === 'current') {
+    if (navType === 'findLocation') {
       //GEOCODER
-      const { latitude, longitude } = region;
-      Geocoder.from(latitude, longitude)
-        .then(({ results }) => {
-          let newAddress = { ...region, address: results[0] ? results[0].formatted_address : address.address }
+      // const { latitude, longitude } = region;
+      // Geocoder.from(latitude, longitude)
+        // .then(({ results }) => {
+          let newAddress = { ...region,  ...route.params.address }
           dispatch({
             type: SET_MAP_LOCATION,
             payload: newAddress,
           });
-          navigation.navigate('CustomerHome', { address: newAddress });
-        })
-        .catch(error => console.warn(error));
+          navigation.navigate('CustomerHome', {  });
+        // })
+        // .catch(error => console.warn(error));
+    }
+    if (navType === 'current') {
+      //GEOCODER
+      // const { latitude, longitude } = region;
+      // Geocoder.from(latitude, longitude)
+        // .then(({ results }) => {
+        
+          let newAddress = { ...region,  ...route.params.address }
+        
+        if(isAuthenticated){
+          dispatch(updateUserById(user._id, {location: newAddress}))
+          .then(a => {
+            console.log(a, 'UPDATED USER')
+            dispatch({
+              type: SET_MAP_LOCATION,
+              payload: newAddress,
+            });
+            navigation.navigate('CustomerHome', {});
+          })
+        } else {
+          await setCustomerLocation(newAddress)
+          dispatch({
+            type: SET_USER,
+            payload: {location: newAddress},
+          
+          });
+          
+          navigation.navigate('CustomerHome', {});
+        
+        }
+        
+        // })
+        // .catch(error => console.warn(error));
     }
   };
 
@@ -247,9 +280,9 @@ export default function Map({ navigation, route }) {
   useEffect(() => {
     dispatch(getShops());
     if(navType === 'current'){
-      getLocation();
+      // getLocation();
     }
-  }, [dispatch, navType]);
+  }, []);
 
   const renderMarker = shops.map((a, index) => {
     const { latitude, longitude } = a.location;

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Animated,
   View,
@@ -11,7 +11,7 @@ import {
   RefreshControl,
 } from 'react-native';
 
-import { 
+import {
   SIZES,
   FONTS,
   COLORS,
@@ -19,7 +19,7 @@ import {
   icons,
   images,
   styles
- } from '../../constants';
+} from '../../constants';
 import { chatList } from '../../globals/data';
 import { cutString } from '../../utils/helpers';
 import { Badge } from '@rneui/themed';
@@ -32,7 +32,7 @@ import socket from '../../utils/socket';
 import { getChatLists, getConversation } from '../../redux/actions/customer.actions';
 
 
- export default function ChatList({navigation}) {
+export default function ChatList({ navigation }) {
   const dispatch = useDispatch();
   const [list, setList] = useState([])
   const { user } = useSelector(({ auth }) => auth);
@@ -56,7 +56,7 @@ import { getChatLists, getConversation } from '../../redux/actions/customer.acti
   //             Alert.alert('error', error.message);
   //             return;
   //         }
-          
+
   //         sound.play(() => {
   //             // Success counts as getting to the end
   //             // Release when it's done so we're not using up resources
@@ -66,131 +66,130 @@ import { getChatLists, getConversation } from '../../redux/actions/customer.acti
   //     let sound = new Sound(testInfo.url, testInfo.basePath, error => callback(error, sound));
   // }
 
-  const fetchChatLists =  async () => {
+  const fetchChatLists = async () => {
     let chatLists = await dispatch(getChatLists())
-       
-      let newChats = chatLists.map(a => {
-      let newObj = {
-               ...a,
-               date: a.updatedAt,
-               name: a.sender._id == user._id ? a.receiver.providerId : a.sender.providerId,
-               latestChat: a.threads[a.threads.length - 1].message,
-               imgUrl: a.sender._id == user._id ? a.receiver.imgUrl : a.sender.imgUrl
-             }
-             return newObj
-       }) 
-       
-       console.log('NEW CHATS',newChats)
-       setChats(newChats)
-       
-       setTimeout(() => {
-        setRefreshing(false);
-      }, 2000);
-   }
-  
 
-   useEffect(() => {
+    let newChats = chatLists.map(a => {
+      let newObj = {
+        ...a,
+        date: a.updatedAt,
+        name: a.sender._id == user._id ? a.receiver.providerId : a.sender.providerId,
+        latestChat: a.threads[a.threads.length - 1].message,
+        imgUrl: a.sender._id == user._id ? a.receiver.imgUrl : a.sender.imgUrl
+      }
+      return newObj
+    })
+
+    console.log('NEW CHATS', newChats)
+    setChats(newChats)
+
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }
+
+
+  useEffect(() => {
     console.log("first")
     fetchChatLists()
     socket.on('newMessage', (data) => {
-        console.log('NEW MESSAGE LIVE', data)
-        // playSound(
-        //   {
-        //     title: 'mp3 in bundle',
-        //     url: 'ring1.mp3',
-        //     basePath: Sound.MAIN_BUNDLE
-        // }
-        // )
-        fetchChatLists()
-      
-      }) 
-    
+      console.log('NEW MESSAGE LIVE', data)
+      // playSound(
+      //   {
+      //     title: 'mp3 in bundle',
+      //     url: 'ring1.mp3',
+      //     basePath: Sound.MAIN_BUNDLE
+      // }
+      // )
+      fetchChatLists()
+
+    })
+
   }, [])
 
-  console.log(chats, 'letse')
 
-  
+
   function renderChatList() {
-    const renderItem = ({item}) => {
+    const renderItem = ({ item }) => {
       // console.log(data)
       return (
         <TouchableOpacity
-          onPress={() => navigation.navigate('Conversation', {conversation: item})}
+          onPress={() => navigation.navigate('Conversation', { conversation: item })}
         >
           <View
-          style={{
-            // borderWidth: 1,
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            width: '100%',
-            paddingVertical: SIZES.padding,
-            backgroundColor: COLORS.white
-          }}
-        >
-          <Image
-            // source={images.defaultBanner}
-            source={{uri: item.bannerUrl}}
-            resizeMode='contain'
             style={{
-              height: 50,
-              width: 50,
               // borderWidth: 1,
-              borderRadius: SIZES.radius,
-              marginRight: SIZES.padding
-            }}
-          />
-          <View
-            style={{
-              justifyContent: 'space-between',
+              alignItems: 'center',
               flexDirection: 'row',
-              width: '70%',
-              padding: SIZES.base,
-              borderBottomWidth: 1,
-              borderColor: COLORS.lightGray
-
+              justifyContent: 'flex-start',
+              width: '100%',
+              paddingVertical: SIZES.padding,
+              backgroundColor: COLORS.white
             }}
           >
+            <Image
+              // source={images.defaultBanner}
+              source={{ uri: item.bannerUrl }}
+              resizeMode='contain'
+              style={{
+                height: 50,
+                width: 50,
+                // borderWidth: 1,
+                borderRadius: SIZES.radius,
+                marginRight: SIZES.padding
+              }}
+            />
             <View
               style={{
-                flexDirection: 'column',
-                flexGrow: 1,
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+                width: '70%',
+                padding: SIZES.base,
+                borderBottomWidth: 1,
+                borderColor: COLORS.lightGray
+
               }}
             >
-              <Text
+              <View
                 style={{
-                  ...FONTS.body2,
-                  // fontSize: SIZES.font,
-                  fontWeight: 'bold',
-                  color: COLORS.black,
+                  flexDirection: 'column',
+                  flexGrow: 1,
+                }}
+              >
+                <Text
+                  style={{
+                    ...FONTS.body2,
+                    // fontSize: SIZES.font,
+                    fontWeight: 'bold',
+                    color: COLORS.black,
 
-                  // textAlign: 'center',
-                }}
-              >
-                {/* [Chat Name Test Name long] */}
-                {/* {item.senderId?.fistName + ' ' + item.senderId?.lastName} */}
-                {item.name}
-              </Text>
-              <Text
-                style={{
-                  ...FONTS.h5,
-                  color: COLORS.darkGray,
-                }}
-              >
-                {/* [Last Message in Conversation] */}
-                {/* {cutString(String(item.thread[-0].messages), 40)} */}
-                {item.latestChat}
-              </Text>
+                    // textAlign: 'center',
+                  }}
+                >
+                  {/* [Chat Name Test Name long] */}
+                  {/* {item.senderId?.fistName + ' ' + item.senderId?.lastName} */}
+                  {item.name}
+                </Text>
+                <Text
+                  style={{
+                    ...FONTS.h5,
+                    color: COLORS.darkGray,
+                  }}
+                >
+                  {/* [Last Message in Conversation] */}
+                  {/* {cutString(String(item.thread[-0].messages), 40)} */}
+                  {item.latestChat}
+                </Text>
+              </View>
+
             </View>
-           
-          </View>
-          
-          <Text
+
+            <Text
               style={{
                 width: '30%',
                 textAlign: 'left'
               }}
-            >{moment(item.createdAt).format('MM/DD/YY')}</Text>   
+            >{moment(item.createdAt).format('MM/DD/YY')}</Text>
           </View>
         </TouchableOpacity>
       )
@@ -201,11 +200,11 @@ import { getChatLists, getConversation } from '../../redux/actions/customer.acti
           flex: 1,
         }}
       >
-        
-        <FlatList 
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+
+        <FlatList
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           keyExtractor={(item, index) => `${index}`}
           data={chats}
           vertical
@@ -233,19 +232,19 @@ import { getChatLists, getConversation } from '../../redux/actions/customer.acti
         }}
       >
 
-        {chats.length !== 0 ? renderChatList() : 
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <Text>
-            No Conversation to display.
-          </Text>
-        </View>}
+        {chats.length !== 0 ? renderChatList() :
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <Text>
+              No Conversation to display.
+            </Text>
+          </View>}
       </View>
-      
+
     </SafeAreaView>
   )
- }
+}

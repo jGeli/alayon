@@ -47,6 +47,7 @@ export const verifyOTP = (user, navigation) => dispatch => {
     .then(res => {
       let { token } = res.data;
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      AsyncStorage.setItem('token', token)
       dispatch({ type: SET_AUTHENTICATED })
       dispatch(getAuthUser(navigation));
       return res.data

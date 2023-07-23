@@ -1,18 +1,21 @@
 //import liraries
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, Switch, FlatList, Alert } from 'react-native';
-import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
+import { COLORS, FONTS, SIZES, icons, constants, images } from '../../constants';
 import { useDispatch } from 'react-redux';
 import { getAreaCodes } from '../../redux/actions/data.actions';
 import TestScreen from '../TestScreen';
 import { ScrollView } from 'react-native';
 import AreaStep from '../../components/AreaStep';
+import LoadingScreen from '../LoadingScreen';
 
 
 // create a component
 const SelectRegion = ({ navigation, route }) => {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+    const {location} = route.params;
     const [areas, setAreas] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [areaOptions, setAreaOptions] = useState([]);
     const [stepInput, setStepInput] = useState([]);
     const [currentStep, setCurrentStep] = useState(0);
@@ -55,11 +58,22 @@ const SelectRegion = ({ navigation, route }) => {
     }
 
     const handleRegions = async () => {
-        let regions = await dispatch(getAreaCodes());
-        if (regions) {
+        await dispatch(getAreaCodes())
+        .then(regions => {
             setAreas(regions)
-            
-        }
+            if(location){
+                let newAreaValue = {...areaValue, ...location} 
+                setAreaValue(newAreaValue)
+                let newStepInput = Object.entries(newAreaValue).filter(([key, val]) => {
+                    return (key === 'region' || key === 'province' || key === 'cityMun' || key === 'barangay') && val;
+                }).map(([key, val]) =>  { return val})
+                setStepInput(newStepInput)
+                setCurrentStep(newStepInput.length)
+            }
+            setTimeout(()=> {
+                setLoading(false)
+            }, 2000)
+        });
     }
     
     const handleReset = () => {
@@ -108,9 +122,10 @@ const SelectRegion = ({ navigation, route }) => {
         }
         if(currentStep === 3){
                 setCurrentStep(4)
-                setAreaValue({...areaValue, barangay: item.name, barangayCode: index});
-                setStepInput([areaValue.region, areaValue.province, areaValue.cityMun, item.name])
-                navigation.navigate('Map', route.params)
+                let newAreaValue = {...areaValue, barangay: item.name, barangayCode: index}
+                setAreaValue(newAreaValue);
+                setStepInput([newAreaValue.region, newAreaValue.province, newAreaValue.cityMun, item.name])
+                navigation.navigate('AddressDetails', {...route.params, address: {...route.params.address, ...newAreaValue}})
         }
     }
 
@@ -144,9 +159,13 @@ const SelectRegion = ({ navigation, route }) => {
         handleRegions()
     }, [])
 
-
+console.log(route.params, 'NAVTYPE')
     return (
         <SafeAreaView style={styles.container}>
+          {loading && <LoadingScreen
+        // style={{ backgroundColor: COLORS.white, opacity: .8 }}
+        source={images.setLoading}
+      />}
             {renderHeader()}
             <View
                 style={{

@@ -37,7 +37,6 @@ const Otp = ({ navigation, route }) => {
     dispatch(verifyOTP({ code, id: user.id }, null))
       .then(res => {
         let resRedirect = res.screen;
-        console.log(resRedirect, 'RESREDIRECT')
 
         if (redirection === 'OrderSummary' && baskets.length !== 0) {
           dispatch(createBulkBasket(baskets))

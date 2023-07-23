@@ -64,14 +64,12 @@ export default function OrderSummary({ navigation, route }) {
       return;
     }
 
-    dispatch(createOrder(val))
+    dispatch(createOrder({ ...val, shop: shopId }))
       .then(({ d }) => {
         navigation.navigate('OrderStatus', { order: d })
       })
 
 
-    // navigation.navigate(isAuthenticated ? 'CustomerOrders' : 'OrderSummary', { basket, shopId })
-    // Clipboard.setString(JSON.stringify(basket.orders));
   }
 
   function renderHeader() {
@@ -466,7 +464,7 @@ export default function OrderSummary({ navigation, route }) {
         // backgroundColor: COLORS.gray2
       }}>
       {loading && <LoadingScreen
-        style={{ backgroundColor: COLORS.white, opacity: .8 }}
+        // style={{ backgroundColor: COLORS.white, opacity: .8 }}
         source={images.setLoading}
       />}
       {renderHeader()}

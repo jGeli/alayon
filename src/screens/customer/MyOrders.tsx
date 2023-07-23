@@ -12,8 +12,6 @@ import { getOrders } from '../../redux/actions/customer.actions'
 export default function MerchantHomeScreen({ navigation }) {
   const dispatch = useDispatch()
   const { customer: { orders } } = useSelector(({customer}) => customer) 
-  const [isOnline, setIsOnline] = useState(false);
-  const [myList, setMyList] = useState([]);
   const [selectedServiceStatus, setSelectedServiceStatus] = useState(1);
   const [ordersData, setOrdersData] = useState([])
   const [refreshing, setRefreshing] = useState(false);

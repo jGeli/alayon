@@ -128,6 +128,6 @@ export const totalOrders = (values) => {
 
 export const statusIndexing = (status) => {
 
-  let ind = ["pending", "shop_confirmed", "rider_pickup", "shop_processing", "rider_delivery", "customer_received", "cancelled", "completed"].indexOf(status)
+  let ind = [{ status: "pending", index: 0 }, { status: "shop_confirmed", index: 0 }, { status: "rider_pickup", index: 1 }, { status: "shop_processing", index: 2 }, { status: "rider_delivery", index: 3 }, { status: "customer_received", index: 4 }, { status: "cancelled", index: 0 }, { status: "completed", index: 6 }, { status: "rate", index: 5 }].find(a => a.status == status)?.index
   return ind
 } 

@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { getOrderById } from '../../redux/actions/customer.actions';
 import { statusIndexing } from '../../utils/helpers';
 import LoadingScreen from '../LoadingScreen';
+import socket from '../../utils/socket';
 
 
 
@@ -91,8 +92,8 @@ export default function OrderStatus({navigation, route}) {
   const [orderData, setOrderData] = React.useState<Object>({})
   const [loading, setLoading] = React.useState(true)
   
-  const handleGetOrder = async () => {
-    let myOrder = await dispatch(getOrderById(order._id));
+  const handleGetOrder = async (id) => {
+    let myOrder = await dispatch(getOrderById(id));
     if(myOrder){
       setOrderData({...myOrder, statusIndex: statusIndexing(myOrder.activeStatus)})
     }
@@ -419,7 +420,14 @@ export default function OrderStatus({navigation, route}) {
   }
 
   React.useEffect(() => {
-    handleGetOrder();
+    handleGetOrder(order._id);
+
+     socket.on('updateOrder', (orderId) => {
+          console.log("UPDATE ORDER",orderId == order._id, orderId, order._id )
+        if(orderId == order._id){
+          handleGetOrder(orderId);
+        }
+     })
     
   }, [order])
   

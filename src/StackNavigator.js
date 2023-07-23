@@ -18,6 +18,7 @@ import AddressLocation from './screens/customer/AddressLocation';
 import MapScreen from './components/Cards/Map/Map';
 import MyAccount from './screens/customer/MyAccount';
 import CustomerReviewScreen from './screens/customer/CustomerReviewScreen';
+import CustomerSettings from './screens/customer/CustomerSettings';
 import OnBoarding from './screens/OnBoarding/OnBoarding';
 import SignIn from './screens/Authentication/SignIn';
 // import ForgotPassword from './screens/Authentication/ForgotPassword';
@@ -418,6 +419,12 @@ const StackNavigator = () => {
               component={TestScreen}
               options={{ headerShown: false }}
             />
+            <Stack.Screen
+              name="CustomerSettings"
+              component={CustomerSettings}
+              options={{ headerShown: false }}
+            />
+
           </Stack.Navigator>
         </NavigationContainer>
       }

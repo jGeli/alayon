@@ -1,7 +1,6 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"  
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.alayon"  
 >
- <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-<uses-permission android:name="android.permission.WAKE_LOCK" />
+
 
 <permission
     android:name="${applicationId}.permission.C2D_MESSAGE"
@@ -14,7 +13,8 @@
     <uses-permission android:name="android.permission.READ_SMS"/>
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-
+ <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+<uses-permission android:name="android.permission.WAKE_LOCK" />
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -40,7 +40,7 @@
 
    <meta-data
       android:name="com.dieam.reactnativepushnotification.default_notification_channel_id"
-      android:value="12345" />
+      android:value="420" />
   <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color"
               android:resource="@android:color/white"/>
 
@@ -68,11 +68,6 @@
           <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
   </service>
-
-
-     
-     
-
-
+      <uses-library android:name="org.apache.http.legacy" android:required="false"/>
     </application>
 </manifest>

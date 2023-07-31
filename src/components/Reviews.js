@@ -57,17 +57,18 @@ export default function Reviews({ shop }) {
             })
     }
 
+    useEffect(() => {
+        handleGetReviews()
+
+    }, [shop])
+    
 
 
 
     function renderReviews(data) {
         const renderItem = ({ item }) => {
-            console.log(item, "items thuis")
             return (
-                <View
-                    style={styles.container}
-                >
-
+                <View>
                     <View style={{ flexDirection: 'column', alignItems: 'flex-start', borderColor: COLORS.lightGray3, margin: SIZES.padding, borderWidth: 1, padding: SIZES.padding, borderRadius: SIZES.base }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center'}}>
                             <Image
@@ -197,14 +198,10 @@ export default function Reviews({ shop }) {
         )
     }
 
-    useEffect(() => {
-        handleGetReviews()
-
-    }, [shop])
-
-
     return (
-        <SafeAreaView>
+        <SafeAreaView
+         style={styles.container}
+        >
             {renderReviews(reviews)}
         </SafeAreaView>
     );

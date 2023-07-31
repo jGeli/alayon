@@ -95,8 +95,7 @@ export default function MerchantHomeScreen({ navigation }) {
             // alignItems: 'center'
           }}
           onPress={() => {
-            handleChangeService(),
-              console.log(item)
+            handleChangeService()
           }}
         >
           <TextButton

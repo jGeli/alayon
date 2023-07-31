@@ -355,7 +355,7 @@ export default function Home({ navigation }) {
           <View style={styles.cardConatiner}>
             <View style={styles.rateBadge}>
               <Text style={{ color: COLORS.white, fontWeight: 'bold' }}>
-                {item.ratings ? item.ratings : 1.2}
+                {item.avgRate ? item.avgRate : 1.5}
               </Text>
             </View>
 

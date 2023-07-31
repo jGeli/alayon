@@ -26,8 +26,12 @@ const location3 = require('../assets/images/location3.gif');
 const starfilled = require('../assets/images/starfilled.png');
 const starcorner = require('../assets/images/starcorner.png');
 const delivery_man = require('../assets/images/delivery_man.png');
+const rider = require('../assets/images/rider.png');
+
+
 
 export default {
+    rider,
     loadingDots,
     delivery_man,
     location,

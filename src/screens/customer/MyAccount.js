@@ -67,6 +67,7 @@ export default function MyAccount({ navigation }) {
 
 
   const handleLogout = () => {
+    console.log("LOGOUT!")
     dispatch(logoutUser(navigation));
 
   };

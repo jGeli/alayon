@@ -8,45 +8,218 @@ import {
   StyleSheet
 } from 'react-native';
 
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE, AnimatedRegion } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
+import Geolocation from 'react-native-geolocation-service';
+import haversine from "haversine";
 
 import { COLORS, FONTS, GOOGLE_API_KEY, SIZES, constants, icons, images } from '../../../constants';
-import dummyData from '../../../constants/dummyData';
+import socket from '../../../utils/socket';
+import { useSelector } from 'react-redux';
+import { Alert } from 'react-native';
+import { computeHeading } from '../../../utils/helpers';
+
+let initialRegion = {
+  latitude: 11.231742101192534,
+  longitude: 125.00245545087691,
+  latitudeDelta: 0.0043,
+  longitudeDelta: 0.0034
+}
 
 
 const Map1 = ({ navigation, route }) => {
   const { order } = route.params;
-  const mapView = useRef()
-
-  const [region, setRegion] = useState(null)
+  const mapView = useRef();
+  const markerRef = useRef();
+  const [mapState, setMapState] = useState({
+    
+    watchCount: 0,
+    latitude: initialRegion.latitude,
+    longitude: initialRegion.longitude,
+    routeCoordinates: [],
+    distanceTravelled: 0,
+    prevLatLng: {},
+    coordinate: new AnimatedRegion({
+      latitude: initialRegion.latitude,
+      longitude: initialRegion.longitude,
+      latitudeDelta: 0,
+      longitudeDelta: 0
+    })
+  })
+  const [state, setState] = useState({
+      progress: [],
+      nextLine: null
+  });
+  const [region, setRegion] = useState(null);
   const [toLoc, setToLoc] = useState(null)
   const [fromLoc, setFromLoc] = useState(null)
-  const [angle, setAngle] = useState(180)
-
+  const [angle, setAngle] = useState(0)
+  const [riderLoc, setRiderLoc] = useState(null)
   const [isReady, setIsReady] = useState(false)
   const [duration, setDuration] = useState('')
+  const [rnd, setRnd] = useState(0)
+
+
 
   useEffect(() => {
     // if (order) {
-    let { shop: { location }, pickupDelivery, owner } = order;
-    let initialRegion = {
-      latitude: 11.231742101192534,
-      longitude: 125.00245545087691,
-      latitudeDelta: 0.0043,
-      longitudeDelta: 0.0034
-    }
 
-    console.log(owner, 'OWNER')
+    let { shop: { location }, pickupDelivery, owner } = order;
     setRegion(initialRegion)
+    setRiderLoc(initialRegion)
     setToLoc({ latitude: Number(location.latitude), longitude: Number(location.longitude) })
     setFromLoc({ latitude: Number(pickupDelivery.latitude), longitude: Number(pickupDelivery.longitude) })
 
 
+    // this.watchID = Geolocation.watchPosition(
+    //   position => {
+    //     const { latitude, longitude } = position.coords;
+
+    //     const newCoordinate = {
+    //       latitude,
+    //       longitude
+    //     };
+
+    //     if (Platform.OS === "android") {
+    //       if (markerRef.current) {
+    //         markerRef.current?.animateMarkerToCoordinate(
+    //           newCoordinate,
+    //           500
+    //         );
+    //       }
+    //     } else {
+    //       // coordinate.timing(newCoordinate).start();
+    //     }
+    //     setMapState((prevState) => {
+    //       return ({
+    //         ...prevState,
+    //         watchCount: prevState.watchCount + 1,
+    //         latitude,
+    //         longitude,
+    //         routeCoordinates: prevState.routeCoordinates.concat([newCoordinate]),
+    //         distanceTravelled:
+    //           prevState.distanceTravelled + calcDistance(newCoordinate),
+    //         prevLatLng: newCoordinate
+    //       })
+    //     });
+    //   },
+    //   error => console.log(error),
+    //   {
+    //     enableHighAccuracy: true,
+    //     timeout: 20000,
+    //     maximumAge: 1000,
+    //     distanceFilter: 10
+    //   }
+    // );
+  
+    socket.emit('trackConnect', {orderId: order._id})
+  
+    socket.on('liveTrack', (data) => {
+      let liveData = data.coordinate;
+      // Alert.alert('TRACKING NOW!', JSON.stringify(data))
+      if(!riderLoc && liveData){
+        // Alert.alert(' SET RIDER LOCATION', JSON.stringify(liveData), JSON.stringify(riderLoc))
+        setRiderLoc(liveData)
+      }
+      
+      if (Platform.OS === "android") {
+        if (markerRef.current && riderLoc) {
+          
+          markerRef.current?.animateMarkerToCoordinate(
+            liveData,
+            500
+          );
+        }
+      }
+     
+      setState({...data.state, angle: data.actualAngle})
+      setAngle(data.actualAngle)
+     
+      // if(liveData){
+      //   if(state.nextLine){
+      //     progress = progress.concat(state.nextLine);
+      //     setState({...state, progress: progress, nextLine: liveData})
+      //   } else {
+      //     setState({...state, nextLine: liveData})
+      //   }
+      // } else{ 
+        
+      // }
+      
+      // setRnd(Math.random())
+      
+    })
+
+
+    return () => {
+      // Geolocation.clearWatch(this.watchID);
+    }
+
+
+  }, [])
+  
+  
+  useEffect(() => {
+    const distance = getDistance();
+
+    if (!distance) {
+        return;
+    }
+
+    let progress = state.path.filter(
+        coordinates => coordinates.distance < distance
+    );
+
+    const nextLine = state.path.find(
+        coordinates => coordinates.distance > distance
+    );
+
+    let point1, point2;
+
+    if (nextLine) {
+        point1 = progress[progress.length - 1];
+        point2 = nextLine;
+    } else {
+        // it's the end, so use the latest 2
+        point1 = progress[progress.length - 2];
+        point2 = progress[progress.length - 1];
+    }
+
+    const point1LatLng = point1;
+    const point2LatLng = point2;
+
+
+    const angle = computeHeading(
+        point1LatLng,
+        point2LatLng
+    );
+
+    console.log(angle, 'ANGLE')
+    console.log(point1LatLng, point2LatLng, 'POINTS')
+    const actualAngle = angle - 90;
+
+    
+    if (markerRef.current) {
+        // currentAngle = actualAngle;
+        setAngle(actualAngle)
+        // socket.emit('liveTrack', { orderId: _id, coordinate: state.prevLatLng, state, actualAngle })
+        // when it hasn't loaded, it's null
+        // this.marker?.rotatation() = actualAngle
+        // this.setState({
+        //   angle: actualAngle
+        // })
+    }
+
+}, [riderLoc])
+
+const getDistance = () => {
+  // seconds between when the component loaded and now
+  const differentInTime = (new Date() - state.initialDate) / 1000; // pass to seconds
+  return differentInTime * state.velocity; // d = v*t -- thanks Newton!
+};
 
 
 
-  }, [order])
 
   function calculateAngle(coordinates) {
     let startLat = coordinates[0]["latitude"]
@@ -59,6 +232,12 @@ const Map1 = ({ navigation, route }) => {
     return Math.atan2(dy, dx) * 180 / Math.PI
   }
 
+
+
+  function calcDistance(newLatLng) {
+    const { prevLatLng } = mapState;
+    return haversine(prevLatLng, newLatLng) || 0;
+  };
 
   function renderHeaderButtons() {
     return (
@@ -98,7 +277,7 @@ const Map1 = ({ navigation, route }) => {
           }}
         >
           <TouchableOpacity
-            onPress={() => navigation.push('TestScreen', {})}
+            onPress={() => navigation.push('TestScreen', {order: order})}
             style={{
               width: 40,
               height: 40,
@@ -156,6 +335,7 @@ const Map1 = ({ navigation, route }) => {
         style={{
           flex: 1,
         }}
+        customMapStyle={mapStyle}
         provider={PROVIDER_GOOGLE}
         initialRegion={region}
       >
@@ -166,40 +346,90 @@ const Map1 = ({ navigation, route }) => {
             coordinate={fromLoc}
             tracksViewChanges={false}
             // icon={images.deliveryMan}
-            rotation={angle}
             anchor={{ x: 0.5, y: 0.5 }}
           >
-            <View style={styles.washing}>
-              <Image
-                source={icons.washingMachinePin}
-                style={{ height: 55, width: 40 }}
-              />
-            </View>
+          
           </Marker>
         }
 
+        {/* <Marker.Animated
+          ref={markerRef}
+          coordinate={mapState.coordinate}
+        /> */}
+     
         {
           toLoc &&
           <Marker
-            key={'ToLoc'}
             coordinate={toLoc}
             tracksViewChanges={false}
             // icon={icons.myLocation}
-            rotation={angle}
           // anchor={{ x: .4, y: 1.2 }}
           >
-            <View style={styles.washing}>
-              <Image
-                source={icons.washingMachinePin}
-                style={{ height: 55, width: 40 }}
-              />
-            </View>
           </Marker>
 
         }
+           {state.progress && state.progress.length > 1 && ( 
+         <Marker.Animated
+          flat
+          anchor={{ x: 0.5, y: 0.4 }}
+          rotation={angle}
+          ref={marker => {
+            markerRef.current = marker;
+        }}
+        style={{ height: 55, width: 50 }}
+        coordinate={state.progress[state.progress.length - 1]}
+        tracksViewChanges={false}
+        
+        >
+ <View   style={{  transform: [{ rotate: `90deg` }]   }}
+                            >
+                                <Image
+                                    resizeMode='stretch'
+                                    source={images.rider}
+                                    style={{ height: 55, width: 40 }}
+                                />
+                            </View>
+        </Marker.Animated>  
+           )}
+        {riderLoc && <>
+
         <MapViewDirections
-          origin={fromLoc}
+          origin={riderLoc}
           destination={toLoc}
+          apikey={GOOGLE_API_KEY}
+          strokeWidth={0}
+
+          strokeColor={COLORS.danger}
+          optimizeWaypoints={false}
+          onReady={result => {
+            setDuration(Math.ceil(result.duration))
+
+            if (!isReady) {
+              // Fit the map based on the route
+              mapView.current.fitToCoordinates(result.coordinates, {
+                edgePending: {
+                  right: SIZES.width * 0.5,
+                  bottom: 1000,
+                  left: SIZES.width * 0.5,
+                  top: SIZES.width * 0.5,
+                }
+              })
+
+              // Reposition the navigator
+              if (result.coordinates.length >= 2) {
+                let angle = calculateAngle(result.coordinates)
+
+                setAngle(angle)
+              }
+              setIsReady(true)
+            }
+          }}
+        />
+        </>}
+        
+        <MapViewDirections
+          origin={toLoc}
+          destination={fromLoc}
           apikey={GOOGLE_API_KEY}
           strokeWidth={5}
           strokeColor={COLORS.primary}
@@ -233,7 +463,7 @@ const Map1 = ({ navigation, route }) => {
     )
   }
 
-  function renderInfo() {
+  const renderInfo = (mapVal) => {
     return (
       <View
         style={{
@@ -317,7 +547,9 @@ const Map1 = ({ navigation, route }) => {
                 style={{
                   ...FONTS.h3
                 }}
-              >Static Address</Text>
+              >{parseFloat(mapVal.distanceTravelled).toFixed(2)} km -
+                {mapVal.watchCount}
+              </Text>
 
             </View>
 
@@ -393,6 +625,8 @@ const Map1 = ({ navigation, route }) => {
       </View>
     )
   }
+  
+  console.log(state.progress.length, 'STATE PROGRESS')
 
   return (
     <View
@@ -404,11 +638,41 @@ const Map1 = ({ navigation, route }) => {
 
       {renderHeaderButtons()}
 
-      {renderInfo()}
+      {renderInfo(mapState)}
 
     </View>
   )
 }
+
+
+const mapStyle = [
+  {
+    elementType: 'labels',
+    stylers: [
+      {
+        visibility: 'off',
+      },
+    ],
+  },
+  {
+    featureType: 'administrative.land_parcel',
+    stylers: [
+      {
+        visibility: 'on',
+      },
+    ],
+  },
+  {
+    featureType: 'administrative.neighborhood',
+    stylers: [
+      {
+        visibility: 'on',
+      },
+    ],
+  },
+];
+
+
 
 //create our styling code:
 const styles = StyleSheet.create({

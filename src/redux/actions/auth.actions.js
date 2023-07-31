@@ -95,6 +95,7 @@ export const updateAuthUser = data => dispatch => {
 };
 
 export const logoutUser = navigation => dispatch => {
+  AsyncStorage.removeItem('token');
   axios.defaults.headers.common['Authorization'] = null;
   dispatch({ type: CLEAR_USER });
   dispatch({ type: CLEAR_CUSTOMER_DATA });

@@ -137,6 +137,7 @@ const CustomerOrders = ({ navigation, order }) => {
                     </View>
                     <TouchableOpacity
                         style={{ marginLeft: 5, marginRight: 5 }}
+                        // onPress={() => navigation.navigate('Map1', { order})}
                     >
                         <Image
                             source={icons.myLocation}

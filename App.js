@@ -10,7 +10,7 @@ export default function App() {
 
   useEffect(() => {
     console.log('INIT APP')
-  }, [])
+  })
 
   return (
     <Provider store={store}>

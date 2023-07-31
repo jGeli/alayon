@@ -19,11 +19,6 @@ import moment from 'moment/moment';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { CLEAR_SELECTED_SHOP, CLOSE_MODALS, SET_ALLOW_LOCATION, SET_ALLOW_LOCATION_MODAL, SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, SET_LAUNDRY_SHOPS, SET_SELECTED_SHOP } from '../../redux/actions/type';
 import { distanceMultiplier } from '../../globals/env';
-import { getAuthUser } from '../../redux/actions/auth.actions';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getCustomerBasket, getCustomerLocations } from '../../utils/AsyncStorage';
-import axios from 'axios';
-import { getCustomerData } from '../../redux/actions/customer.actions';
 import AllowLocationModal from '../../components/Modals/AllowLocationModal';
 import { ScrollView } from 'react-native';
 import { RefreshControl } from 'react-native';
@@ -33,7 +28,7 @@ const varEnv = constants.varEnv;
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
   const { isLocationAllow } = useSelector(({ data }) => data);
-  const { isAuthenticated, user: { location } } = useSelector(({auth}) => auth)
+  const { isAuthenticated, user: { location, _id } } = useSelector(({auth}) => auth)
   const [refreshing, setRefreshing] = useState(false);
   const [shops, setShops] = useState([])
   const onRefresh = React.useCallback(() => {
@@ -271,8 +266,9 @@ export default function Home({ navigation }) {
 
   function renderNearbyList() {
     const renderItem = ({ item }) => {
-      let { latitude, longitude } = item.location ? item.location : { latitude: location.latitude, longitude: location.longitude };
-      let distance = haversine({ latitude: location.latitude, longitude: location.longitude }, { latitude, longitude }) || 0
+      let itemLoc = item.location ? item.location : location && location.latitude ? { latitude: location.latitude, longitude: location.longitude } : null;
+      
+      let distance = itemLoc && location ? haversine({ latitude: location.latitude, longitude: location.longitude }, { latitude: itemLoc.latitude, longitude: itemLoc.longitude }) || 0 : 0
       return shops.length === 0 ? (
         <TouchableOpacity
           style={{
@@ -371,7 +367,7 @@ export default function Home({ navigation }) {
                 }}
               />
               <Text style={{ color: COLORS.primary, fontWeight: 'bold' }}>
-                {location.address ? `${parseFloat(distance * distanceMultiplier).toFixed(2)} Km away` : 'Not in range'}
+                {location?.address ? `${parseFloat(distance * distanceMultiplier).toFixed(2)} Km away` : 'Not in range'}
               </Text>
             </View>
             <View style={{ width: '90%' }}>
@@ -503,7 +499,7 @@ export default function Home({ navigation }) {
     };
   }, []);
 
-
+  console.log(_id, 'USERID')
   return (
     <SafeAreaView style={styles.container}>
       <AllowLocationModal navigation={navigation} />

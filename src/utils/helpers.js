@@ -1,4 +1,7 @@
 import { constants } from '../constants';
+import { decode } from "@mapbox/polyline"; //please install this package before running!
+import { gapikey } from '../globals/env';
+import axios from 'axios';
 
 
 const isEmpty = string => {
@@ -130,4 +133,71 @@ export const statusIndexing = (status) => {
 
   let ind = [{ status: "pending", index: 0 }, { status: "shop_confirmed", index: 0 }, { status: "rider_pickup", index: 1 }, { status: "shop_processing", index: 2 }, { status: "rider_delivery", index: 3 }, { status: "customer_received", index: 4 }, { status: "cancelled", index: 0 }, { status: "completed", index: 6 }, { status: "rate", index: 5 }].find(a => a.status == status)?.index
   return ind
-} 
+
+}
+
+
+export const getDirections = async (start, destination) => {
+  try {
+    const KEY = gapikey; //put your API key here.
+    const startLoc = `${start.latitude},${start.longitude}`;
+    const destinationLoc = `${destination.latitude},${destination.longitude}`
+    console.log(startLoc, destinationLoc)
+    //otherwise, you'll have an 'unauthorized' error.
+    let resp = await axios.get(
+      `https://maps.googleapis.com/maps/api/directions/json?origin=${startLoc}&destination=${destinationLoc}&key=${KEY}`
+    );
+
+    let respJson = resp.data;
+    let points = decode(respJson.routes[0].overview_polyline.points);
+    console.log(points);
+    let coords = points.map((point, index) => {
+      return {
+        latitude: point[0],
+        longitude: point[1]
+      };
+    });
+    return coords
+  } catch (error) {
+    return error;
+  }
+};
+
+
+export const interpolatedPoint = (from, to, fraction) => {
+  if (fraction < 0 || fraction > 1) {
+    throw new Error('Fraction must be a number between 0 and 1 (inclusive).');
+  }
+
+  const latitude = from.latitude + (to.latitude - from.latitude) * fraction;
+  const longitude = from.longitude + (to.longitude - from.longitude) * fraction;
+
+  return { latitude, longitude };
+}
+
+
+export const computeHeading = (from, to) => {
+  const fromLatRad = toRadians(from?.latitude);
+  const toLatRad = toRadians(to?.latitude);
+  const deltaLng = toRadians(to?.longitude - from?.longitude);
+
+  const y = Math.sin(deltaLng) * Math.cos(toLatRad);
+  const x =
+    Math.cos(fromLatRad) * Math.sin(toLatRad) -
+    Math.sin(fromLatRad) * Math.cos(toLatRad) * Math.cos(deltaLng);
+
+  let heading = toDegrees(Math.atan2(y, x));
+  heading = (heading + 360) % 360; // Convert to positive degrees
+
+  return heading;
+}
+
+// Helper function to convert degrees to radians
+function toRadians(degrees) {
+  return degrees * (Math.PI / 180);
+}
+
+// Helper function to convert radians to degrees
+function toDegrees(radians) {
+  return radians * (180 / Math.PI);
+}

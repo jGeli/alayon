@@ -23,6 +23,7 @@ import MapView, {
 } from "react-native-maps";
 import haversine from "haversine";
 import Geolocation from 'react-native-geolocation-service';
+import socket from "../../../utils/socket";
 
 // const LATITUDE = 29.95539;
 // const LONGITUDE = 78.07513;
@@ -87,6 +88,9 @@ class Map2 extends React.Component {
                         distanceTravelled + this.calcDistance(newCoordinate),
                     prevLatLng: newCoordinate
                 });
+
+                socket.emit('liveTrack', newCoordinate)
+
             },
             error => console.log(error),
             {

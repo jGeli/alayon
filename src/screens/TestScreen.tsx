@@ -6,218 +6,404 @@
  * @flow
  */
 
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Platform,
-  PermissionsAndroid
+    StyleSheet,
+    View,
+    Text,
+    TouchableOpacity,
+    Platform,
+    PermissionsAndroid,
+    Image
 } from "react-native";
 import MapView, {
-  Marker,
-  AnimatedRegion,
-  Polyline,
-  PROVIDER_GOOGLE
+    Marker,
+    AnimatedRegion,
+    Polyline,
+    PROVIDER_GOOGLE,
+    
 } from "react-native-maps";
 import haversine from "haversine";
 import Geolocation from 'react-native-geolocation-service';
+import socket from "../utils/socket";
+import { computeHeading, getDirections, interpolatedPoint } from "../utils/helpers";
+import { COLORS, images } from "../constants";
 
-
-// const LATITUDE = 29.95539;
-// const LONGITUDE = 78.07513;
 const LATITUDE_DELTA = 0.009;
 const LONGITUDE_DELTA = 0.009;
-const LATITUDE = 11.2317012;
-const LONGITUDE = 125.0024682;
+const LATITUDE = 11.228703;
+const LONGITUDE = 124.997525;
 
-class TestScreen extends React.Component {
-  constructor(props) {
-    super(props);
+// create a component
+const TestScreen = ({navigation, route}) => {
+  let { shop: { location }, pickupDelivery, owner } = route.params.order;
+  
 
-    this.state = {
-      latitude: LATITUDE,
-      longitude: LONGITUDE,
-      routeCoordinates: [],
-      distanceTravelled: 0,
-      prevLatLng: {},
-      coordinate: new AnimatedRegion({
-        latitude: LATITUDE,
-        longitude: LONGITUDE,
-        latitudeDelta: 0,
-        longitudeDelta: 0
-      })
-    };
-  }
-
-  componentDidMount() {
-    const { coordinate } = this.state;
+    const [currentAngle, setCurrentAngle] = useState(0)
+    const [state, setState] = useState({
+             path: [],
+            progress: [],
+            velocity:  20,
+            initialDate: new Date(),
+            latitude: LATITUDE,
+            longitude: LONGITUDE,
+            routeCoordinates: [],
+            distanceTravelled: 0,
+            prevLatLng: {},
+            angle: 0,
+            coordinate: new AnimatedRegion({
+                latitude: LATITUDE,
+                longitude: LONGITUDE,
+                latitudeDelta: 0,
+                longitudeDelta: 0
+            })    
     
-    
-      this.watchID = Geolocation.watchPosition(
-        position => {
-            const { routeCoordinates, distanceTravelled } = this.state;
-            const { latitude, longitude } = position.coords;
+    })
 
-            const newCoordinate = {
-                latitude,
-                longitude
-            };
+  const markerRef = useRef()    
 
-            if (Platform.OS === "android") {
-                if (this.marker) {
-                    console.log(this.marker)
-                    Object.keys(this.marker).map(a => {
-                        console.log(a)
-                    })
-                    this.marker.animateMarkerToCoordinate(
-                        newCoordinate,
-                        500
-                    );
-                }
-            } else {
-                coordinate.timing(newCoordinate).start();
-            }
-            this.setState({
-                latitude,
-                longitude,
-                routeCoordinates: routeCoordinates.concat([newCoordinate]),
-                distanceTravelled:
-                    distanceTravelled + this.calcDistance(newCoordinate),
-                prevLatLng: newCoordinate
+
+
+
+
+
+    moveObject = () => {
+      const distance = getDistance();
+      console.log(distance, 'distance old');
+      if (!distance) {
+        return;
+      }
+  
+      let progress = state.path.filter(
+        (coordinates) => coordinates.distance < distance
+      );
+      
+  
+      const nextLine = state.path.find(
+        (coordinates) => coordinates.distance > distance
+      );
+      
+      
+      // console.log('PROGRESS', progress, nextLine)
+      if (!nextLine) {
+        setState({...state, progress });
+        return; // it's the end!
+      }
+      
+      const lastLine = progress[progress.length - 1];
+  
+      const lastLineLatLng = lastLine
+       
+  
+      const nextLineLatLng = nextLine
+  
+      // distance of this line
+      const totalDistance = nextLine.distance - lastLine.distance;
+      const percentage = (distance - lastLine.distance) / totalDistance;
+  
+      const position = interpolatedPoint(
+        lastLineLatLng,
+        nextLineLatLng,
+        percentage
+      );
+  
+      // if (Platform.OS === "android") {
+      //               if (marker) {
+      //                 marker?.animateMarkerToCoordinate(
+      //                   position,
+      //                   500
+      //                 );
+            
+      //               }
+      //           }
+      
+      
+         //         setState({
+        //             latitude,
+        //             longitude,
+        //             routeCoordinates: routeCoordinates.concat([newCoordinate]),
+        //             distanceTravelled:
+        //                 distanceTravelled + calcDistance(newCoordinate),
+        //             prevLatLng: newCoordinate
+        //         });
+        
+        
+                
+      progress = progress.concat(position);
+      setState({ 
+      ...state,
+            progress,
+                    distanceTravelled:
+                        state.distanceTravelled + calcDistance(position),
+                    prevLatLng: position
             });
-        },
-        error => console.log(error),
-        {
-            enableHighAccuracy: true,
-            timeout: 20000,
-            maximumAge: 1000,
-            distanceFilter: 10
-        }
-    );
+    };
     
-    // this.watchID = navigator.geolocation.watchPosition(
-    //   position => {
-    //     const { routeCoordinates, distanceTravelled } = this.state;
-    //     const { latitude, longitude } = position.coords;
 
-    //     const newCoordinate = {
-    //       latitude,
-    //       longitude
-    //     };
 
-    //     if (Platform.OS === "android") {
-    //       if (this.marker) {
-    //         this.marker._component.animateMarkerToCoordinate(
-    //           newCoordinate,
-    //           500
-    //         );
-    //       }
-    //     } else {
-    //       coordinate.timing(newCoordinate).start();
-    //     }
 
-    //     this.setState({
-    //       latitude,
-    //       longitude,
-    //       routeCoordinates: routeCoordinates.concat([newCoordinate]),
-    //       distanceTravelled:
-    //         distanceTravelled + this.calcDistance(newCoordinate),
-    //       prevLatLng: newCoordinate
-    //     });
-    //   },
-    //   error => console.log(error),
-    //   {
-    //     enableHighAccuracy: true,
-    //     timeout: 20000,
-    //     maximumAge: 1000,
-    //     distanceFilter: 10
-    //   }
-    // );
-    
-  }
 
-  componentWillUnmount() {
-    // navigator.geolocation.clearWatch(this.watchID);
-    Geolocation.clearWatch(this.watchID);
 
-  }
 
-  getMapRegion = () => ({
-    latitude: this.state.latitude,
-    longitude: this.state.longitude,
-    latitudeDelta: LATITUDE_DELTA,
-    longitudeDelta: LONGITUDE_DELTA
+
+
+
+
+
+
+   const getMapRegion = () => ({
+      latitude: state.latitude,
+      longitude: state.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA
   });
 
-  calcDistance = newLatLng => {
-    const { prevLatLng } = this.state;
-    return haversine(prevLatLng, newLatLng) || 0;
+  const calcDistance = (newLatLng, prev) => {
+      const prevLatLng = prev ? prev : state.prevLatLng;
+      return haversine(prevLatLng, newLatLng) || 0;
   };
+  
+  const  getDistance = () => {
+    // seconds between when the component loaded and now
+    const differentInTime = (new Date() - state.initialDate) / 1000; // pass to seconds
+    return differentInTime * state.velocity; // d = v*t -- thanks Newton!
+  };
+  
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <MapView
-          style={styles.map}
-          provider={PROVIDER_GOOGLE}
-          showUserLocation
-          followUserLocation
-          loadingEnabled
-          region={this.getMapRegion()}
-        >
-          <Polyline coordinates={this.state.routeCoordinates} strokeWidth={5} />
-          <Marker.Animated
-            ref={marker => {
-              this.marker = marker;
-            }}
-            coordinate={this.state.coordinate}
-          />
-        </MapView>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.bubble, styles.button]}>
-            <Text style={styles.bottomBarContent}>
-              {parseFloat(this.state.distanceTravelled).toFixed(2)} km
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
+  const handleInitialDirection = () => {
+    const { coordinate, latitude, longitude } = state;
+
+  
+    getDirections({latitude, longitude}, pickupDelivery)
+    .then((coord) => {
+      let path = coord.map((coordinates, i, array) => {
+        if (i === 0) {
+          return { ...coordinates, distance: 0 }; // it begins here!
+        }
+        // const { latitude: lat1, longitude: lng1 } = coordinates;
+        const latLong1 = coordinates;
+  
+        // const { latitude: lat2, longitude: lng2 } = array[0];
+        const latLong2 = array[0]
+        // console.log(latLong1);
+        // // in meters:
+        let distance =  calcDistance(
+          latLong1,
+          latLong2
+        );
+  
+      console.log(distance, 'DDIIS')
+        // console.log(latLong2);
+  
+        return { ...coordinates, distance: distance * 1000 };
+      })
+          
+          
+      setState({...state, path, ...path[0]})
+
+      // this.setState({routeCoordinates: path})
+      this.interval = setInterval(moveObject, 1000);   //50000
+      
+      
+    })
+    .catch(err => {
+      console.log(err, "COORD ERROR")
+    })
+  
+  
   }
-}
 
+
+
+  useEffect(() => {
+        handleInitialDirection()      
+   
+    return () => {
+      clearInterval(this.interval)
+    }
+  }, [])
+  
+  
+  useEffect(() => {
+    const distance = getDistance();
+    if (!distance) {
+      return;
+    }
+
+    let progress = state.path.filter(
+      coordinates => coordinates.distance < distance
+    );
+
+    const nextLine = state.path.find(
+      coordinates => coordinates.distance > distance
+    );
+
+    let point1, point2;
+
+    if (nextLine) {
+      point1 = progress[progress.length - 1];
+      point2 = nextLine;
+    } else {
+      // it's the end, so use the latest 2
+      point1 = progress[progress.length - 2];
+      point2 = progress[progress.length - 1];
+    }
+
+    const point1LatLng = point1;
+    const point2LatLng = point2;
+
+
+    const angle = computeHeading(
+      point1LatLng,
+      point2LatLng
+    );
+    
+    const actualAngle = angle - 90;
+
+
+    if (markerRef.current) {
+      // currentAngle = actualAngle;
+      setCurrentAngle(actualAngle)
+      // when it hasn't loaded, it's null
+        // this.marker?.rotatation() = actualAngle
+        // this.setState({
+        //   angle: actualAngle
+        // })
+    }
+    
+  }, [state])
+
+
+
+  return (
+    <View style={styles.container}>
+    <MapView
+        customMapStyle={mapStyle}
+        style={styles.map}
+        provider={PROVIDER_GOOGLE}
+        showUserLocation
+        followUserLocation
+        loadingEnabled
+        region={getMapRegion()}
+        // onPress={(e) => {
+           
+
+        // }}
+    >
+{state.progress && state.progress.length > 1 && (
+<>
+
+        <Polyline coordinates={state.progress} strokeWidth={5} strokeColor={COLORS.primary} />
+        <Marker.Animated
+        flat
+            anchor={{ x: 0.5, y: 0.4 }}
+            rotation={currentAngle}
+             ref={marker => {
+                markerRef.current = marker;
+            }}
+            style={{ height: 55, width: 50 }}
+            tracksViewChanges={false}
+            coordinate={state.progress[state.progress.length - 1]}
+            // image={{uri: images.rider}}
+        >
+        <View
+          style={{
+            transform: [{ rotate: `90deg` }],
+          }}
+        >
+            <Image
+              resizeMode='stretch'
+              source={images.rider}
+              style={{ height: 55, width: 40 }}
+              />
+              </View>
+        </Marker.Animated>
+                 
+</>
+)}
+
+        <Marker.Animated
+            tracksViewChanges={false}
+            coordinate={  { latitude: Number(location.latitude), longitude: Number(location.longitude) }}
+        />
+        
+        
+        <Marker.Animated
+            tracksViewChanges={false}
+            coordinate={{ latitude: Number(pickupDelivery.latitude), longitude: Number(pickupDelivery.longitude) }}
+        />
+    </MapView>
+    <View style={styles.buttonContainer}>
+        <TouchableOpacity style={[styles.bubble, styles.button]}>
+            <Text style={styles.bottomBarContent}>
+                {parseFloat(state.distanceTravelled).toFixed(2)} km
+            </Text>
+        </TouchableOpacity>
+    </View>
+</View>
+  );
+};
+
+const mapStyle = [
+  {
+    elementType: 'labels',
+    stylers: [
+      {
+        visibility: 'off',
+      },
+    ],
+  },
+  {
+    featureType: 'administrative.land_parcel',
+    stylers: [
+      {
+        visibility: 'on',
+      },
+    ],
+  },
+  {
+    featureType: 'administrative.neighborhood',
+    stylers: [
+      {
+        visibility: 'on',
+      },
+    ],
+  },
+];
+
+// define your styles
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: "flex-end",
     alignItems: "center"
-  },
-  map: {
+},
+map: {
     ...StyleSheet.absoluteFillObject
-  },
-  bubble: {
+},
+bubble: {
     flex: 1,
     backgroundColor: "rgba(255,255,255,0.7)",
     paddingHorizontal: 18,
     paddingVertical: 12,
     borderRadius: 20
-  },
-  latlng: {
+},
+latlng: {
     width: 200,
     alignItems: "stretch"
-  },
-  button: {
+},
+button: {
     width: 80,
     paddingHorizontal: 12,
     alignItems: "center",
     marginHorizontal: 10
-  },
-  buttonContainer: {
+},
+buttonContainer: {
     flexDirection: "row",
     marginVertical: 20,
     backgroundColor: "transparent"
-  }
+}
 });
 
+//make this component available to the app
 export default TestScreen;

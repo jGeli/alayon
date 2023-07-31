@@ -126,6 +126,7 @@ export default function MyAccount({ navigation }) {
             textValue={(user.email)}
             textStyle={{
               color: COLORS.black,
+              fontWeight: 'bold'
             }}
           />
         </View>
@@ -180,7 +181,7 @@ export default function MyAccount({ navigation }) {
               style={{
                 fontSize: SIZES.base * 2,
                 fontWeight: '600',
-                // color: COLORS.black,
+                color: COLORS.black,
                 // marginLeft: 50,
                 padding: SIZES.padding,
               }}>

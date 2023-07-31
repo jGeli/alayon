@@ -198,7 +198,7 @@ const StackNavigator = () => {
           }}
         />
 
-        <Tab.Screen
+        {/* <Tab.Screen
           name="CustomerNotifications"
           component={NotificationScreen}
           options={{
@@ -229,7 +229,7 @@ const StackNavigator = () => {
                 />
               ),
           }}
-        />
+        /> */}
 
         <Tab.Screen
           name="CustomerAccount"
@@ -290,6 +290,11 @@ const StackNavigator = () => {
             <Stack.Screen
               name="Conversation"
               component={Conversation}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="CustomerNotifications"
+              component={NotificationScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen

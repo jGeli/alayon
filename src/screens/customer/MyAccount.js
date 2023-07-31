@@ -79,45 +79,59 @@ export default function MyAccount({ navigation }) {
       <View
         style={{
           flexDirection: 'row',
-          flex: 1,
+          // flex: 1,
           // borderWidth: 1,
+          height: '10%',
           width: '100%',
           alignItems: 'center',
           justifyContent: 'flex-start',
           paddingHorizontal: SIZES.padding2 * 2,
-          paddingTop: SIZES.padding2 * 2,
           left: 0,
           right: 0,
           bottom: 0,
-          top: 0
+          top: 20
         }}
       >
-        <View
+        {/* <View
           style={{
             borderWidth: 1,
             borderColor: COLORS.lightGray3,
             borderRadius: 999,
             marginRight: SIZES.padding,
           }}
+        > */}
+        <View
+          style={{
+            borderWidth: 1,
+            borderRadius: 999
+          }}
         >
           <Image
             source={{ uri: user.imgUrl ?? 'https://alayon.bugtech.solutions/api/v1/static/banners/8.jpg' }}
             resizeMode='contain'
             style={{
-              height: 120,
-              width: 120,
-              borderRadius: 999
+              height: 70,
+              width: 70,
+              borderRadius: 999,
             }}
           />
-        </View>
+          </View>
+        {/* </View> */}
         <View
           style={{
-            borderColor: COLORS.lightGray3,
-            borderRadius: SIZES.radius,
+            // borderColor: COLORS.lightGray3,
+            // borderRadius: SIZES.radius,
             marginLeft: SIZES.padding,
+            // borderWidth: 1,
+            height: '100%',
+            justifyContent: 'flex-start',
+            bottom: 0,
+            top: 0,
+            left: 0,
+            right: 0
           }}
         >
-          <LabeledText
+          {/* <LabeledText
             label={user.firstName + ' ' + user.lastName}
             labelStyle={{
               color: COLORS.primary,
@@ -128,7 +142,32 @@ export default function MyAccount({ navigation }) {
               color: COLORS.black,
               fontWeight: 'bold'
             }}
-          />
+          /> */}
+          <View
+            style={{
+              // borderWidth: 1,
+              height: '100%',
+              alignItems: 'flex-start',
+              justifyContent: 'flex-start',
+              paddingTop: SIZES.base
+              
+            }}
+          >
+          <Text
+            style={{
+              ...FONTS.body2, color: COLORS.primary
+            }}
+          >
+            {user.firstName + ' ' + user.lastName}
+          </Text>
+          <Text
+            style={{
+              ...FONTS.body4, color: COLORS.black
+            }}
+          >
+            {user.email}
+          </Text>
+          </View>
         </View>
 
       </View>
@@ -140,17 +179,14 @@ export default function MyAccount({ navigation }) {
     const renderItem = ({ item }) => {
       return (
         <View>
-
-
           <TouchableOpacity
             style={{
               justifyContent: 'center',
-              borderColor: COLORS.black,
-              borderBottomWidth: .5,
+              borderColor: COLORS.lightGray3,
+              borderBottomWidth: 1.5,
               marginTop: SIZES.padding / 2,
               paddingBottom: SIZES.padding,
               paddingTop: SIZES.padding
-
             }}
             onPress={() => {
               if (item.name === 'Logout') {
@@ -179,10 +215,8 @@ export default function MyAccount({ navigation }) {
         /> */}
             <Text
               style={{
-                fontSize: SIZES.base * 2,
-                fontWeight: '600',
+                ...FONTS.body2,
                 color: COLORS.black,
-                // marginLeft: 50,
                 padding: SIZES.padding,
               }}>
               {item.name}

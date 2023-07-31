@@ -176,6 +176,10 @@ export const CustomerMyAccount = [
     
   },
   {
+    name: 'My Notification',
+    screen: 'CustomerNotifications'
+  },
+  {
     name: 'Terms And Condition',
     
   },

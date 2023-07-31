@@ -13,20 +13,45 @@ import { COLORS, FONTS, SIZES, icons } from '../constants';
 import { nearbyList, notifications } from '../globals/data';
 
 export default function Notification({ navigation }) {
+  // function renderHeader() {
+  //   return (
+  //     <View style={styles.headerContainer}>
+  //       <TouchableOpacity onPress={() => navigation.goBack()}>
+  //         <Image source={icons.back} style={{ height: 20, width: 20 }} />
+  //       </TouchableOpacity>
+
+  //         <Text style={{ ...FONTS.h2, color: COLORS.black, fontWeight: 'bold' }}>
+  //           Notifications
+  //         </Text>
+  //       {/* <Image source={icons.back} style={{height: 25, width: 25}} /> */}
+  //     </View>
+  //   );
+  // }
   function renderHeader() {
     return (
-      <View style={styles.headerContainer}>
-        {/* <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image source={icons.back} style={{ height: 20, width: 20 }} />
-        </TouchableOpacity> */}
+        <View
+            style={styles.header}>
+            <TouchableOpacity
+                style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
+                onPress={() => navigation.goBack()}>
+                <Image
+                    source={icons.back}
+                    style={{ height: 20, width: 20, tintColor: COLORS.primary }}
+                />
+            </TouchableOpacity>
+            <Text
+                style={{
+                    ...FONTS.body2,
+                    color: COLORS.black,
+                    // fontWeight: 'bold',
+                }}>
+                TEST SCREEN
+            </Text>
 
-          <Text style={{ ...FONTS.h2, color: COLORS.black, fontWeight: 'bold' }}>
-            Notifications
-          </Text>
-        {/* <Image source={icons.back} style={{height: 25, width: 25}} /> */}
-      </View>
+            <View></View>
+        </View>
     );
-  }
+}
 
   function renderNotification() {
     const renderItem = ({ item }) => {
@@ -120,15 +145,14 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.lightGray3,
     // paddingBottom: SIZES.padding * 3,
   },
-  headerContainer: {
+  header: {
     height: 50,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: COLORS.white,
     elevation: 5,
-    width: '100%',
-    // marginBottom: SIZES.padding
+    width: '100%'
   },
   searchContainer: {
     marginVertical: SIZES.padding * 1,

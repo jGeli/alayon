@@ -271,8 +271,8 @@ export default function Home({ navigation }) {
 
   function renderNearbyList() {
     const renderItem = ({ item }) => {
-      let { latitude, longitude } = item.location ? item.location : { latitude: location.latitude, longitude: location.longitude };
-      let distance = haversine({ latitude: location.latitude, longitude: location.longitude }, { latitude, longitude }) || 0
+      let { latitude, longitude } = item.location ? item.location : { latitude: location?.latitude, longitude: location?.longitude };
+      let distance = haversine({ latitude: location?.latitude, longitude: location?.longitude }, { latitude, longitude }) || 0
       return shops.length === 0 ? (
         <TouchableOpacity
           style={{
@@ -355,7 +355,7 @@ export default function Home({ navigation }) {
           <View style={styles.cardConatiner}>
             <View style={styles.rateBadge}>
               <Text style={{ color: COLORS.white, fontWeight: 'bold' }}>
-                {item.avgRate ? item.avgRate : 1.5}
+                {item.avgRate}
               </Text>
             </View>
 
@@ -371,7 +371,7 @@ export default function Home({ navigation }) {
                 }}
               />
               <Text style={{ color: COLORS.primary, fontWeight: 'bold' }}>
-                {location.address ? `${parseFloat(distance * distanceMultiplier).toFixed(2)} Km away` : 'Not in range'}
+                {location?.address ? `${parseFloat(distance * distanceMultiplier).toFixed(2)} Km away` : 'Not in range'}
               </Text>
             </View>
             <View style={{ width: '90%' }}>

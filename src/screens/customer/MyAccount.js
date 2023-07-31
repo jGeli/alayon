@@ -95,12 +95,12 @@ export default function MyAccount({ navigation }) {
           style={{
             borderWidth: 1,
             borderColor: COLORS.lightGray3,
-            borderRadius: SIZES.radius,
+            borderRadius: 999,
             marginRight: SIZES.padding,
           }}
         >
           <Image
-            source={{ uri: user.imgUrl }}
+            source={{ uri: user.imgUrl ?? 'https://alayon.bugtech.solutions/api/v1/static/banners/8.jpg' }}
             resizeMode='contain'
             style={{
               height: 120,

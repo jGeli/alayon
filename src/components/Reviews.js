@@ -68,20 +68,18 @@ export default function Reviews({ shop }) {
                     style={styles.container}
                 >
 
-                    <View style={{ flexDirection: 'column', alignItems: 'flex-start', borderColor: COLORS.black, margin: SIZES.padding, borderBottomWidth: 1, padding: SIZES.padding }}>
-
+                    <View style={{ flexDirection: 'column', alignItems: 'flex-start', borderColor: COLORS.lightGray3, margin: SIZES.padding, borderWidth: 1, padding: SIZES.padding, borderRadius: SIZES.base }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center'}}>
-                        <Image 
-                        source={icons.user}
-                         style={{
-                            height: 50,
-                            width: 50,
-                            tintColor: COLORS.lightGray3,
-                         }} />
-                            <View style={{ flexDirection: 'row', alignItems: 'center', width: '90%' }}>
+                            <Image
+                                source={icons.user}
+                                style={{
+                                    height: 50,
+                                    width: 50,
+                                    tintColor: COLORS.lightGray3,
+                                }} />
+                            <View style={{ flexDirection: 'row', alignItems: 'flex-start', width: '90%', height: '100%'}}>
                                 <View style={{ flexDirection: 'column', flex: 1, marginLeft: SIZES.padding * 1}}>
                                     <Text style={{
-
                                         fontSize: SIZES.base * 2,
                                         fontWeight: 'bold',
                                         color: COLORS.black
@@ -99,35 +97,40 @@ export default function Reviews({ shop }) {
                                         <Ratings
                                             rating={item.ratings}
                                             iconStyle={{
-                                                marginLeft: 3
+                                                marginRight: 3
                                             }}
                                         />
                                     </View>
 
 
                                 </View>
-                                <TouchableOpacity
+                                <View
                                     style={{
                                         flexDirection: 'row'
                                     }}
-                                    disabled={loading}
-                                    onPress={() => handleReact(item)}
                                 >
-                                    <Image
-                                        source={icons.likes}
-                                        resizeMode='contain'
-                                        style={{
+                                    <TouchableOpacity
+                                        
+                                        disabled={loading}
+                                        onPress={() => handleReact(item)}
+                                    >
+                                        <Image
+                                            source={icons.likes}
+                                            resizeMode='contain'
+                                            style={{
 
-                                            height: 20,
-                                            width: 20,
-                                            tintColor: item.likes.find(a => String(a) == String(user._id)) ? COLORS.primary : COLORS.black
-                                        }}
-                                    />
+                                                height: 20,
+                                                width: 20,
+                                                tintColor: item.likes.find(a => String(a) == String(user._id)) ? COLORS.primary : COLORS.black
+                                            }}
+                                        />
+                                        
+
+                                    </TouchableOpacity>
                                     <Text style={{
-                                        ...FONTS.body4, marginLeft: SIZES.padding
-                                    }}>({item.likes.length})</Text>
-
-                                </TouchableOpacity>
+                                            ...FONTS.body4, marginLeft: SIZES.padding / 2
+                                        }}>({item.likes.length})</Text>
+                                </View>
                                 <TouchableOpacity
                                     style={{
                                         // marginHorizontal: SIZES.base
@@ -146,8 +149,7 @@ export default function Reviews({ shop }) {
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', margin: SIZES.padding2 }}>
-                        <View style={{ flexDirection: 'column', flex: 1, marginLeft: SIZES.padding * 4}}>
+                        <View style={{ flexDirection: 'row', alignItems: 'flex-start', margin: SIZES.padding2}}>
                                 <Text style={{
                                     ...FONTS.body3,
                                     fontWeight: '600',
@@ -156,20 +158,21 @@ export default function Reviews({ shop }) {
                                 >
                                     {item.message}
                                 </Text>
-                            </View>
                         </View>
 
-                        <View style={{ flexDirection: 'row', margin: SIZES.padding2, alignItems: 'center' }}>
-                            <View style={{ flexDirection: 'column', flex: 1 }}>
+                        <View style={{ flexDirection: 'row'}}>
+                            {/* <View style={{ flexDirection: 'column', flex: 1, borderWidth: 1}}> */}
                                 <Image
                                     source={images.shop4}
                                     resizeMode='contain'
                                     style={{
                                         height: 100,
-                                        width: 100
+                                        width: 100,
+                                        marginHorizontal: SIZES.base / 2
                                     }}
                                 />
-                            </View>
+                                
+                            {/* </View> */}
                         </View>
                     </View>
                 </View>
@@ -179,9 +182,9 @@ export default function Reviews({ shop }) {
             <View>
 
                 <FlatList
-                      refreshControl={
+                    refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                      }
+                    }
                     keyExtractor={(item) => item._id}
                     data={data}
                     vertical

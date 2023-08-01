@@ -8,12 +8,13 @@ import TestScreen from '../TestScreen';
 import { ScrollView } from 'react-native';
 import AreaStep from '../../components/AreaStep';
 import LoadingScreen from '../LoadingScreen';
+import { SET_MAP_LOCATION } from '../../redux/actions/type';
 
 
 // create a component
 const SelectRegion = ({ navigation, route }) => {
     const dispatch = useDispatch();
-    const {location} = route.params;
+    const {location, navType} = route.params;
     const [areas, setAreas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [areaOptions, setAreaOptions] = useState([]);
@@ -125,7 +126,12 @@ const SelectRegion = ({ navigation, route }) => {
                 let newAreaValue = {...areaValue, barangay: item.name, barangayCode: index}
                 setAreaValue(newAreaValue);
                 setStepInput([newAreaValue.region, newAreaValue.province, newAreaValue.cityMun, item.name])
-                navigation.navigate('AddressDetails', {...route.params, address: {...route.params.address, ...newAreaValue}})
+                if(navType === 'current'){
+                    dispatch({type: SET_MAP_LOCATION, payload: newAreaValue})  
+                    navigation.navigate('CustomerHome', {...route.params, address: {...route.params.address, ...newAreaValue}})
+                } else {
+                        navigation.navigate('AddressDetails', {...route.params, address: {...route.params.address, ...newAreaValue}})
+                }
         }
     }
 

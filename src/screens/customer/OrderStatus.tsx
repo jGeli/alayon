@@ -11,6 +11,7 @@ import { getOrderById } from '../../redux/actions/customer.actions';
 import { statusIndexing } from '../../utils/helpers';
 import LoadingScreen from '../LoadingScreen';
 import socket from '../../utils/socket';
+import moment from 'moment';
 
 
 
@@ -93,6 +94,7 @@ export default function OrderStatus({navigation, route}) {
   const [loading, setLoading] = React.useState(true)
   
   const handleGetOrder = async (id) => {
+  
     let myOrder = await dispatch(getOrderById(id));
     if(myOrder){
       setOrderData({...myOrder, statusIndex: statusIndexing(myOrder.activeStatus)})
@@ -113,14 +115,7 @@ export default function OrderStatus({navigation, route}) {
     return (
         <View
             style={styles.header}>
-            <TouchableOpacity
-                style={{  padding: SIZES.padding}}
-                onPress={() => navigation.navigate(navType == 'track' ? 'CustomerOrders': 'CustomerHome', {})}>
-                <Image
-                    source={navType === 'track' ? icons.back : icons.home}
-                    style={{ height: 20, width: 20, tintColor: COLORS.primary }}
-                />
-            </TouchableOpacity>
+         
             <Text
                 style={{
                     ...FONTS.body2,
@@ -130,9 +125,6 @@ export default function OrderStatus({navigation, route}) {
               DELIVERY STATUS
             </Text>
 
-            <View
-              style={{ height: 20, width: 20, margin: SIZES.padding, tintColor: COLORS.primary }}
-              ></View>
         </View>
     );
 }
@@ -149,7 +141,7 @@ export default function OrderStatus({navigation, route}) {
         <Text
           style={{
             ...FONTS.body4,
-            color: COLORS.gray,
+            color: COLORS.darkGray2,
             textAlign: 'center'
             // fontWeight: 'bold',
           }}>
@@ -157,12 +149,12 @@ export default function OrderStatus({navigation, route}) {
         </Text>
         <Text
           style={{
-            ...FONTS.h3,
+            ...FONTS.h4,
             color: COLORS.black,
-            textAlign: 'center'
-            // fontWeight: 'bold',
+            textAlign: 'center',
+            fontWeight: 'bold',
           }}>
-          21 Sept 2021 / 12:30PM
+         {moment().add(12, 'hours').format('LLL')}
         </Text>
       </View>
     );
@@ -282,7 +274,7 @@ export default function OrderStatus({navigation, route}) {
             style={{flexDirection: 'row', height: 55}}
         >
         {
-        orderData.statusIndex < 2 ?
+        orderData.statusIndex < 2 && navType !== 'track' ?
         <TextButton
         buttonContainerStyle={{
             width: '40%',
@@ -293,7 +285,7 @@ export default function OrderStatus({navigation, route}) {
         labelStyle={{
         color: COLORS.primary
         }}
-        onPress={() => Alert.alert('CANCEL')}
+        onPress={() => navigation.goBack()}
     />  : 
     
     <TextButton
@@ -306,7 +298,7 @@ export default function OrderStatus({navigation, route}) {
     labelStyle={{
     color: COLORS.primary
     }}
-    onPress={() => Alert.alert('BACK')}
+    onPress={() => navigation.goBack()}
     />
         }
        {orderData.statusIndex < 4 
@@ -466,10 +458,10 @@ const styles = StyleSheet.create({
   header: {
     height: 50,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
-    elevation: 5,
+    // backgroundColor: COLORS.white,
+    // elevation: 5,
     width: '100%'
 },
   stepIndicator: {

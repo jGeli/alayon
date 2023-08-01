@@ -12,7 +12,7 @@ import { getOrders } from '../../redux/actions/customer.actions'
 export default function MerchantHomeScreen({ navigation }) {
   const dispatch = useDispatch()
   const { customer: { orders } } = useSelector(({customer}) => customer) 
-  const [selectedServiceStatus, setSelectedServiceStatus] = useState(1);
+  const [selectedTab, setSelectedTab] = useState(0);
   const [ordersData, setOrdersData] = useState([])
   const [refreshing, setRefreshing] = useState(false);
 
@@ -27,10 +27,9 @@ export default function MerchantHomeScreen({ navigation }) {
 
 
 
-  const handleChangeService = (orderId) => {
-    const selectedStatus = userData2.orders.filter(a => a.category == orderId)
+  const handleChangeTab = (id) => {
     // setMyList(selectedStatus)
-    setSelectedServiceStatus(orderId)
+    setSelectedTab(id)
     // console.log(serviceId)
     // console.log(selectedCloth)
 
@@ -67,7 +66,7 @@ export default function MerchantHomeScreen({ navigation }) {
         </TouchableOpacity> */}
         <Text
           style={{
-            ...FONTS.body2,
+            ...FONTS.body3,
             color: COLORS.black,
             fontWeight: 'bold',
           }}>
@@ -82,69 +81,26 @@ export default function MerchantHomeScreen({ navigation }) {
 
 
 
-  function renderOrders() {
+  function renderOrderTab() {
     return (
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-
-        <TouchableOpacity
-          style={{
-            // borderRadius: SIZES.radius,
-            // height: 40,
-            flexDirection: 'row',
-            // alignItems: 'center'
-          }}
-          onPress={() => {
-            handleChangeService()
-          }}
-        >
-          <TextButton
-            label="Active Orders"
-            buttonContainerStyle={{
-              // width: 150,
-              padding: SIZES.base,
-
-              backgroundColor: COLORS.primary,
-              borderColor: COLORS.primary,
-              borderWidth: 1,
-              borderRadius: SIZES.padding * 1,
-              // flexDirection: 'row',
-
-              // alignItems: 'center',
-              marginHorizontal: SIZES.radius * 1
-            }}
-            labelStyle={{
-              color: COLORS.white,
-            }}
-            // onPress={() => onPress("OrderDetails")}
-            onPress={() => console.log("Order Receive Pressed")}
-
-          />
-          <TextButton
-            label="Past Orders"
-            buttonContainerStyle={{
-              // width: 150,
-              padding: SIZES.base,
-              backgroundColor: COLORS.lightGray3,
-              borderColor: COLORS.white,
-              borderWidth: 1,
-              borderRadius: SIZES.padding * 1,
-              // flexDirection: 'row',
-
-              // alignItems: 'center',
-              marginHorizontal: SIZES.radius * 1
-            }}
-            labelStyle={{
-              color: COLORS.black,
-            }}
-            // onPress={() => onPress("OrderDetails")}
-            onPress={() => console.log("Order Receive Pressed")}
-
-          />
-        </TouchableOpacity>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', width: '100%' }}>
+      <TouchableOpacity
+        style={[styles.orderTabItem, selectedTab === 0 && { backgroundColor: COLORS.primary }]}
+        onPress={() => handleChangeTab(0)}
+      >
+        <Text style={styles.tabItemText}
+        style={[styles.tabItemText, selectedTab === 0 && { color: COLORS.white }]}
+        >Active Orders</Text>
+      </TouchableOpacity> 
+      <TouchableOpacity
+               style={[styles.orderTabItem, selectedTab === 1 && { backgroundColor: COLORS.primary }]}
+               onPress={() => handleChangeTab(1)}
+      >
+        <Text style={[styles.tabItemText, selectedTab === 1 && { color: COLORS.white }]}>Past Orders</Text>
+      </TouchableOpacity>
+     
       </View>
-
-
     )
   }
 
@@ -165,18 +121,17 @@ export default function MerchantHomeScreen({ navigation }) {
     // }}
     >
       {renderHeader()}
-      {renderOrders()}
+      {renderOrderTab()}
       <FlatList
         showsVerticalScrollIndicator={false}
        refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
-          style={{marginTop: SIZES.padding * 2}}
+          style={{marginTop: SIZES.padding * 2, padding: SIZES.padding * 2}}
           data={ordersData}
-          renderItem={({item}) => {
-          console.log(item, "ITEM")
+          renderItem={({item, index}) => {
           return(
-            <CustomerOrders navigation={navigation} order={item}/>
+            <CustomerOrders key={index} navigation={navigation} order={item}/>
             )
           }}
           keyExtractor={(item) => item._id}
@@ -192,18 +147,29 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flex: 1,
     backgroundColor: COLORS.lightGray3,
-    paddingBottom: SIZES.padding * 3,
-    alignItems: 'center'
+    paddingBottom: SIZES.padding * 2,
+    // alignItems: 'center'
   },
   header: {
     height: 50,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
-    elevation: 5,
+    // backgroundColor: COLORS.white,
+    // elevation: 5,
     width: '100%',
     marginBottom: SIZES.padding
   },
-
+  orderTabItem: {
+    width: '40%',
+    borderRadius: SIZES.radius,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.gray3,
+    height: 40
+  }, 
+  tabItemText: {
+    ...FONTS.body3,
+    fontWeight: 'bold'
+  }
 });

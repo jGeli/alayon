@@ -27,7 +27,7 @@ const varEnv = constants.varEnv;
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
-  const { isLocationAllow } = useSelector(({ data }) => data);
+  const { isLocationAllow, location: { cityMun } } = useSelector(({ data }) => data);
   const { isAuthenticated, user: { location, _id } } = useSelector(({auth}) => auth)
   const [refreshing, setRefreshing] = useState(false);
   const [shops, setShops] = useState([])
@@ -123,9 +123,9 @@ export default function Home({ navigation }) {
               style={{
                 ...FONTS.body3,
                 color: COLORS.primary,
-                // fontWeight: 'bold',
+                fontWeight: 'bold',
               }}>
-              {location && location.address ? cutString(location.address, 25) : 'Find your location?'}
+              {cityMun  ? cutString(cityMun, 25) : 'Find your location?'}
             </Text>
           </View>
         </TouchableOpacity>

@@ -10,13 +10,10 @@ import {
 
 import MapView, { Marker, PROVIDER_GOOGLE, AnimatedRegion } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
-import Geolocation from 'react-native-geolocation-service';
 import haversine from "haversine";
 
 import { COLORS, FONTS, GOOGLE_API_KEY, SIZES, constants, icons, images } from '../../../constants';
 import socket from '../../../utils/socket';
-import { useSelector } from 'react-redux';
-import { Alert } from 'react-native';
 import { computeHeading } from '../../../utils/helpers';
 
 let initialRegion = {
@@ -57,7 +54,6 @@ const Map1 = ({ navigation, route }) => {
   const [riderLoc, setRiderLoc] = useState(null)
   const [isReady, setIsReady] = useState(false)
   const [duration, setDuration] = useState('')
-  const [rnd, setRnd] = useState(0)
 
 
 
@@ -194,8 +190,6 @@ const Map1 = ({ navigation, route }) => {
         point2LatLng
     );
 
-    console.log(angle, 'ANGLE')
-    console.log(point1LatLng, point2LatLng, 'POINTS')
     const actualAngle = angle - 90;
 
     
@@ -276,7 +270,7 @@ const getDistance = () => {
             right: SIZES.padding
           }}
         >
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => navigation.push('TestScreen', {order: order})}
             style={{
               width: 40,
@@ -298,8 +292,8 @@ const getDistance = () => {
                 tintColor: COLORS.gray
               }}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </TouchableOpacity> */}
+          {/* <TouchableOpacity
             style={{
               width: 40,
               height: 40,
@@ -321,7 +315,7 @@ const getDistance = () => {
                 tintColor: COLORS.gray
               }}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
       </>

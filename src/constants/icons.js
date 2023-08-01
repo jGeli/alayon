@@ -111,11 +111,13 @@ export const shop_processing2 = require('../assets/icons/shop_processing2.png');
 export const navigator1 = require('../assets/icons/navigator1.png');
 export const globe = require('../assets/icons/globe.png');
 export const focus = require('../assets/icons/focus.png');
+export const send = require('../assets/icons/send.png');
 
 
 
 
 export default {
+  send,
   focus,
   globe,
   navigator1,

@@ -293,11 +293,6 @@ const StackNavigator = () => {
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="CustomerNotifications"
-              component={NotificationScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
               name="OnBoarding"
               component={OnBoarding}
               options={{ headerShown: false }}

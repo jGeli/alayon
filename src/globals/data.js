@@ -176,7 +176,7 @@ export const CustomerMyAccount = [
     
   },
   {
-    name: 'My Notification',
+    name: 'Notification',
     screen: 'CustomerNotifications'
   },
   {

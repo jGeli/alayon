@@ -222,7 +222,7 @@ console.log(route.params, 'NAVTYPE')
                     return (
                         <TouchableOpacity style={{...styles.listItem, backgroundColor: COLORS.white}} key={a.code} onPress={() => handleSelectRegion(a, index)}>
                             <View style={styles.listItemContent}>
-                                <Text>{a.name}</Text>
+                                <Text style={{color: COLORS.black}}>{a.name}</Text>
                             </View>
                         </TouchableOpacity>
                     )

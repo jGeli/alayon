@@ -59,6 +59,7 @@ const AddressDetails = ({ navigation, route }) => {
                     <TextInput
                         editable
                         placeholder='House No., Building, Street Name.'
+                        placeholderTextColor={"gray"}
                         onChangeText={text => setValues(text)}
                         value={values}
                         multiline={true}
@@ -120,7 +121,10 @@ const styles = StyleSheet.create({
         width: '100%'
     },
     textInput: {
-        width: '100%'
+        width: '100%',
+        backgroundColor: COLORS.white,
+        color: COLORS.black
+        
     },
     textInputContainer: {
         backgroundColor: COLORS.white3,

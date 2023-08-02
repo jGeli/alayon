@@ -201,7 +201,8 @@ const AddressLocationForm = ({ navigation, route }) => {
                     />
                 </View> */}
                 <TouchableOpacity style={{ ...styles.textInputContainer, flexDirection: 'row', justifyContent: 'space-between', padding: SIZES.padding, paddingLeft: SIZES.padding }} onPress={() => navigation.navigate('AddressDetails', { address: values, navType })}>
-                    <Text style={{ color: COLORS.gray2 }}>{values.address ? values.address : 'Street Name, Building, House No.'}</Text>
+                    <Text style={{color: values.address ? COLORS.black : COLORS.gray2}}>{values.address ? values.address : 'Street Name, Building, House No.'}</Text>
+                   
                     <Image
                         source={icons.arrow_right}
                         style={{ height: 25, width: 25, tintColor: COLORS.darkGray }}
@@ -219,7 +220,7 @@ const AddressLocationForm = ({ navigation, route }) => {
                     <Text style={styles.labelText}>Settings</Text>
                 </View>
                 <View style={styles.textInputContainer2}>
-                    <Text>Label As:</Text>
+                    <Text style={{color: COLORS.gray}}>Label As:</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flexGrow: 1 }}>
                         {labels.map(a => {
                             return <TouchableOpacity
@@ -235,7 +236,7 @@ const AddressLocationForm = ({ navigation, route }) => {
                     </View>
                 </View>
                 <View style={styles.textInputContainer2}>
-                    <Text>Set as Default Address</Text>
+                    <Text style={{color: COLORS.gray}}>Set as Default Address</Text>
                     <Switch
                         trackColor={{ false: '#767577', true: COLORS.primary }}
                         thumbColor={values.isDefault ? COLORS.primary : '#f4f3f4'}
@@ -315,7 +316,6 @@ const styles = StyleSheet.create({
         // height: 10,
         ...FONTS.body5,
 
-
     },
     activeCardLabel: {
         borderColor: COLORS.primary,
@@ -345,7 +345,6 @@ const styles = StyleSheet.create({
     textInput: {
         // height: 40,
         padding: SIZES.padding,
-
         width: '100%',
         color: COLORS.black
     },

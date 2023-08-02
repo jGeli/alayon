@@ -196,7 +196,7 @@ console.log(route.params, 'NAVTYPE')
                     height: stepInput.length * 50,
                     paddingVertical: 5,
                     paddingLeft: SIZES.padding,
-                       flexDirection: 'row',
+                    flexDirection: 'row',
                     width: '100%',
                     backgroundColor: COLORS.white
                 }}
@@ -263,7 +263,7 @@ console.log(route.params, 'NAVTYPE')
                         return (
                             <TouchableOpacity style={styles.listItem} key={item.code} onPress={() => handleSelect(item, index)}>
                                 <View style={styles.listItemContent}>
-                                    <Text>{item.name}</Text>
+                                    <Text style={{color: COLORS.black}}>{item.name}</Text>
                                 </View>
                             </TouchableOpacity>
                         )

@@ -122,7 +122,7 @@ export default function Map({ navigation, route }) {
             <Text
               style={{ ...FONTS.body3, color: COLORS.black }}
             >
-              {address.address}
+              {address?.address}
             </Text>
           </View>
           :

@@ -53,7 +53,7 @@ const AllowLocationModal = ({ navigation }) => {
             if (granted === 'granted') {
                 dispatch({ type: SET_ALLOW_LOCATION, payload: true })
                 dispatch({ type: CLOSE_ALLOW_LOCATION_MODAL })
-                navigation.navigate('Map', { navType: 'current' })
+                navigation.navigate('SelectRegion', { navType: 'current' })
 
                 console.log('You can use Geolocation');
                 // return true;

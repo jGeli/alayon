@@ -129,7 +129,7 @@ export default function Home({ navigation }) {
             </Text>
           </View>
         </TouchableOpacity>
-        {isAuthenticated &&
+        {/* {isAuthenticated &&
         <TouchableOpacity
           onPress={() => navigation.navigate("Chats", { shops })}
           style={{
@@ -147,7 +147,7 @@ export default function Home({ navigation }) {
             }}
           />
         </TouchableOpacity>
-        }
+        } */}
         <TouchableOpacity
           onPress={() => navigation.navigate('Search', {})}
           style={{

@@ -53,6 +53,7 @@ import Maps from './components/Cards/Map/Map1';
 import Map1 from './components/Cards/Map/Map1';
 import TestScreen from './screens/TestScreen';
 import socket from './utils/socket';
+import CustomerOrderDetails from './screens/customer/CustomerOrderDetails';
 
 
 const StackNavigator = () => {
@@ -349,6 +350,11 @@ const StackNavigator = () => {
               component={OrderSummary}
               options={{ headerShown: false }}
             />
+              <Stack.Screen
+              name="CustomerOrderDetails"
+              component={CustomerOrderDetails}
+              options={{ headerShown: false }}
+            />
             <Stack.Screen
               name="AddOnsScreen"
               component={AddOnsScreen}
@@ -424,6 +430,7 @@ const StackNavigator = () => {
               component={CustomerSettings}
               options={{ headerShown: false }}
             />
+           
 
           </Stack.Navigator>
         </NavigationContainer>

@@ -50,7 +50,9 @@ const CustomerOrders = ({ navigation, order }) => {
         {/* BUTTON */}
         <View style={styles.btnContainer}>
             <TouchableOpacity style={styles.button}>
-                <Text style={{...FONTS.body4, fontWeight: 'bold'}}>Order Details</Text>
+                <Text style={{...FONTS.body4, fontWeight: 'bold'}}
+                onPress={() => navigation.navigate("CustomerOrderDetails")}
+                >Order Details</Text>
             </TouchableOpacity>
         </View>
         

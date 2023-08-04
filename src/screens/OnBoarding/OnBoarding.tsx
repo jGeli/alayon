@@ -6,37 +6,34 @@ import { TextButton } from '../../components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const OnBoarding = ({ navigation }) => {
-  // const scrollX = new Animated.Value(0)
-  // const scrollX = new Animated.Value(0);
   const scrollX = useRef(new Animated.Value(0)).current
-  const { width: windowWidth } = useWindowDimensions();
   const flatListRef = useRef();
-
+  const [isDone, setIsDone] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
 
   const onViewChangeRef = useRef(({ viewableItems, changed }) => {
+    setIsDone(false)
     setCurrentIndex(viewableItems[0].index);
   });
 
 
   const handleBack = () => {
-    navigation.replace('MainCustomer')
+      let ind = currentIndex - 1;
+    setIsDone(false)
+  setCurrentIndex(ind)
+  flatListRef?.current?.scrollToIndex({
+    index: ind,
+    Animated: true,
+  });
+    
   }
 
   const handleGetStarted = async () => {
     await AsyncStorage.setItem('onBoarded', 'onboarded')
     navigation.replace('MainCustomer')
   }
-  // const {width, height} = Dimensions.get('window');
-  // let titleSize = Number(~~width)
-  // console.log(titleSize)
-  // let title = titleSize / 100;
-  // console.log(Math.trunc(title * title))
-  // console.log(title / 100 * 3)
-
-
-
+  
 
   const Dots = () => {
     const dotPosition = Animated.divide(scrollX, SIZES.width);
@@ -51,7 +48,7 @@ const OnBoarding = ({ navigation }) => {
         {constants.onboarding_screens.map((item, index) => {
           const dotColor = dotPosition.interpolate({
 
-            inputRange: [index - 1, index, index + 1],
+            inputRange: [index - 1, index, index + 1,  index + 2, index + 3],
             // inputRange: [
             //   windowWidth * (index - 1), 
             //   windowWidth * index, 
@@ -60,6 +57,8 @@ const OnBoarding = ({ navigation }) => {
               COLORS.white,
               COLORS.primary,
               COLORS.primary,
+              COLORS.primary,
+              COLORS.primary
 
             ],
             extraPolate: 'clamp',
@@ -123,7 +122,7 @@ const OnBoarding = ({ navigation }) => {
           <Dots />
         </View>
         {/* Button */}
-        {currentIndex < constants.onboarding_screens.length - 1 && (
+        {(currentIndex < constants.onboarding_screens.length - 1 && !isDone)  && (
           <View
             style={{
               flexDirection: 'row',
@@ -133,16 +132,42 @@ const OnBoarding = ({ navigation }) => {
               marginVertical: SIZES.padding,
               borderColor: COLORS.lightGray3
             }}>
+            {currentIndex !== 0 ? (
             <TextButton
-              label="Skip"
+              label="Back"
               labelStyle={{
-                color: COLORS.darkGray2
+                color: COLORS.darkGray2,
+                ...FONTS.body2,
+                textAlign: 'center'
               }}
               buttonContainerStyle={{
+                height: 50,
+                width: 150,
                 backgroundColor: null,
+                // borderRadius: SIZES.radius,
+                marginTop: SIZES.base
               }}
               onPress={handleBack}
-            />
+            />) : (<TextButton
+              label="Skip"
+              labelStyle={{
+                color: COLORS.darkGray2,
+                ...FONTS.body2,
+                textAlign: 'center'
+              }}
+              buttonContainerStyle={{
+                height: 50,
+                width: 150,
+                backgroundColor: null,
+                // borderRadius: SIZES.radius,
+                marginTop: SIZES.base
+              }}
+              onPress={() => {
+                navigation.replace('MainCustomer')
+              }}
+            />)}
+  
+            
             <TextButton
               label="Next"
               labelStyle={{
@@ -151,25 +176,28 @@ const OnBoarding = ({ navigation }) => {
               }}
               buttonContainerStyle={{
                 height: 50,
-                width: 200,
+                width: 150,
                 borderRadius: SIZES.radius,
                 marginTop: SIZES.base
               }}
               onPress={() => {
-                setCurrentIndex(currentIndex + 1)
+              let ind = currentIndex + 1;
+              if(ind === constants.onboarding_screens.length - 1){
+                    setIsDone(true)
+              }
+                setCurrentIndex(ind)
                 flatListRef?.current?.scrollToIndex({
                   index: currentIndex + 1,
                   Animated: true,
                 });
+                
               }}
             />
-          </View>
-        )}
-
-        {currentIndex == constants.onboarding_screens.length - 1 && (
+          </View>)}
+         {(currentIndex == constants.onboarding_screens.length - 1 || isDone)  && (
           <View
             style={{
-              paddingHorizontal: SIZES.padding,
+              paddingHorizontal: SIZES.padding * 2,
               marginVertical: SIZES.padding,
             }}>
             <TextButton
@@ -190,15 +218,14 @@ const OnBoarding = ({ navigation }) => {
     );
   }
 
+
   return (
     <View
       style={{
+        // height: '100%',
         flex: 1,
-        width: SIZES.width,
-        height: SIZES.height,
         flexGrow: 1,
-        // alignItems: 'center',
-        justifyContent: 'flex-start',
+        width: SIZES.width,
         backgroundColor: COLORS.white,
       }}
     // style={styles.container}
@@ -209,14 +236,19 @@ const OnBoarding = ({ navigation }) => {
         ref={flatListRef}
         horizontal={true}
         // pagingEnabled
+        onEndReached={() => {
+        setCurrentIndex(constants.onboarding_screens.length - 1)
+        setIsDone(true)
+        }}
+        onScrollEndDrag={(e) => {
+        if(currentIndex <= constants.onboarding_screens.length - 1){
+          setIsDone(false)
+        }
+        }}
         data={constants.onboarding_screens}
         scrollEventThrottle={1}
         snapToAlignment='center'
         showsHorizontalScrollIndicator={false}
-        // onScroll={Animated.event(
-        //   [{nativeEvent: {contentOffset: {x: scrollX}}}],
-        //   {useNativeDriver: false},
-        // )}
         onScroll={Animated.event([
           {
             nativeEvent: {
@@ -233,41 +265,60 @@ const OnBoarding = ({ navigation }) => {
           return (
             <View
               style={{
+                flex: 3,
+                flexGrow: 1,
+                // width: SIZES.width,
                 width: SIZES.width,
+                // height: '100%'
+
               }}>
               {/* Header */}
               <View
                 style={{
-                  flex: 3,
-                  // alignItems: 'flex-end'
-                }}>
+                // flex: 1,
+                // flexGrow: 1,
+                alignItems: 'flex-end',
+                justifyContent: 'flex-end',
+                width: '100%', 
+                height: SIZES.height,
+                bottom: 400,
+
+                // marginTop: index % 2 == 1 ? 55 : 0,
+                // paddingBottom: index % 2 == 1 ? 0 : 50
+                }}
+              >
                 <ImageBackground
+                  // resizeMode='c'
                   source={item.backgroundImage}
                   style={{
-                    flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    height: '100%',
-                    width: SIZES.width,
-                    // height: '100%',
-                    bottom: 50,
-                    opacity: .9,
-                  }}>
+                  flex: 1,
+                  // flexGrow: 1,
+                  // marginTop: -50,
+                  // marginBottom: 100,
+                  // bottom: 200,
+                  // backgroundColor: COLORS.black,
+                    height: index % 2 == 1? '95.5%' : '100%',
+                    width: '100%'
+                }}>
+                            
+        
+                           
                 </ImageBackground>
-              </View>
+                </View>
 
               {/* Details */}
               <View
                 style={{
-                  flex: 1,
-                  marginTop: 30,
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                  paddingHorizontal: SIZES.padding2 * 6,
-                  bottom: 300
+                  // flexGrow: 1,
+                    // height: SIZES.height,
+                // width: SIZES.width,
+                alignItems: 'center',
+                  // justifyContent: 'flex-start',
+                  paddingHorizontal: SIZES.padding * 5,
+                  bottom: index % 2 == 1 ? 600 : 500
                 }}>
                 <Text style={{
-                  ...FONTS.h1, fontSize: 35,
+                  ...FONTS.h1, fontSize: 30,
                   textAlign: 'center', textShadowRadius: 2, fontWeight: 'bold', color: (item.id === 2 || item.id === 4) ? COLORS.white : COLORS.black
                 }}>
                   {item.title}
@@ -276,14 +327,13 @@ const OnBoarding = ({ navigation }) => {
               </View>
               <View
                 style={{
-                  flex: 1,
                   position: 'absolute',
                   width: SIZES.width,
-                  // justifyContent: 'flex-end',
-                  height: '160%',
-                  paddingLeft: SIZES.radius * 3,
-                  alignItems: 'center'
-
+                  justifyContent: 'center',
+                  bottom: 100,
+                  paddingHorizontal: SIZES.radius,
+                  // paddingLeft: SIZES.radius * 5,
+                  alignItems: 'flex-end',
                 }}
               >
                 <Image
@@ -292,17 +342,17 @@ const OnBoarding = ({ navigation }) => {
                   style={{
                     height: 125,
                     width: 125,
-                    flex: 1,
-                    marginBottom: -SIZES.padding,
-                    opacity: .7
                   }}
                 />
               </View>
+            
             </View>
           );
         }}
       />
+      <View style={{paddingHorizontal: SIZES.padding}}>
       {renderFooter()}
+      </View>
     </View>
   );
 };

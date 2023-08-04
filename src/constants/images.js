@@ -19,7 +19,7 @@ const defaultBanner = require('../assets/images/ALAYON/10.jpg');
 const loadingDots = require('../assets/images/loading-dots.gif');
 const setLoading = require('../assets/images/setLoading.gif');
 const setLoading2 = require('../assets/images/setLoading2.gif');
-const location = require('../assets/images/location.gif');
+const location = require('../assets/images/location1.gif');
 const location2 = require('../assets/images/location2.gif');
 const map = require('../assets/images/map.gif');
 const location3 = require('../assets/images/location3.gif');
@@ -29,10 +29,12 @@ const delivery_man = require('../assets/images/delivery_man.png');
 const rider = require('../assets/images/rider.png');
 const notification = require('../assets/images/bell.png');
 const locationIcon = require('../assets/images/location.png');
+const featureOverlay = require('../assets/images/featureOverlay.png');
 
 
 
 export default {
+    featureOverlay,
     locationIcon,
     rider,
     loadingDots,

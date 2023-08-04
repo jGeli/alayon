@@ -63,7 +63,6 @@ const StackNavigator = () => {
   const { isAuthenticated, user } = useSelector(({ auth }) => auth);
   const [mainScreen, setMainScreen] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [rnd, setRnd] = useState(0)
   // getting data
 
 
@@ -81,13 +80,13 @@ const StackNavigator = () => {
   console.log('LOCATION PERM', locationPermission)
   console.log('NOtif PERM', notificationPermission)
 
-    if (onBoarded && locationPermission && notificationPermission) {
+    if (onBoarded && (locationPermission && notificationPermission)) {
       // setMainScreen('OrderStatus');
-      setMainScreen('CustomerHome');
+      setMainScreen('OnBoarding');
 
     } else {
-      if(!locationPermission || !notificationPermission){
-        setMainScreen('PermissionScreen')
+      if((!locationPermission || !notificationPermission)){
+        setMainScreen('OnBoarding')
       } else {
         setMainScreen('OnBoarding')
       }
@@ -132,7 +131,7 @@ const StackNavigator = () => {
 
     setTimeout(() => {
       setLoading(false)
-    }, 5000)
+    }, 3000)
 
   }, [isAuthenticated])
 

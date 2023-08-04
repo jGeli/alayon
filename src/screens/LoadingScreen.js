@@ -11,7 +11,7 @@ const LoadingScreen = ({ source, style }) => {
 
                 height: '100%',
                 position: 'absolute',
-                backgroundColor: COLORS.lightGray1,
+                backgroundColor: COLORS.white,
                 justifyContent: 'center',
                 alignItems: 'center',
                 flexGrow: 1,
@@ -22,7 +22,7 @@ const LoadingScreen = ({ source, style }) => {
         >
 
             <Image
-                source={source ? source : images.loadingDots}
+                source={source ? source : images.lo}
                 resizeMode='contain'
                 style={{
                     height: 50,

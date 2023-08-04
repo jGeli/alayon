@@ -146,6 +146,7 @@ const OnBoarding = ({ navigation }) => {
     async function checkLocationPermission () {
       const granted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
   console.log(granted, 'LOCATION PERMISSION')
+        // if()
           
       }
   
@@ -155,7 +156,6 @@ const OnBoarding = ({ navigation }) => {
     }
     if(currentIndex === 1 && requestStatus === null){
       checkLocationPermission()
-        
     }
   })
   

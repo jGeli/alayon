@@ -1,409 +1,380 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, PermissionsAndroid, Image, Animated, useWindowDimensions } from 'react-native';
 
-import React, { useEffect, useState, useRef } from "react";
-import {
-    StyleSheet,
-    View,
-    Text,
-    TouchableOpacity,
-    Platform,
-    PermissionsAndroid,
-    Image
-} from "react-native";
-import MapView, {
-    Marker,
-    AnimatedRegion,
-    Polyline,
-    PROVIDER_GOOGLE,
-    
-} from "react-native-maps";
-import haversine from "haversine";
-import Geolocation from 'react-native-geolocation-service';
-import socket from "../utils/socket";
-import { computeHeading, getDirections, interpolatedPoint } from "../utils/helpers";
-import { COLORS, images } from "../constants";
+import { constants, images, FONTS, SIZES, COLORS } from '../constants';
+import { TextButton } from '../components';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { checkNotifications, requestNotifications, openSettings } from 'react-native-permissions';
 
-const LATITUDE_DELTA = 0.009;
-const LONGITUDE_DELTA = 0.009;
-const LATITUDE = 11.228703;
-const LONGITUDE = 124.997525;
 
-// create a component
-const TestScreen = ({navigation, route}) => {
-  let { shop: { location }, pickupDelivery, owner } = route.params.order;
-  
-
-    const [currentAngle, setCurrentAngle] = useState(0)
-    const [state, setState] = useState({
-             path: [],
-            progress: [],
-            velocity:  20,
-            initialDate: new Date(),
-            latitude: LATITUDE,
-            longitude: LONGITUDE,
-            routeCoordinates: [],
-            distanceTravelled: 0,
-            prevLatLng: {},
-            angle: 0,
-            coordinate: new AnimatedRegion({
-                latitude: LATITUDE,
-                longitude: LONGITUDE,
-                latitudeDelta: 0,
-                longitudeDelta: 0
-            })    
-    
-    })
-
-  const markerRef = useRef()    
+const permission_process = [
+    {
+      id: 1,
+      name: 'Please enable notifications',
+      description: 'This is required for getting notifications about your laundry order.',
+      image: images.notification
+    },
+    { 
+      id: 2,
+      name: 'Please allow access to geolocation',
+      description: 'It will make the address search more precise. This will help you save time and speed up the order process.',
+      image: images.locationIcon
+    }
+  ];
 
 
 
+const OnBoarding = ({ navigation }) => {
+  // const scrollX = new Animated.Value(0)
+  // const scrollX = new Animated.Value(0);
+  const scrollX = useRef(new Animated.Value(0)).current
+  const flatListRef = useRef();
 
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [requestStatus, setRequestStatus] = useState(null);
 
-
-    moveObject = () => {
-      const distance = getDistance();
-      console.log(distance, 'distance old');
-      if (!distance) {
-        return;
-      }
-  
-      let progress = state.path.filter(
-        (coordinates) => coordinates.distance < distance
-      );
-      
-  
-      const nextLine = state.path.find(
-        (coordinates) => coordinates.distance > distance
-      );
-      
-      
-      // console.log('PROGRESS', progress, nextLine)
-      if (!nextLine) {
-        setState({...state, progress });
-        return; // it's the end!
-      }
-      
-      const lastLine = progress[progress.length - 1];
-  
-      const lastLineLatLng = lastLine
-       
-  
-      const nextLineLatLng = nextLine
-  
-      // distance of this line
-      const totalDistance = nextLine.distance - lastLine.distance;
-      const percentage = (distance - lastLine.distance) / totalDistance;
-  
-      const position = interpolatedPoint(
-        lastLineLatLng,
-        nextLineLatLng,
-        percentage
-      );
-  
-      // if (Platform.OS === "android") {
-      //               if (marker) {
-      //                 marker?.animateMarkerToCoordinate(
-      //                   position,
-      //                   500
-      //                 );
-            
-      //               }
-      //           }
-      
-      
-         //         setState({
-        //             latitude,
-        //             longitude,
-        //             routeCoordinates: routeCoordinates.concat([newCoordinate]),
-        //             distanceTravelled:
-        //                 distanceTravelled + calcDistance(newCoordinate),
-        //             prevLatLng: newCoordinate
-        //         });
-        
-        
-                
-      progress = progress.concat(position);
-      setState({ 
-      ...state,
-            progress,
-                    distanceTravelled:
-                        state.distanceTravelled + calcDistance(position),
-                    prevLatLng: position
-            });
-    };
-    
-
-
-
-
-
-
-
-
-
-
-
-
-   const getMapRegion = () => ({
-      latitude: state.latitude,
-      longitude: state.longitude,
-      latitudeDelta: LATITUDE_DELTA,
-      longitudeDelta: LONGITUDE_DELTA
+  const onViewChangeRef = useRef(({ viewableItems, changed }) => {
+  console.log('WAWAWA', viewableItems[0])
+    setCurrentIndex(viewableItems[0].index);
   });
 
-  const calcDistance = (newLatLng, prev) => {
-      const prevLatLng = prev ? prev : state.prevLatLng;
-      return haversine(prevLatLng, newLatLng) || 0;
-  };
-  
-  const  getDistance = () => {
-    // seconds between when the component loaded and now
-    const differentInTime = (new Date() - state.initialDate) / 1000; // pass to seconds
-    return differentInTime * state.velocity; // d = v*t -- thanks Newton!
-  };
-  
 
-  const handleInitialDirection = () => {
-    const { coordinate, latitude, longitude } = state;
+  const requestLocationPermission = async () => {
+    try {
+      
 
-  
-    getDirections({latitude, longitude}, pickupDelivery)
-    .then((coord) => {
-      let path = coord.map((coordinates, i, array) => {
-        if (i === 0) {
-          return { ...coordinates, distance: 0 }; // it begins here!
+        if (granted === 'granted') {
+            dispatch({ type: SET_ALLOW_LOCATION, payload: true })
+            dispatch({ type: CLOSE_ALLOW_LOCATION_MODAL })
+            navigation.navigate('SelectRegion', { navType: 'current' })
+
+            console.log('You can use Geolocation');
+            // return true;
+        } else {
+            dispatch({ type: SET_ALLOW_LOCATION, payload: false })
+            dispatch({ type: CLOSE_ALLOW_LOCATION_MODAL })
+            console.log('You cannot use Geolocation');
+            // return false;
         }
-        // const { latitude: lat1, longitude: lng1 } = coordinates;
-        const latLong1 = coordinates;
-  
-        // const { latitude: lat2, longitude: lng2 } = array[0];
-        const latLong2 = array[0]
-        // console.log(latLong1);
-        // // in meters:
-        let distance =  calcDistance(
-          latLong1,
-          latLong2
-        );
-  
-      console.log(distance, 'DDIIS')
-        // console.log(latLong2);
-  
-        return { ...coordinates, distance: distance * 1000 };
-      })
-          
-          
-      setState({...state, path, ...path[0]})
+    } catch (err) {
+        return false;
+    }
+};
 
-      // this.setState({routeCoordinates: path})
-      this.interval = setInterval(moveObject, 1000);   //50000
+
+
+  const handleBack = () => {
+    if(currentIndex === 0){
+      setCurrentIndex(currentIndex + 1)
+      flatListRef?.current?.scrollToIndex({
+        index: currentIndex + 1,
+        Animated: true,
+      });
+    } else {
+    navigation.push('OnBoarding', {})
+    }
+  }
+
+  const handleContinue = async () => {
+      console.log("CCONT")
+      console.log(currentIndex)
+
+    if(currentIndex === 0){
+        console.log('CONTINUEEING')
+      requestNotifications(['alert', 'sound']).then(({status, settings}) => {
+          console.log(status, settings, 'REQUEST NOTIF')
+          setRequestStatus(status);
+          
+          if(requestStatus === 'blocked'){
+            setRequestStatus(null);
+                   openSettings().catch(() => console.warn('cannot open settings'));
+              return;
+            }
+          if(status === 'granted'){
+            setRequestStatus(null);
+          setCurrentIndex(currentIndex + 1)
+          flatListRef?.current?.scrollToIndex({
+            index: currentIndex + 1,
+            Animated: true,
+          });
+        }
+      });
       
-      
-    })
-    .catch(err => {
-      console.log(err, "COORD ERROR")
-    })
+    }
+     
+    
+    if(currentIndex ===  1){
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+            title: 'Geolocation Permission',
+            message: 'Can we access your location?',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+        },
+    );
+    if(granted === 'granted'){
+        navigation.push('OnBoarding', {})
+    }
+    } 
   
   
+    // await AsyncStorage.setItem('onBoarded', 'onboarded')
   }
 
 
 
-  useEffect(() => {
-        handleInitialDirection()      
-   
-    return () => {
-      clearInterval(this.interval)
+
+
+
+
+
+  async function checkNotifPermissions () {
+    let {status} = await checkNotifications();
+    console.log(status, 'NOTIFICATION', requestStatus, currentIndex)
+        // setRequestStatus(status);
+        if(status === 'granted' && currentIndex === 0){
+          setCurrentIndex(1)
+          flatListRef?.current?.scrollToIndex({
+           index:  1,
+           Animated: true,
+         });
+        }
     }
-  }, [])
+  
+    async function checkLocationPermission () {
+      const granted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+  console.log(granted, 'LOCATION PERMISSION')
+          
+      }
+  
+  useEffect(() => {
+    if(currentIndex === 0 && requestStatus === null){
+      checkNotifPermissions();
+    }
+    if(currentIndex === 1 && requestStatus === null){
+      checkLocationPermission()
+        
+    }
+  })
+  
+  // useEffect(() => {
+  //   if(requestStatus === 'granted'){
+  //     setCurrentIndex(currentIndex + 1)
+  //     // flatListRef?.current?.scrollToIndex({
+  //     //   index: 1,
+  //     //   Animated: true,
+  //     // });
+  //   }    
+  
+  // }, [requestStatus])
+
+
+  function Dots () {
+    const dotPosition = Animated.divide(scrollX, SIZES.width);
+
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        {permission_process.map((item, index) => {
+           const dotColor = dotPosition.interpolate({
+
+            inputRange: [index - 1, index, index + 1],
+            // inputRange: [
+            //   windowWidth * (index - 1), 
+            //   windowWidth * index, 
+            //   windowWidth * (index + 1)],
+            outputRange: [
+              COLORS.transparentBlue,
+              COLORS.primary,
+              COLORS.primary
+            ],
+            extraPolate: 'clamp',
+          });
+
+
+          return (
+            <Animated.View
+              key={item.id}
+              style={{
+                // borderRadius: 5,
+                // marginHorizontal: 6,
+                // width: width,
+                // height: 10,
+                // backgroundColor: dotColor,
+                height: 5,
+                width: 30,
+                borderRadius: 4,
+                borderColor: COLORS.primary,
+                borderWidth: .4,
+                backgroundColor: dotColor,
+                marginHorizontal: 4,
+              }}
+            >
+            </Animated.View>
+          );
+        })}
+      </View>
+    );
+  };
   
   
-  useEffect(() => {
-    const distance = getDistance();
-    if (!distance) {
-      return;
-    }
+  
+  function renderFooter() {
+    return (
+      <View
+        style={{
+          // flex: 1,
+        }}>
+        <Dots />
+        {/* Button */}
+          <View
+            style={{
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              alignItems: "center",
+              paddingHorizontal: SIZES.padding,
+              margin: SIZES.padding * 2,
+              borderColor: COLORS.lightGray3
+            }}>
+            <TextButton
+              label="Skip"
+              labelStyle={{
+                ...FONTS.body2,
+                color: COLORS.primaryDisabled
+              }}
+              buttonContainerStyle={{
+                backgroundColor: null,
+                margin: SIZES.padding
+              }}
+              onPress={() => handleBack()}
+            />
+            <TextButton
+              label={requestStatus === 'blocked' ? "OPEN SETTINGS" : requestStatus === "denied" ? "REQUEST AGAIN" : "CONTINUE"}
+              labelStyle={{
+                ...FONTS.body2,
+                color: COLORS.white
+              }}
+              buttonContainerStyle={{
+                height: 50,
+                width: 200,
+                borderRadius: SIZES.radius,
+                margin: SIZES.padding
+              }}
+              onPress={() => handleContinue()}
+            />
+          </View>
 
-    let progress = state.path.filter(
-      coordinates => coordinates.distance < distance
+      </View>
     );
+  }
 
-    const nextLine = state.path.find(
-      coordinates => coordinates.distance > distance
-    );
-
-    let point1, point2;
-
-    if (nextLine) {
-      point1 = progress[progress.length - 1];
-      point2 = nextLine;
-    } else {
-      // it's the end, so use the latest 2
-      point1 = progress[progress.length - 2];
-      point2 = progress[progress.length - 1];
-    }
-
-    const point1LatLng = point1;
-    const point2LatLng = point2;
-
-
-    const angle = computeHeading(
-      point1LatLng,
-      point2LatLng
-    );
-    
-    const actualAngle = angle - 90;
-
-
-    if (markerRef.current) {
-      // currentAngle = actualAngle;
-      setCurrentAngle(actualAngle)
-      // when it hasn't loaded, it's null
-        // this.marker?.rotatation() = actualAngle
-        // this.setState({
-        //   angle: actualAngle
-        // })
-    }
-    
-  }, [state])
-
-
+  
+  
 
   return (
-    <View style={styles.container}>
-    <MapView
-        customMapStyle={mapStyle}
-        style={styles.map}
-        provider={PROVIDER_GOOGLE}
-        showUserLocation
-        followUserLocation
-        loadingEnabled
-        region={getMapRegion()}
-        // onPress={(e) => {
-           
-
-        // }}
+    <View
+      style={{
+        flex: 1,
+        flexGrow: 1,
+        // padding: SIZES.padding,
+        alignItems: 'center',
+        // paddingBottom: SIZES.padding * 2,
+        justifyContent: 'center',
+        backgroundColor: COLORS.white,
+      }}
     >
-{state.progress && state.progress.length > 1 && (
-<>
-
-        <Polyline coordinates={state.progress} strokeWidth={5} strokeColor={COLORS.primary} />
-        <Marker.Animated
-        flat
-            anchor={{ x: 0.5, y: 0.4 }}
-            rotation={currentAngle}
-             ref={marker => {
-                markerRef.current = marker;
-            }}
-            style={{ height: 55, width: 50 }}
-            tracksViewChanges={false}
-            coordinate={state.progress[state.progress.length - 1]}
-            // image={{uri: images.rider}}
-        >
-        <View
-          style={{
-            transform: [{ rotate: `90deg` }],
-          }}
-        >
-            <Image
-              resizeMode='stretch'
-              source={images.rider}
-              style={{ height: 55, width: 40 }}
-              />
-              </View>
-        </Marker.Animated>
-                 
-</>
-)}
-
-        <Marker.Animated
-            tracksViewChanges={false}
-            coordinate={  { latitude: Number(location.latitude), longitude: Number(location.longitude) }}
-        />
-        
-        
-        <Marker.Animated
-            tracksViewChanges={false}
-            coordinate={{ latitude: Number(pickupDelivery.latitude), longitude: Number(pickupDelivery.longitude) }}
-        />
-    </MapView>
-    <View style={styles.buttonContainer}>
-        <TouchableOpacity style={[styles.bubble, styles.button]}>
-            <Text style={styles.bottomBarContent}>
-                {parseFloat(state.distanceTravelled).toFixed(2)} km
-            </Text>
-        </TouchableOpacity>
+    <View
+      style={{width: '100%', flexGrow: 1, justifyContent: 'center', alignItems: 'center'}}
+    >
+      <Image
+        resizeMode='cover'
+        source={images.logo}
+        style={{height: 80, width: 250}}
+      />
     </View>
-</View>
+      {/* {renderHeaderLogo()} */}
+      <Animated.FlatList
+        ref={flatListRef}
+        horizontal
+        scrollEnabled={false}
+        // pagingEnabled
+        data={permission_process}
+        scrollEventThrottle={1}
+        snapToAlignment='center'
+        showsHorizontalScrollIndicator={false}
+        // onScroll={Animated.event(
+        //   [{nativeEvent: {contentOffset: {x: scrollX}}}],
+        //   {useNativeDriver: false},
+        // )}
+        onScroll={Animated.event([
+          {
+            nativeEvent: {
+              contentOffset: {
+                x: scrollX,
+              },
+            },
+          },
+        ],
+          { useNativeDriver: false })}
+        onViewableItemsChanged={onViewChangeRef.current}
+        keyExtractor={(item, index) => `${index}`}
+        renderItem={({ item, index }) => {
+          return (
+            <View
+              style={{
+                // flex: 1,
+                width: SIZES.width,
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                paddingBottom: SIZES.padding * 2
+                // height: '100%',
+                // flex: 1
+              }}>
+              {/* Header */}
+                <Image 
+                  source={item.image}
+                  style={{
+                    // flex: 1,
+                    width: 125,
+                    height: 125,
+                    tintColor: COLORS.primary
+                    // opacity: .9,
+                  }}
+                />
+
+              {/* Details */}
+              <View
+                style={{ paddingVertical: SIZES.padding * 3, paddingHorizontal: SIZES.padding * 3}}
+                >
+                <Text style={{
+                  ...FONTS.body2,
+                  textAlign: 'center',
+                  color: COLORS.black                  
+                }}>
+                  {item.name}
+                </Text>
+                <Text style={{
+                  ...FONTS.body4,
+                  textAlign: 'center',
+                  marginTop: SIZES.padding
+                }}>
+                  {item.description}
+                </Text>
+              </View>
+           
+            </View>
+          );
+        }}
+      />
+      {renderFooter()}
+    </View>
   );
 };
 
-const mapStyle = [
-  {
-    elementType: 'labels',
-    stylers: [
-      {
-        visibility: 'off',
-      },
-    ],
-  },
-  {
-    featureType: 'administrative.land_parcel',
-    stylers: [
-      {
-        visibility: 'on',
-      },
-    ],
-  },
-  {
-    featureType: 'administrative.neighborhood',
-    stylers: [
-      {
-        visibility: 'on',
-      },
-    ],
-  },
-];
-
-// define your styles
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: "flex-end",
-    alignItems: "center"
-},
-map: {
-    ...StyleSheet.absoluteFillObject
-},
-bubble: {
-    flex: 1,
-    backgroundColor: "rgba(255,255,255,0.7)",
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 20
-},
-latlng: {
-    width: 200,
-    alignItems: "stretch"
-},
-button: {
-    width: 80,
-    paddingHorizontal: 12,
-    alignItems: "center",
-    marginHorizontal: 10
-},
-buttonContainer: {
-    flexDirection: "row",
-    marginVertical: 20,
-    backgroundColor: "transparent"
-}
-});
-
-//make this component available to the app
-export default TestScreen;
+export default OnBoarding;

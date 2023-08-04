@@ -1,4 +1,4 @@
-import { StyleSheet, Image, TouchableOpacity, Button, Text } from 'react-native';
+import { StyleSheet, Image, TouchableOpacity, PermissionsAndroid } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -75,14 +75,22 @@ const StackNavigator = () => {
     const locations = await getCustomerLocations();
     const location = await getCustomerLocation();
     const onBoarded = await AsyncStorage.getItem('onBoarded');
+    const locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+    const notificationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS)
 
+  console.log('LOCATION PERM', locationPermission)
+  console.log('NOtif PERM', notificationPermission)
 
-    if (onBoarded) {
+    if (onBoarded && locationPermission && notificationPermission) {
       // setMainScreen('OrderStatus');
-      setMainScreen('MainCustomer');
+      setMainScreen('CustomerHome');
 
     } else {
-      setMainScreen('OnBoarding')
+      if(!locationPermission || !notificationPermission){
+        setMainScreen('PermissionScreen')
+      } else {
+        setMainScreen('OnBoarding')
+      }
     }
 
 
@@ -421,7 +429,7 @@ const StackNavigator = () => {
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="TestScreen"
+              name="PermissionScreen"
               component={TestScreen}
               options={{ headerShown: false }}
             />

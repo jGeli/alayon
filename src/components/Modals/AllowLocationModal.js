@@ -14,11 +14,7 @@ import {
     PermissionsAndroid
 } from 'react-native';
 import { COLORS, FONTS, SIZES, icons, images, styles } from '../../constants';
-import { FlatList } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCloths } from '../../redux/actions/data.actions';
-import { createClothType, deleteCloths } from '../../redux/actions/admin.actions';
-import { updateServiceClothPricing } from '../../redux/actions/merchant.actions';
 import { CLOSE_ALLOW_LOCATION_MODAL, SET_ALLOW_LOCATION } from '../../redux/actions/type';
 
 // create a component

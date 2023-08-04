@@ -49,7 +49,6 @@ const OnBoarding = ({ navigation }) => {
           justifyContent: 'center',
         }}>
         {constants.onboarding_screens.map((item, index) => {
-          console.log(index, item)
           const dotColor = dotPosition.interpolate({
 
             inputRange: [index - 1, index, index + 1],

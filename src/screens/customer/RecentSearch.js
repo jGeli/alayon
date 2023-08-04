@@ -45,7 +45,7 @@ export default function RecentSearch({ navigation }) {
         <View
           style={{ flexDirection: 'row' }}
         >
-          <TouchableOpacity style={{ marginRight: SIZES.padding }} onPress={() => navigation.navigate('TestScreen', {})}>
+          <TouchableOpacity style={{ marginRight: SIZES.padding }} onPress={() => navigation.navigate('PermissionScreen', {})}>
             <Image source={icons.dotsetting} style={{ height: 20, width: 20 }} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleClick()}>

@@ -5,7 +5,7 @@ export const COLORS = {
   // base colors
   primary: '#1699F2', // orange
   primaryTransparent: '#1699f280',
-  transparentBlue: '#0000ff80',
+  transparentBlue: 'rgb(240,248,255)',
   primaryDisabled: '#1699f280',
   primaryColor: '#1E90FF',
   secondary: '#003580', // gray

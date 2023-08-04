@@ -45,6 +45,8 @@ const onboarding_screens = [
   },
 ];
 
+const permission_process = ['notification', 'location'];
+
 
 const deliveryOptions = [
   {
@@ -612,5 +614,6 @@ export default {
   clothAndPricing1,
   deliveryOptions,
   addressLocations,
-  addressLabels
+  addressLabels,
+  permission_process
 };

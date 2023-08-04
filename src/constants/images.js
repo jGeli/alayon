@@ -27,13 +27,17 @@ const starfilled = require('../assets/images/starfilled.png');
 const starcorner = require('../assets/images/starcorner.png');
 const delivery_man = require('../assets/images/delivery_man.png');
 const rider = require('../assets/images/rider.png');
+const notification = require('../assets/images/bell.png');
+const locationIcon = require('../assets/images/location.png');
 
 
 
 export default {
+    locationIcon,
     rider,
     loadingDots,
     delivery_man,
+    notification,
     location,
     location2,
     location3,

@@ -162,9 +162,7 @@ const OnBoarding = ({ navigation }) => {
                 // borderRadius: SIZES.radius,
                 marginTop: SIZES.base
               }}
-              onPress={() => {
-                navigation.replace('MainCustomer')
-              }}
+              onPress={() =>  handleGetStarted()}
             />)}
   
             

@@ -21,7 +21,7 @@ export default function Filter({ navigation }) {
         <Text style={{ ...FONTS.h4, color: COLORS.black, fontWeight: 'bold' }}>Filter</Text>
         <TouchableOpacity
           style={{ justifyContent: 'center', alignItems: 'center' }}
-        // onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate('TestScreen', {})}
         >
           <Text style={{ ...FONTS.h4, color: COLORS.black, fontWeight: 'bold' }}>Clear</Text>
         </TouchableOpacity>

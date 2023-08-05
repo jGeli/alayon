@@ -10,88 +10,9 @@ export const userData = {
   },
 };
 
-export const userData2 = {
-  firstName: 'Steven',
-  lastName: 'Alba',
-  imageUrl: require('../assets/images/ALAYON/15.jpg'),
-  nameOfShop: 'Tacloban Prime Wash',
-  email: 'marksteven.webdev@gmail.com',
-  phone: '09058591443',
-  location: {
-    address: '016 Dadison St., Baramgay 56 Real. Tacloban City',
-    latitude: 1233,
-    longitude: 123123,
-  },
-  orders: [
-    {
-      orderId: 0,
-      itemName: 'TShirt',
-      qty: 2,
-      rate: 5,
-      pricingType: 'pc',
-      status: 'Ongoing',
-      serviceTimeType: 'EXPRESS',
-    },
-    {
-      orderId: 1,
-      itemName: 'Comforter',
-      qty: 6,
-      rate: 5,
-      pricingType: 'pc',
-      status: 'Incoming',
-      serviceTimeType: 'EXPRESS',
-    },
-    {
-      orderId: 2,
-      itemName: 'Coat',
-      qty: 6,
-      rate: 5,
-      pricingType: 'pc',
-      status: 'Completed',
-      serviceTimeType: 'STANDARD',
-    },
-  ],
-};
 
-export const userData4 = {
-  firstName: 'Steven',
-  lastName: 'Alba',
-  imageUrl: require('../assets/images/ALAYON/15.jpg'),
-  Id: 'ExpressWashMachine002',
-  nameOfShop: 'Tacloban Prime Wash',
-  email: 'marksteven.webdev@gmail.com',
-  phone: '09058591443',
-  address: 'Brgy 56 Real. Tacloban City',
-  orders: [
-    {
-      orderId: 0,
-      itemName: 'TShirt',
-      qty: 2,
-      rate: 5,
-      pricingType: 'pc',
-      status: 'Ongoing',
-      serviceTimeType: 'EXPRESS',
-    },
-    {
-      orderId: 1,
-      itemName: 'Comforter',
-      qty: 6,
-      rate: 5,
-      pricingType: 'pc',
-      status: 'Incoming',
-      serviceTimeType: 'EXPRESS',
-    },
-    {
-      orderId: 2,
-      itemName: 'Coat',
-      qty: 6,
-      rate: 5,
-      pricingType: 'pc',
-      status: 'Completed',
-      serviceTimeType: 'STANDARD',
-    },
-  ],
-};
+
+
 export const userData5 = {
   firstName: 'Steven',
   lastName: 'Alba',
@@ -147,33 +68,33 @@ export const myAccount = [
   {
     name: 'Account Settings',
     screen: 'ProfileSetup',
-    
+
   },
   {
     name: 'Terms And Condition',
-    
+
   },
   {
     name: 'Privacy Policy',
     screen: '',
-   
+
   },
   {
     name: 'Contact Us',
     screen: 'MerchantMyAccount',
-    
+
   },
   {
     name: 'Logout',
     screen: 'Main',
-    
+
   },
 ];
 export const CustomerMyAccount = [
   {
     name: 'Account Settings',
     screen: 'CustomerSettings',
-    
+
   },
   {
     name: 'Notification',
@@ -181,22 +102,22 @@ export const CustomerMyAccount = [
   },
   {
     name: 'Terms And Condition',
-    
+
   },
   {
     name: 'Privacy Policy',
     screen: '',
-   
+
   },
   {
     name: 'Contact Us',
     screen: 'MerchantMyAccount',
-    
+
   },
   {
     name: 'Logout',
     screen: 'Main',
-    
+
   },
 ];
 
@@ -837,29 +758,6 @@ export const carsAround = [
   { latitude: -26.203598, longitude: 28.239509 },
 ];
 
-export const chatList = [
-  {
-    id: 0,
-    shop_name: 'Laundry Express',
-    bannerUrl: require('../assets/images/ALAYON/12.jpg'),
-    date: '29/08/25',
-    latestChat: "How are you?"
-  },
-  {
-    id: 1,
-    shop_name: '24x7 Direct Express',
-    bannerUrl: require('../assets/images/ALAYON/11.jpg'),
-    date: '29/08/23',
-    latestChat: 'Pa confirm ng Booking ko. Thanks!'
-  },
-  {
-    id: 2,
-    shop_name: 'Alayon Express',
-    bannerUrl: require('../assets/images/ALAYON/10.jpg'),
-    date: '29/08/23',
-    latestChat: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
-  },
-]
 
 export const conversationHistory = [
   {

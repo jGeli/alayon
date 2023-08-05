@@ -11,7 +11,7 @@ import {
 
 } from 'react-native';
 import haversine from "haversine";
-import { icons, SIZES, COLORS, FONTS, constants } from '../../constants';
+import { icons, SIZES, COLORS, FONTS, constants, images } from '../../constants';
 import { cutString } from '../../utils/helpers';
 import { useDispatch, useSelector } from 'react-redux';
 import { getShops } from '../../redux/actions/data.actions';
@@ -106,14 +106,14 @@ export default function Home({ navigation }) {
               style={{
                 width: 25,
                 height: 25,
-                tintColor: COLORS.black,
+                tintColor: COLORS.white,
               }}
             />
           </View>
           <View
             style={{
               alignItems: 'flex-start',
-              justifyContent: 'center',
+              justifyContent: 'flex-end',
               // backgroundColor: COLORS.black,
               paddingRight: SIZES.padding,
               flex: 1,
@@ -121,9 +121,8 @@ export default function Home({ navigation }) {
             }}>
             <Text
               style={{
-                ...FONTS.body3,
-                color: COLORS.primary,
-                fontWeight: 'bold',
+                ...FONTS.h4,
+                color: COLORS.lightGray2
               }}>
               {cityMun  ? cutString(cityMun, 25) : 'Find your location?'}
             </Text>
@@ -158,13 +157,20 @@ export default function Home({ navigation }) {
             source={icons.search}
             resizeMode="contain"
             style={{
-              width: 20,
-              height: 20,
-              tintColor: COLORS.black,
+              width: 25,
+              height: 25,
+              tintColor: COLORS.white
             }}
           />
         </TouchableOpacity>
-
+        <TouchableOpacity
+         style={{
+          paddingRight: SIZES.padding * 2,
+          justifyContent: 'center',
+        }}
+        onPress={() => {navigation.navigate('Filter', {})}}>
+            <Image source={icons.filter} style={{ height: 25, width: 25, tintColor: COLORS.white }} />
+          </TouchableOpacity>
         {/* <TouchableOpacity
           onPress={() => navigation.navigate('Filter', {})}
           style={{
@@ -191,8 +197,8 @@ export default function Home({ navigation }) {
         <SkeletonPlaceholder>
           <TouchableOpacity
             style={{
-              width: 100,
-              height: 150,
+              width: 150,
+              height: 200,
               borderRadius: SIZES.semiRadius,
               alignItems: 'flex-start',
               justifyContent: 'flex-end',
@@ -204,8 +210,8 @@ export default function Home({ navigation }) {
       ) : (
         <TouchableOpacity
           style={{
-            width: 100,
-            height: 150,
+            width: 150,
+            height: 200,
             borderRadius: SIZES.semiRadius,
             alignItems: 'flex-start',
             justifyContent: 'flex-end',
@@ -216,22 +222,28 @@ export default function Home({ navigation }) {
             source={{ uri: `${item.bannerUrl}` }}
             resizeMode="cover"
             style={{
-              width: 100,
-              height: 150,
+              width: 150,
+            height: 200,
               position: 'absolute',
               borderRadius: SIZES.semiRadius,
             }}
           />
+        <Image
+            source={images.featureOverlay}
+            style={styles.bannerOverlay}
+          />
 
           <View style={styles.bannerStyle}>
+  
             <Text
               style={{
-                color: COLORS.white,
                 fontWeight: 'bold',
-                // ...FONTS.body5
+                // ...FONTS.body5,
+                color: COLORS.white,
                 // position: 'absolute',
+                textAlign: 'left'
               }}>
-              {cutString(item.shop_name, 20)}
+              {cutString(item.shop_name, 25)}
             </Text>
           </View>
         </TouchableOpacity>
@@ -246,7 +258,7 @@ export default function Home({ navigation }) {
           paddingRight: SIZES.padding * 0.5,
           paddingLeft: SIZES.padding * 0.5,
         }}>
-        <Text style={{ ...FONTS.h3, color: COLORS.black, fontWeight: 'bold' }}>
+        <Text style={{ ...FONTS.h3, color: COLORS.secondary, fontWeight: 'bold' }}>
           Featured
         </Text>
         <FlatList
@@ -456,7 +468,7 @@ export default function Home({ navigation }) {
         <Text
           style={{
             ...FONTS.h3,
-            color: COLORS.black,
+            color: COLORS.secondary,
             fontWeight: 'bold',
           }}>
           Nearby
@@ -522,12 +534,13 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 5,
     backgroundColor: COLORS.lightGray3,
   },
   headerContainer: {
+    backgroundColor: COLORS.primary,
     flexDirection: 'row',
-    margin: 5,
+    paddingHorizontal: SIZES.padding,
+    paddingVertical: SIZES.padding
   },
   bodyContainer: {
     margin: 5,
@@ -559,15 +572,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'absolute',
   },
+  bannerOverlay: {
+    position: 'absolute',
+    width: 150,
+    height: 100,
+    borderRadius: SIZES.semiRadius
+  },
   bannerStyle: {
-    padding: 3,
+    padding: 5,
     paddingLeft: 5,
-    backgroundColor: COLORS.primary,
-    height: 40,
+    // backgroundColor: COLORS.primary,
+    height: 50,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    borderBottomLeftRadius: SIZES.semiRadius,
-    borderBottomRightRadius: SIZES.semiRadius,
+    borderRadius: SIZES.semiRadius,
+    // borderBottomRightRadius: SIZES.semiRadius,
   },
 });

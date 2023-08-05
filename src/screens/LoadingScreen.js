@@ -1,6 +1,6 @@
 //import liraries
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Image } from 'react-native';
+import React from 'react';
+import { StyleSheet, SafeAreaView, Image } from 'react-native';
 import { COLORS, SIZES, images } from '../constants';
 
 // create a component

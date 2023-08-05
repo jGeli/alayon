@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, PermissionsAndroid, Image, Animated, useWindowDimensions } from 'react-native';
 
-import { constants, images, FONTS, SIZES, COLORS } from '../constants';
-import { TextButton } from '../components';
+import { constants, images, FONTS, SIZES, COLORS } from '../../constants';
+import { TextButton } from '../../components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { checkNotifications, requestNotifications, openSettings } from 'react-native-permissions';
 
@@ -24,7 +24,7 @@ const permission_process = [
 
 
 
-const OnBoarding = ({ navigation }) => {
+const PermissionScreen = ({ navigation }) => {
   // const scrollX = new Animated.Value(0)
   // const scrollX = new Animated.Value(0);
   const scrollX = useRef(new Animated.Value(0)).current
@@ -358,4 +358,4 @@ const OnBoarding = ({ navigation }) => {
   );
 };
 
-export default OnBoarding;
+export default PermissionScreen;

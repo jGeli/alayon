@@ -11,19 +11,15 @@ import axios from 'axios';
 //SCREENS
 import HomeScreen from './screens/customer/Home';
 import MyOrderScreen from './screens/customer/MyOrders';
-import NotificationScreen from './screens/Notifications';
 import RecentSearch from './screens/customer/RecentSearch';
 import Filter from './screens/customer/Filter';
-import AddressLocation from './screens/customer/AddressLocation';
 import MapScreen from './components/Cards/Map/Map';
 import MyAccount from './screens/customer/MyAccount';
 import CustomerReviewScreen from './screens/customer/CustomerReviewScreen';
 import CustomerSettings from './screens/customer/CustomerSettings';
 import OnBoarding from './screens/OnBoarding/OnBoarding';
 import SignIn from './screens/Authentication/SignIn';
-// import ForgotPassword from './screens/Authentication/ForgotPassword';
 import Otp from './screens/Authentication/Otp';
-import SchedulePickup from './screens/customer/SchedulePickup';
 import OrderSummary from './screens/customer/OrderSummary';
 import ShopServices from './screens/customer/ShopServices';
 import LoadingScreen from './screens/LoadingScreen';
@@ -35,7 +31,6 @@ import Conversation from './screens/ChatSupport/Conversation';
 import AddressLocationForm from './screens/customer/AddressLocationForm';
 import SelectRegion from './screens/customer/SelectRegion';
 import AddressDetails from './screens/customer/AddressDetails';
-import io from 'socket.io-client';
 
 
 
@@ -45,7 +40,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerBasket, getCustomerLocation, getCustomerLocations } from './utils/AsyncStorage';
 import { SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, SET_USER, STOP_LOADING } from './redux/actions/type';
 import OrderStatus from './screens/customer/OrderStatus';
-import Map2 from './components/Cards/Map/Map2';
 import Map3 from './components/Cards/Map/Map3';
 import BasketsScreen from './screens/customer/BasketsScreen';
 import ProfileSetup from './screens/Authentication/ProfileSetup';
@@ -54,6 +48,7 @@ import Map1 from './components/Cards/Map/Map1';
 import TestScreen from './screens/TestScreen';
 import socket from './utils/socket';
 import CustomerOrderDetails from './screens/customer/CustomerOrderDetails';
+import PermissionScreen from './screens/OnBoarding/PermissionScreen';
 
 
 const StackNavigator = () => {
@@ -77,15 +72,12 @@ const StackNavigator = () => {
     const locationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
     const notificationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS)
 
-  console.log('LOCATION PERM', locationPermission)
-  console.log('NOtif PERM', notificationPermission)
-
     if (onBoarded && (locationPermission && notificationPermission)) {
       // setMainScreen('OrderStatus');
       setMainScreen('MainCustomer');
 
     } else {
-      if((!locationPermission || !notificationPermission)){
+      if(!locationPermission || !notificationPermission){
         setMainScreen('PermissionScreen')
       } else {
         setMainScreen('OnBoarding')
@@ -290,10 +282,10 @@ const StackNavigator = () => {
           {/* CUSTOMER SCREENS */}
 
           <Stack.Navigator initialRouteName={mainScreen}>
-            <Stack.Screen
-              name="Chats"
-              component={ChatList}
-            // options={{ headerShown: false }}
+          <Stack.Screen
+              name="TestScreen"
+              component={TestScreen}
+              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="Conversation"
@@ -305,7 +297,6 @@ const StackNavigator = () => {
               component={OnBoarding}
               options={{ headerShown: false }}
             />
-
             <Stack.Screen
               name="SignIn"
               component={SignIn}
@@ -321,15 +312,11 @@ const StackNavigator = () => {
               component={OrderStatus}
               options={{ headerShown: false }}
             />
-
-
             <Stack.Screen
               name="LoadingScreen"
               component={LoadingScreen}
               options={{ headerShown: false }}
             />
-
-
             <Stack.Screen
               name="MainCustomer"
               component={CustomerBottomTabs}
@@ -340,7 +327,6 @@ const StackNavigator = () => {
               component={ShopServices}
               options={{ headerShown: false }}
             />
-
             <Stack.Screen
               name="Search"
               component={RecentSearch}
@@ -351,7 +337,6 @@ const StackNavigator = () => {
               component={Filter}
               options={{ headerShown: false }}
             />
-
             <Stack.Screen
               name="OrderSummary"
               component={OrderSummary}
@@ -429,7 +414,7 @@ const StackNavigator = () => {
             />
             <Stack.Screen
               name="PermissionScreen"
-              component={TestScreen}
+              component={PermissionScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen

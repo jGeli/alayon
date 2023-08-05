@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.alayon"  
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
+package="com.alayon"  
 >
 
 
@@ -25,6 +26,16 @@
           <meta-data
      android:name="com.google.android.geo.API_KEY"
      android:value="AIzaSyD5ibcRV6uhLjLQgcSpt6GySfrzsXZkVkE"/> 
+     <activity
+        android:name=".SplashActivity"
+        android:theme="@style/SplashTheme"
+        android:label="@string/app_name"
+        android:exported="true">
+        <intent-filter>
+          <action android:name="android.intent.action.MAIN" />
+          <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+     </activity>
            <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
@@ -32,13 +43,8 @@
         android:launchMode="singleTask"
         android:windowSoftInputMode="adjustResize"
         android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
       </activity>
-
-   <meta-data
+    <meta-data
       android:name="com.dieam.reactnativepushnotification.default_notification_channel_id"
       android:value="420" />
   <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color"

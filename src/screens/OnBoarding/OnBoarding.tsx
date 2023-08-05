@@ -266,10 +266,11 @@ const OnBoarding = ({ navigation }) => {
             <View
               style={{
                 flex: 3,
-                flexGrow: 1,
+                // flexGrow: 1,
                 // width: SIZES.width,
                 width: SIZES.width,
-                // height: '100%'
+                bottom: 100,
+                height: SIZES.height,
 
               }}>
               {/* Header */}
@@ -277,18 +278,17 @@ const OnBoarding = ({ navigation }) => {
                 style={{
                 // flex: 1,
                 // flexGrow: 1,
+                bottom: 300,
                 alignItems: 'flex-end',
                 justifyContent: 'flex-end',
                 width: '100%', 
                 height: SIZES.height,
-                bottom: 400,
-
-                // marginTop: index % 2 == 1 ? 55 : 0,
-                // paddingBottom: index % 2 == 1 ? 0 : 50
+                paddingTop: index % 2 == 1 ? 174 : 0,
+                // paddingBottom: index % 2 == 1 ? 0 : 174
                 }}
               >
                 <ImageBackground
-                  // resizeMode='c'
+                  resizeMode='contain'
                   source={item.backgroundImage}
                   style={{
                   flex: 1,
@@ -297,7 +297,7 @@ const OnBoarding = ({ navigation }) => {
                   // marginBottom: 100,
                   // bottom: 200,
                   // backgroundColor: COLORS.black,
-                    height: index % 2 == 1? '95.5%' : '100%',
+                    height: '100%',
                     width: '100%'
                 }}>
                             
@@ -309,13 +309,13 @@ const OnBoarding = ({ navigation }) => {
               {/* Details */}
               <View
                 style={{
-                  // flexGrow: 1,
-                    // height: SIZES.height,
-                // width: SIZES.width,
-                alignItems: 'center',
-                  // justifyContent: 'flex-start',
-                  paddingHorizontal: SIZES.padding * 5,
-                  bottom: index % 2 == 1 ? 600 : 500
+                    height: SIZES.height,
+                    flexGrow: 1,
+                    width: SIZES.width,
+                  //  alignItems: 'center',
+                  // justifyContent: 'center',
+                  paddingHorizontal: SIZES.radius,
+                  top: index % 2 == 1 ? -SIZES.height * .75 : -SIZES.height * .55
                 }}>
                 <Text style={{
                   ...FONTS.h1, fontSize: 30,
@@ -323,24 +323,24 @@ const OnBoarding = ({ navigation }) => {
                 }}>
                   {item.title}
                 </Text>
-
               </View>
               <View
                 style={{
                   position: 'absolute',
                   width: SIZES.width,
-                  justifyContent: 'center',
-                  bottom: 100,
+                  // justifyContent: 'flex-end',
+                  bottom: 120,
                   paddingHorizontal: SIZES.radius,
                   // paddingLeft: SIZES.radius * 5,
                   alignItems: 'flex-end',
+                  justifyContent: 'flex-start'
                 }}
               >
                 <Image
                   source={item.backgroundIcon}
                   resizeMode="contain"
                   style={{
-                    height: 125,
+                    height: 150,
                     width: 125,
                   }}
                 />

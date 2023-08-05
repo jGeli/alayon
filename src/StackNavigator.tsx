@@ -82,11 +82,11 @@ const StackNavigator = () => {
 
     if (onBoarded && (locationPermission && notificationPermission)) {
       // setMainScreen('OrderStatus');
-      setMainScreen('OnBoarding');
+      setMainScreen('MainCustomer');
 
     } else {
       if((!locationPermission || !notificationPermission)){
-        setMainScreen('OnBoarding')
+        setMainScreen('PermissionScreen')
       } else {
         setMainScreen('OnBoarding')
       }

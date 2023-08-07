@@ -65,11 +65,7 @@ export const Rider1 = {
 };
 
 export const myAccount = [
-  {
-    name: 'Account Settings',
-    screen: 'ProfileSetup',
 
-  },
   {
     name: 'Terms And Condition',
 
@@ -92,13 +88,8 @@ export const myAccount = [
 ];
 export const CustomerMyAccount = [
   {
-    name: 'Account Settings',
-    screen: 'CustomerSettings',
-
-  },
-  {
     name: 'Notification',
-    screen: 'CustomerNotifications'
+    screen: 'NotificationScreen'
   },
   {
     name: 'Terms And Condition',

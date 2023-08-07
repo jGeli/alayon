@@ -13,42 +13,31 @@ import { COLORS, FONTS, SIZES, icons } from '../constants';
 import { nearbyList, notifications } from '../globals/data';
 
 export default function Notification({ navigation }) {
-  // function renderHeader() {
-  //   return (
-  //     <View style={styles.headerContainer}>
-  //       <TouchableOpacity onPress={() => navigation.goBack()}>
-  //         <Image source={icons.back} style={{ height: 20, width: 20 }} />
-  //       </TouchableOpacity>
 
-  //         <Text style={{ ...FONTS.h2, color: COLORS.black, fontWeight: 'bold' }}>
-  //           Notifications
-  //         </Text>
-  //       {/* <Image source={icons.back} style={{height: 25, width: 25}} /> */}
-  //     </View>
-  //   );
-  // }
   function renderHeader() {
     return (
         <View
             style={styles.header}>
             <TouchableOpacity
-                style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
+                style={{  marginHorizontal: SIZES.padding, paddingBottom: 5, alignContent:'center', justifyContent: 'center' }}
                 onPress={() => navigation.goBack()}>
                 <Image
                     source={icons.back}
-                    style={{ height: 20, width: 20, tintColor: COLORS.primary }}
+                    style={{ height: 20, width: 20, tintColor: COLORS.white }}
                 />
             </TouchableOpacity>
             <Text
                 style={{
-                    ...FONTS.body2,
-                    color: COLORS.black,
+                    ...FONTS.h3,
+                    color: COLORS.white,
                     // fontWeight: 'bold',
                 }}>
-                TEST SCREEN
+              NOTIFICATIONS
             </Text>
 
-            <View></View>
+            <View
+                style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2, width: 20 }}
+            ></View>
         </View>
     );
 }
@@ -148,10 +137,11 @@ const styles = StyleSheet.create({
   header: {
     height: 50,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: COLORS.white,
-    elevation: 5,
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    backgroundColor: COLORS.primary,
+    elevation: 3,
+    paddingBottom: SIZES.padding,
     width: '100%'
   },
   searchContainer: {

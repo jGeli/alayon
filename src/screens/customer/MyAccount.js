@@ -10,11 +10,10 @@ import {
   Animated,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { COLORS, SIZES, FONTS, images, styles } from '../../constants';
+import { COLORS, SIZES, FONTS, images, styles, icons } from '../../constants';
 import { CustomerMyAccount } from '../../globals/data';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../redux/actions/auth.actions';
-import LabeledText from '../../components/LabeledText';
 import TermsAndCondition from '../../components/Modals/TermsAndCondition/TermsAndCondition';
 
 
@@ -72,105 +71,75 @@ export default function MyAccount({ navigation }) {
 
   };
 
-
   function renderHeader() {
-
     return (
-      <View
+      <TouchableOpacity
+        onPress={() => navigation.navigate('ProfileSetup', { user })}
         style={{
+          backgroundColor: COLORS.primary,
           flexDirection: 'row',
-          // flex: 1,
-          // borderWidth: 1,
-          height: '10%',
+          height: 130,
           width: '100%',
           alignItems: 'center',
           justifyContent: 'flex-start',
           paddingHorizontal: SIZES.padding2 * 2,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          top: 20
         }}
       >
-        {/* <View
-          style={{
-            borderWidth: 1,
-            borderColor: COLORS.lightGray3,
-            borderRadius: 999,
-            marginRight: SIZES.padding,
-          }}
-        > */}
-        <View
-          style={{
-            borderWidth: 1,
-            borderRadius: 999
-          }}
-        >
+        {user.imgUrl ?
           <Image
-            source={{ uri: user.imgUrl ?? 'https://alayon.bugtech.solutions/api/v1/static/banners/8.jpg' }}
+            source={{ uri: user.imgUrl }}
             resizeMode='contain'
             style={{
               height: 70,
               width: 70,
-              borderRadius: 999,
+              borderRadius: 70,
+            }}
+          /> :
+          <Image
+            source={icons.user}
+            resizeMode='contain'
+            style={{
+              height: 70,
+              width: 70,
+              tintColor: COLORS.white,
+              borderRadius: 70
+              // borderRadius: 999,
             }}
           />
-          </View>
-        {/* </View> */}
+        }
+
         <View
           style={{
             // borderColor: COLORS.lightGray3,
             // borderRadius: SIZES.radius,
-            marginLeft: SIZES.padding,
-            // borderWidth: 1,
+            marginLeft: SIZES.padding * 2,
+            marginBottom: SIZES.padding,
             height: '100%',
-            justifyContent: 'flex-start',
-            bottom: 0,
-            top: 0,
-            left: 0,
-            right: 0
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            flexGrow: 1
           }}
         >
-          {/* <LabeledText
-            label={user.firstName + ' ' + user.lastName}
-            labelStyle={{
-              color: COLORS.primary,
-              fontSize: SIZES.base * 3,
-            }}
-            textValue={(user.email)}
-            textStyle={{
-              color: COLORS.black,
-              fontWeight: 'bold'
-            }}
-          /> */}
-          <View
-            style={{
-              // borderWidth: 1,
-              height: '100%',
-              alignItems: 'flex-start',
-              justifyContent: 'flex-start',
-              paddingTop: SIZES.base
-              
-            }}
-          >
           <Text
             style={{
-              ...FONTS.body2, color: COLORS.primary
+              ...FONTS.body2, color: COLORS.white
             }}
           >
-            {user.firstName + ' ' + user.lastName}
+            {user.mobile ? `+63 ${user.mobile}` : 'Account Information'}
           </Text>
           <Text
             style={{
-              ...FONTS.body4, color: COLORS.black
+              ...FONTS.body3, color: COLORS.gold
             }}
           >
-            {user.email}
+            Fill in your profile details
           </Text>
-          </View>
         </View>
-
-      </View>
+        <Image
+          source={icons.arrow_right}
+          style={{ height: 30, width: 30, tintColor: COLORS.white }}
+        />
+      </TouchableOpacity>
 
     );
   }
@@ -266,7 +235,7 @@ export default function MyAccount({ navigation }) {
 
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={embeddedStyles.container}>
       {/* Header */}
       {renderHeader()}
 
@@ -280,11 +249,11 @@ export default function MyAccount({ navigation }) {
 
 const embeddedStyles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    padding: 20,
+    width: '100%',
+    backgroundColor: COLORS.white2,
+    height: '100%',
+    flexGrow: 1,
+    // padding: 20,
   },
   modalView: {
     flexGrow: 1,

@@ -26,7 +26,6 @@ import LoadingScreen from './screens/LoadingScreen';
 import DeliveryOptionScreen from './screens/customer/DeliveryOptions';
 import AddOnsScreen from './screens/customer/AddOnsScreen';
 import AddressLocationScreen from './screens/customer/AddressLocationScreen';
-import ChatList from './screens/ChatSupport/ChatList';
 import Conversation from './screens/ChatSupport/Conversation';
 import AddressLocationForm from './screens/customer/AddressLocationForm';
 import SelectRegion from './screens/customer/SelectRegion';
@@ -49,6 +48,7 @@ import TestScreen from './screens/TestScreen';
 import socket from './utils/socket';
 import CustomerOrderDetails from './screens/customer/CustomerOrderDetails';
 import PermissionScreen from './screens/OnBoarding/PermissionScreen';
+import Notification from './screens/Notifications';
 
 
 const StackNavigator = () => {
@@ -198,38 +198,7 @@ const StackNavigator = () => {
           }}
         />
 
-        {/* <Tab.Screen
-          name="CustomerNotifications"
-          component={NotificationScreen}
-          options={{
-            tabBarLabel: 'Notifications',
-            headerShown: false,
-            tabBarShowLabel: true,
-            tabBarButton: (props) => isAuthenticated ? <TouchableOpacity {...props} /> : <TouchableOpacity {...props} onPress={() => navigation.navigate('SignIn', { redirection: 'CustomerNotifications' })} />,
-            tabBarIcon: ({ focused }) =>
-              focused ? (
-                <Image
-                  resizeMode="contain"
-                  source={icons.notification}
-                  style={{
-                    height: 25,
-                    width: 25,
-                    tintColor: COLORS.primary,
-                  }}
-                />
-              ) : (
-                <Image
-                  resizeMode="contain"
-                  source={icons.notification}
-                  style={{
-                    height: 25,
-                    width: 25,
-                    tintColor: COLORS.black,
-                  }}
-                />
-              ),
-          }}
-        /> */}
+      
 
         <Tab.Screen
           name="CustomerAccount"
@@ -285,6 +254,11 @@ const StackNavigator = () => {
           <Stack.Screen
               name="TestScreen"
               component={TestScreen}
+              options={{ headerShown: false }}
+            />
+                 <Stack.Screen
+              name="NotificationScreen"
+              component={Notification}
               options={{ headerShown: false }}
             />
             <Stack.Screen

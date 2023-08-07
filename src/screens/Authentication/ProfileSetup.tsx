@@ -27,9 +27,8 @@ import { updateUserById } from '../../redux/actions/user.actions';
 export default function ProfileScreen({ navigation, route }) {
   const dispatch = useDispatch();
   // console.log('ROUTESS', route)
-  const { redirection } = route.params;
+  const { redirection, user } = route.params;
   const { location } = useSelector(state => state.data);
-  const { user } = useSelector(({auth}) => auth);
 
   const [values, setValues] = useState({});
 
@@ -121,6 +120,35 @@ export default function ProfileScreen({ navigation, route }) {
     }
   }, [user]);
 
+
+
+  function renderHeader() {
+    return (
+        <View
+            style={embeddedStyles.header}>
+            <TouchableOpacity
+                style={{  marginHorizontal: SIZES.padding, paddingBottom: 5, alignContent:'center', justifyContent: 'center' }}
+                onPress={() => navigation.goBack()}>
+                <Image
+                    source={icons.back}
+                    style={{ height: 20, width: 20, tintColor: COLORS.white }}
+                />
+            </TouchableOpacity>
+            <Text
+                style={{
+                    ...FONTS.h3,
+                    color: COLORS.white,
+                    // fontWeight: 'bold',
+                }}>
+             USER PROFILE
+            </Text>
+            <View
+                style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2, width: 20 }}
+            ></View>
+        </View>
+    );
+}
+
   console.log(user, 'USER')
 
   return (
@@ -128,6 +156,8 @@ export default function ProfileScreen({ navigation, route }) {
       style={{ ...styles.container}}
 
     >
+    
+    
     
     <Modal
             visible={modalVisible}
@@ -138,20 +168,13 @@ export default function ProfileScreen({ navigation, route }) {
               <TermsAndCondition onPress={() => handleCloseModal()} />
             </Animated.View>
           </Modal>
+          {renderHeader()}
       <ScrollView
         style={{
           padding: SIZES.padding,
         }}
       >
-        {/* Title */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ ...FONTS.h2, fontWeight: 'bold', color: COLORS.black }}>
-            MY ACCOUNT
-          </Text>
-        </View>
-
-
-        <View style={styles.uploadContainer}>
+     <View style={styles.uploadContainer}>
           <UploadProfileImage 
             image={values.imgUrl}
             setImage={e => setValues({ ...values, imgUrl: e })}
@@ -331,5 +354,15 @@ const embeddedStyles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+  },
+  header: {
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    backgroundColor: COLORS.primary,
+    elevation: 3,
+    paddingBottom: SIZES.padding,
+    width: '100%'
   },
 })

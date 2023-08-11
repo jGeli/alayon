@@ -27,8 +27,8 @@ const varEnv = constants.varEnv;
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
-  const { isLocationAllow, location: { cityMun } } = useSelector(({ data }) => data);
-  const { isAuthenticated, user: { location, _id } } = useSelector(({auth}) => auth)
+  const { isLocationAllow, location: {cityMun, _id }} = useSelector(({ data }) => data);
+  const { isAuthenticated, user: { location, areaLocation } } = useSelector(({auth}) => auth)
   const [refreshing, setRefreshing] = useState(false);
   const [shops, setShops] = useState([])
   const onRefresh = React.useCallback(() => {
@@ -40,8 +40,10 @@ export default function Home({ navigation }) {
     }, 30000);
   }, []);
 
+  console.log(_id, 'AREA LOCATIONs')
+
   const handleGetShops = async () => {
-    await dispatch(getShops())
+    await dispatch(getShops(_id))
       .then(a => {
         if (a && a.length !== 0) {
           setShops(a)
@@ -60,14 +62,14 @@ export default function Home({ navigation }) {
   }
 
   const onShopSelect = item => {
-    console.log("SELECTED")
+    console.log("SELECTED", item)
     if (item.services && item.services.length !== 0) {
       dispatch({ type: CLEAR_SELECTED_SHOP })
       dispatch({
         type: SET_SELECTED_SHOP,
-        payload: {_id: item._id},
+        payload:  item,
       });
-      navigation.navigate('ShopServices', { shopId: item._id });
+      navigation.navigate('ShopServices', { shopId: item._id});
     }
   };
 
@@ -77,7 +79,7 @@ export default function Home({ navigation }) {
     if (!isLocationAllow ) {
       dispatch({ type: SET_ALLOW_LOCATION_MODAL })
     } else {
-      navigation.navigate('SelectRegion', { navType: 'current', location })
+      navigation.navigate('AreaLocations', {})
     }
   }
 
@@ -489,29 +491,19 @@ export default function Home({ navigation }) {
 
   }
 
-  async function checkPermission() {
-    const granted = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
-    // if (!granted) {
-    //   setTimeout(() => {
-    //     dispatch({ type: SET_ALLOW_LOCATION_MODAL })
-    //   }, 3000)
-    // }
-    dispatch({ type: SET_ALLOW_LOCATION, payload: granted })
-  }
+
 
 
 
   useEffect(() => {
     handleGetShops()
-    checkPermission()
 
     return () => {
       // dispatch({ type: SET_LAUNDRY_SHOPS, payload: [] });
       // dispatch({ type: CLOSE_MODALS });
     };
-  }, []);
+  }, [cityMun]);
 
-  console.log(_id, 'USERID')
   return (
     <SafeAreaView style={styles.container}>
       <AllowLocationModal navigation={navigation} />

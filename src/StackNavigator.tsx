@@ -49,6 +49,7 @@ import socket from './utils/socket';
 import CustomerOrderDetails from './screens/customer/CustomerOrderDetails';
 import PermissionScreen from './screens/OnBoarding/PermissionScreen';
 import Notification from './screens/Notifications';
+import AreaLocations from './components/AreaLocations';
 
 
 const StackNavigator = () => {
@@ -254,6 +255,11 @@ const StackNavigator = () => {
           <Stack.Screen
               name="TestScreen"
               component={TestScreen}
+              options={{ headerShown: false }}
+            />
+                     <Stack.Screen
+              name="AreaLocations"
+              component={AreaLocations}
               options={{ headerShown: false }}
             />
                  <Stack.Screen

@@ -33,10 +33,10 @@ export const createShopProfile = (data, navigation) => dispatch => {
     });
 };
 
-export const getShops = () => dispatch => {
-  console.log('GET LAUNDRY SHOPS')
+export const getShops = (props) => dispatch => {
+  console.log('GET LAUNDRY SHOPS', props)
   return axios
-    .get(`${varEnv.apiUrl}/alayon/shops`)
+    .get(`${varEnv.apiUrl}/alayon/shops?areaLocation=${props}`)
     .then(res => {
       dispatch({ type: SET_LAUNDRY_SHOPS, payload: res.data });
       return res.data
@@ -117,6 +117,23 @@ export const getConversation = () => dispatch => {
 export const getAreaCodes = () => dispatch => {
   return axios
     .get(`${varEnv.apiUrl}/alayon/area`)
+    .then(res => {
+      return res.data
+    })
+    .catch(err => {
+      console.log(JSON.stringify(err));
+      dispatch({
+        type: SET_ERROR,
+        payload: err,
+      });
+      return null
+    });
+
+};
+
+export const getAreaLocations = () => dispatch => {
+  return axios
+    .get(`${varEnv.apiUrl}/alayon/areaLocations`)
     .then(res => {
       return res.data
     })

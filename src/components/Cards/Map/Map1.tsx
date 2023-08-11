@@ -11,6 +11,7 @@ import {
 import MapView, { Marker, PROVIDER_GOOGLE, AnimatedRegion } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import haversine from "haversine";
+import { Svg } from "react-native-svg";
 
 import { COLORS, FONTS, GOOGLE_API_KEY, SIZES, constants, icons, images } from '../../../constants';
 import socket from '../../../utils/socket';
@@ -44,8 +45,14 @@ const Map1 = ({ navigation, route }) => {
     })
   })
   const [state, setState] = useState({
-      progress: [],
-      nextLine: null
+      progress: [{latitude: initialRegion.latitude, longitude: initialRegion.longitude}],
+      nextLine: null,
+      coordinate: new AnimatedRegion({
+        latitude: initialRegion.latitude,
+        longitude: initialRegion.longitude,
+        latitudeDelta: 0,
+        longitudeDelta: 0
+      })
   });
   const [region, setRegion] = useState(null);
   const [toLoc, setToLoc] = useState(null)
@@ -60,9 +67,9 @@ const Map1 = ({ navigation, route }) => {
   useEffect(() => {
     // if (order) {
 
-    let { shop: { location }, pickupDelivery, owner } = order;
+    let { shop: { location }, pickupDelivery } = order;
     setRegion(initialRegion)
-    setRiderLoc(initialRegion)
+    setRiderLoc({latitude: 0, longitude: 0})
     setToLoc({ latitude: Number(location.latitude), longitude: Number(location.longitude) })
     setFromLoc({ latitude: Number(pickupDelivery.latitude), longitude: Number(pickupDelivery.longitude) })
 
@@ -108,19 +115,20 @@ const Map1 = ({ navigation, route }) => {
     //   }
     // );
   
-    socket.emit('trackConnect', {orderId: order._id})
   
     socket.on('liveTrack', (data) => {
+      console.log('DATA SOCKET', data.coordinate)
       let liveData = data.coordinate;
       // Alert.alert('TRACKING NOW!', JSON.stringify(data))
-      if(!riderLoc && liveData){
-        // Alert.alert(' SET RIDER LOCATION', JSON.stringify(liveData), JSON.stringify(riderLoc))
+      // if(!riderLoc && liveData){
+      //   // Alert.alert(' SET RIDER LOCATION', JSON.stringify(liveData), JSON.stringify(riderLoc))
         setRiderLoc(liveData)
-      }
+      // }
       
       if (Platform.OS === "android") {
-        if (markerRef.current && riderLoc) {
-          
+        console.log('MARKER SOCKET11', data.coordinate)
+        if (markerRef.current && liveData) {
+          console.log('MARKER SOCKET', data.coordinate)
           markerRef.current?.animateMarkerToCoordinate(
             liveData,
             500
@@ -128,7 +136,7 @@ const Map1 = ({ navigation, route }) => {
         }
       }
      
-      setState({...data.state, angle: data.actualAngle})
+      setState({...data, angle: data.actualAngle})
       setAngle(data.actualAngle)
      
       // if(liveData){
@@ -154,64 +162,6 @@ const Map1 = ({ navigation, route }) => {
 
   }, [])
   
-  
-  useEffect(() => {
-    const distance = getDistance();
-
-    if (!distance) {
-        return;
-    }
-
-    let progress = state.path.filter(
-        coordinates => coordinates.distance < distance
-    );
-
-    const nextLine = state.path.find(
-        coordinates => coordinates.distance > distance
-    );
-
-    let point1, point2;
-
-    if (nextLine) {
-        point1 = progress[progress.length - 1];
-        point2 = nextLine;
-    } else {
-        // it's the end, so use the latest 2
-        point1 = progress[progress.length - 2];
-        point2 = progress[progress.length - 1];
-    }
-
-    const point1LatLng = point1;
-    const point2LatLng = point2;
-
-
-    const angle = computeHeading(
-        point1LatLng,
-        point2LatLng
-    );
-
-    const actualAngle = angle - 90;
-
-    
-    if (markerRef.current) {
-        // currentAngle = actualAngle;
-        setAngle(actualAngle)
-        // socket.emit('liveTrack', { orderId: _id, coordinate: state.prevLatLng, state, actualAngle })
-        // when it hasn't loaded, it's null
-        // this.marker?.rotatation() = actualAngle
-        // this.setState({
-        //   angle: actualAngle
-        // })
-    }
-
-}, [riderLoc])
-
-const getDistance = () => {
-  // seconds between when the component loaded and now
-  const differentInTime = (new Date() - state.initialDate) / 1000; // pass to seconds
-  return differentInTime * state.velocity; // d = v*t -- thanks Newton!
-};
-
 
 
 
@@ -226,12 +176,6 @@ const getDistance = () => {
     return Math.atan2(dy, dx) * 180 / Math.PI
   }
 
-
-
-  function calcDistance(newLatLng) {
-    const { prevLatLng } = mapState;
-    return haversine(prevLatLng, newLatLng) || 0;
-  };
 
   function renderHeaderButtons() {
     return (
@@ -322,140 +266,6 @@ const getDistance = () => {
     )
   }
 
-  function renderMap() {
-    return (
-      <MapView
-        ref={mapView}
-        style={{
-          flex: 1,
-        }}
-        customMapStyle={mapStyle}
-        provider={PROVIDER_GOOGLE}
-        initialRegion={region}
-      >
-        {
-          fromLoc &&
-          <Marker
-            key={'FromLoc'}
-            coordinate={fromLoc}
-            tracksViewChanges={false}
-            // icon={images.deliveryMan}
-            anchor={{ x: 0.5, y: 0.5 }}
-          >
-          
-          </Marker>
-        }
-
-        {/* <Marker.Animated
-          ref={markerRef}
-          coordinate={mapState.coordinate}
-        /> */}
-     
-        {
-          toLoc &&
-          <Marker
-            coordinate={toLoc}
-            tracksViewChanges={false}
-            // icon={icons.myLocation}
-          // anchor={{ x: .4, y: 1.2 }}
-          >
-          </Marker>
-
-        }
-           {state.progress && state.progress.length > 1 && ( 
-         <Marker.Animated
-          flat
-          anchor={{ x: 0.5, y: 0.4 }}
-          rotation={angle}
-          ref={marker => {
-            markerRef.current = marker;
-        }}
-        style={{ height: 55, width: 50 }}
-        coordinate={state.progress[state.progress.length - 1]}
-        tracksViewChanges={false}
-        
-        >
- <View   style={{  transform: [{ rotate: `90deg` }]   }}
-                            >
-                                <Image
-                                    resizeMode='stretch'
-                                    source={images.rider}
-                                    style={{ height: 55, width: 40 }}
-                                />
-                            </View>
-        </Marker.Animated>  
-           )}
-        {riderLoc && <>
-
-        <MapViewDirections
-          origin={riderLoc}
-          destination={toLoc}
-          apikey={GOOGLE_API_KEY}
-          strokeWidth={0}
-
-          strokeColor={COLORS.danger}
-          optimizeWaypoints={false}
-          onReady={result => {
-            setDuration(Math.ceil(result.duration))
-
-            if (!isReady) {
-              // Fit the map based on the route
-              mapView.current.fitToCoordinates(result.coordinates, {
-                edgePending: {
-                  right: SIZES.width * 0.5,
-                  bottom: 1000,
-                  left: SIZES.width * 0.5,
-                  top: SIZES.width * 0.5,
-                }
-              })
-
-              // Reposition the navigator
-              if (result.coordinates.length >= 2) {
-                let angle = calculateAngle(result.coordinates)
-
-                setAngle(angle)
-              }
-              setIsReady(true)
-            }
-          }}
-        />
-        </>}
-        
-        <MapViewDirections
-          origin={toLoc}
-          destination={fromLoc}
-          apikey={GOOGLE_API_KEY}
-          strokeWidth={5}
-          strokeColor={COLORS.primary}
-          optimizeWaypoints={false}
-          onReady={result => {
-            setDuration(Math.ceil(result.duration))
-
-            if (!isReady) {
-              // Fit the map based on the route
-              mapView.current.fitToCoordinates(result.coordinates, {
-                edgePending: {
-                  right: SIZES.width * 0.5,
-                  bottom: 1000,
-                  left: SIZES.width * 0.5,
-                  top: SIZES.width * 0.5,
-                }
-              })
-
-              // Reposition the navigator
-              if (result.coordinates.length >= 2) {
-                let angle = calculateAngle(result.coordinates)
-
-                setAngle(angle)
-              }
-              setIsReady(true)
-            }
-          }}
-        />
-
-      </MapView>
-    )
-  }
 
   const renderInfo = (mapVal) => {
     return (
@@ -536,13 +346,12 @@ const getDistance = () => {
                 style={{
                   color: COLORS.gray, ...FONTS.body4
                 }}
-              >Your Address</Text>
+              >Distance Travelled</Text>
               <Text
                 style={{
                   ...FONTS.h3
                 }}
-              >{parseFloat(mapVal.distanceTravelled).toFixed(2)} km -
-                {mapVal.watchCount}
+              >{parseFloat(mapVal.distanceTravelled).toFixed(2)} km
               </Text>
 
             </View>
@@ -620,19 +429,168 @@ const getDistance = () => {
     )
   }
   
-  console.log(state.progress.length, 'STATE PROGRESS')
-
+  // console.log(state.progress, 'STATE PROGRESS')
+let RiderImage = images.rider;
   return (
     <View
       style={{
         flex: 1,
       }}
     >
-      {renderMap()}
+    
+    <Image
+      onLoadEnd={() => console.log('LOOOADED')}
+                                    resizeMode='stretch'
+                                    source={RiderImage}
+                                    style={{ height: 0, width: 0 }}
+                                />
+      {/* {renderMap()} */}
+
+      <MapView
+        ref={mapView}
+        style={{
+          flex: 1,
+        }}
+        customMapStyle={mapStyle}
+        provider={PROVIDER_GOOGLE}
+        initialRegion={region}
+      >
+        {
+          fromLoc &&
+          <Marker
+            // image={RiderImage}
+
+            key={'FromLoc'}
+            coordinate={fromLoc}
+            tracksViewChanges={false}
+            // icon={images.deliveryMan}
+            anchor={{ x: 0.5, y: 0.5 }}
+          >
+          
+          </Marker>
+        }
+
+        {/* <Marker.Animated
+          ref={markerRef}
+          coordinate={mapState.coordinate}
+        /> */}
+     
+        {
+          toLoc &&
+          <Marker
+            key={'toloc'}
+            coordinate={toLoc}
+            tracksViewChanges={false}
+              // icon={RiderImage}
+            // icon={icons.myLocation}
+          // anchor={{ x: .4, y: 1.2 }}
+          >
+          </Marker>
+
+        }
+        {riderLoc &&  <Marker.Animated
+          key={'riderLoc'}
+          flat
+          anchor={{ x: 0.5, y: 0.4 }}
+          rotation={angle}
+          // icon={RiderImage}
+          // ref={markerRef.current}
+        
+        // style={{ height: 55, width: 50 }}
+        coordinate={riderLoc}
+        // tracksViewChanges={false}
+        
+        >
+ <View                               >
+                                    <Svg
+            width={50} height={55}
+            style={{  transform: [{ rotate: `90deg` }]   }}
+
+            >
+
+                                <Image
+                                      onLoadEnd={() => console.log('LOOOADEDINGG')}
+                                    resizeMode='stretch'
+                                    source={RiderImage}
+                                    style={{ height: 55, width: 40 }}
+                                />
+                                  </Svg>
+
+                            </View>
+        </Marker.Animated>  }
+        {/* {riderLoc && <>
+
+        <MapViewDirections
+          origin={riderLoc}
+          destination={toLoc}
+          apikey={GOOGLE_API_KEY}
+          strokeWidth={0}
+
+          strokeColor={COLORS.danger}
+          optimizeWaypoints={false}
+          onReady={result => {
+            setDuration(Math.ceil(result.duration))
+
+            if (!isReady) {
+              // Fit the map based on the route
+              mapView.current.fitToCoordinates(result.coordinates, {
+                edgePending: {
+                  right: SIZES.width * 0.5,
+                  bottom: 1000,
+                  left: SIZES.width * 0.5,
+                  top: SIZES.width * 0.5,
+                }
+              })
+
+              // Reposition the navigator
+              if (result.coordinates.length >= 2) {
+                let angle = calculateAngle(result.coordinates)
+
+                setAngle(angle)
+              }
+              setIsReady(true)
+            }
+          }}
+        />
+        </>} */}
+        
+        <MapViewDirections
+          origin={toLoc}
+          destination={fromLoc}
+          apikey={GOOGLE_API_KEY}
+          strokeWidth={5}
+          strokeColor={COLORS.primary}
+          optimizeWaypoints={false}
+          onReady={result => {
+            setDuration(Math.ceil(result.duration))
+
+            if (!isReady) {
+              // Fit the map based on the route
+              mapView.current.fitToCoordinates(result.coordinates, {
+                edgePending: {
+                  right: SIZES.width * 0.5,
+                  bottom: 1000,
+                  left: SIZES.width * 0.5,
+                  top: SIZES.width * 0.5,
+                }
+              })
+
+              // Reposition the navigator
+              if (result.coordinates.length >= 2) {
+                let angle = calculateAngle(result.coordinates)
+
+                setAngle(angle)
+              }
+              setIsReady(true)
+            }
+          }}
+        />
+
+      </MapView>
 
       {renderHeaderButtons()}
 
-      {renderInfo(mapState)}
+      {renderInfo(state)}
 
     </View>
   )

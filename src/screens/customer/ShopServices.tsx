@@ -291,30 +291,7 @@ export default ShopServices = ({ navigation, route }) => {
           </TouchableOpacity>
 
           <View style={{ flexDirection: 'row', marginRight: SIZES.padding }}>
-            <TouchableOpacity
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: SIZES.padding,
-                borderRadius: 50,
-                height: 40,
-                width: 40,
-              }}
-              // onPress={() => navigation.goBack()}
-              onPress={() =>
-                navigation.navigate('Chats')}
-
-            >
-              <Image
-                source={icons.chat}
-                resizeMode="contain"
-                style={{
-                  height: 25,
-                  width: 25,
-                  tintColor: COLORS.lightGray3,
-                }}
-              />
-            </TouchableOpacity>
+         
 
             <TouchableOpacity
               onPress={() => navigation.navigate('BasketsScreen', {})}

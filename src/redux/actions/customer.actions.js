@@ -38,7 +38,6 @@ export const getCustomerShopById = id => dispatch => {
   return axios
     .get(`${varEnv.apiUrl}/alayon/shops/${id}`)
     .then(res => {
-
       return res.data;
     })
     .catch(err => {

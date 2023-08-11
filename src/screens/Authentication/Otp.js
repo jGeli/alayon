@@ -36,23 +36,15 @@ const Otp = ({ navigation, route }) => {
     let { baskets } = param ? param : { baskets: [] }
     dispatch(verifyOTP({ code, id: user.id }, null))
       .then(res => {
-        let resRedirect = res.screen;
-
         if (redirection === 'OrderSummary' && baskets.length !== 0) {
           dispatch(createBulkBasket(baskets))
             .then((resBaskets) => {
-              if (resBaskets && resRedirect !== 'ProfileSetup') {
-                navigation.navigate(redirection, { ...param, selectedBaskets: resBaskets.map(a => { return a._id }) })
-              } else {
-                navigation.navigate(resRedirect, { redirection, ...param, selectedBaskets: resBaskets.map(a => { return a._id }) })
-              }
+              navigation.navigate(redirection, { ...param, selectedBaskets: resBaskets.map(a => { return a._id }) })
             })
         } else {
-          navigation.navigate(redirection, route.params)
+          navigation.navigate('MainCustomer', route.params)
         }
-
       })
-      ;
   };
 
   const copyText = () => {

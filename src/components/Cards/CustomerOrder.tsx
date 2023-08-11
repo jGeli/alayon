@@ -17,6 +17,7 @@ import moment from 'moment';
 const CustomerOrders = ({ navigation, order }) => {
     let { shop } = order;
         console.log(order, 'ORDER')
+        console.log(shop, "SHOP")
     return (
         <View
             style={styles.cardContainer}
@@ -51,7 +52,9 @@ const CustomerOrders = ({ navigation, order }) => {
         <View style={styles.btnContainer}>
             <TouchableOpacity style={styles.button}>
                 <Text style={{...FONTS.body4, fontWeight: 'bold'}}
-                onPress={() => navigation.navigate("CustomerOrderDetails")}
+                onPress={() => {
+                    console.log("PRESS INE")
+                    navigation.navigate("CustomerOrderDetails", {order, orderId: order._id, shopId : shop._id})}}
                 >Order Details</Text>
             </TouchableOpacity>
         </View>

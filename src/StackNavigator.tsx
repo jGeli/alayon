@@ -47,7 +47,7 @@ import Maps from './components/Cards/Map/Map1';
 import Map1 from './components/Cards/Map/Map1';
 import TestScreen from './screens/TestScreen';
 import socket from './utils/socket';
-import CustomerOrderDetails from './screens/customer/CustomerOrderDetails';
+import CustomerOrderDetails from './components/Cards/CustomerOrderDetails';
 import PermissionScreen from './screens/OnBoarding/PermissionScreen';
 
 
@@ -422,8 +422,8 @@ const StackNavigator = () => {
               component={CustomerSettings}
               options={{ headerShown: false }}
             />
+            
            
-
           </Stack.Navigator>
         </NavigationContainer>
       }

@@ -27,7 +27,7 @@ export default function CustomerOrderDetails({ navigation, route }) {
 
     const handleGetOrder = async () => {
         let myOrders = await dispatch(getOrderById(orderId));
-    console.log(myOrders, 'deliver')
+    console.log(myOrders.orders.length, 'deliver')
 
         if(myOrders){
             let newOpen = [];
@@ -36,9 +36,8 @@ export default function CustomerOrderDetails({ navigation, route }) {
           })
           setServiceOpen(newOpen)
           setOrdersData(myOrders)
-        }
+        }  
     }
-
 
 
 
@@ -161,9 +160,10 @@ export default function CustomerOrderDetails({ navigation, route }) {
                     backgroundColor: COLORS.lightGray4,
                     marginBottom: 5,
                     // marginTop: SIZES.padding,
-                    padding: SIZES.padding,
                     justifyContent: 'flex-start',
-                    alignItems: 'flex-start',
+                    alignItems: 'center',
+                    padding: SIZES.padding,
+                    marginHorizontal:SIZES.padding
                 }}>
                   
                 <View
@@ -181,9 +181,10 @@ export default function CustomerOrderDetails({ navigation, route }) {
                             // flexGrow: 1,
                             flexDirection: 'row',
                             justifyContent: 'flex-start',
+                            width:'100%',
                             alignItems: 'center',
                         }}>
-
+                        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'flex-start',width: '80%'}}>
                         {serviceOpen.filter(a => a == String(item?.service?._id)).length !== 0 ? (
                             <TouchableOpacity onPress={() => {
                                 let newServ = serviceOpen.filter(a => a !== String(item?.service?._id))
@@ -194,7 +195,7 @@ export default function CustomerOrderDetails({ navigation, route }) {
                             </TouchableOpacity>
                         ) : (
                             <TouchableOpacity onPress={() => {
-                                let ind = serviceOpen.find(a => a == String(item?.service?._id));
+                                let ind = serviceOpen.find(a =>{ a == String(item?.service?._id), console.log(a, "PPPPP")});
                                 if (!ind) {
                                     serviceOpen.push(String(item?.service?._id))
                                 }
@@ -202,7 +203,7 @@ export default function CustomerOrderDetails({ navigation, route }) {
                                 setRnd(Math.random())
                             }}>
                                 <Image source={icons.addbox} style={{ width: 25, height: 25 }} />
-                            </TouchableOpacity>
+                            </TouchableOpacity >
                         )}
                         <Text
                             style={{
@@ -213,6 +214,24 @@ export default function CustomerOrderDetails({ navigation, route }) {
                             }}>
                             {item?.service?.name}
                         </Text>
+                        </View>
+                        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between',width:'20%'}}>
+                        <TouchableOpacity onPress={() => {
+                               
+                            }}>
+                                <Image source={icons.edit} style={{ width: 25, height: 25 }} />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => {
+                                let ind = serviceOpen.find(a =>{ a == String(item?.service?._id), console.log(a, "PPPPP")});
+                                if (!ind) {
+                                    serviceOpen.push(String(item?.service?._id))
+                                }
+                                setServiceOpen(serviceOpen)
+                                setRnd(Math.random())
+                            }}>
+                                <Image source={icons.dele} style={{ width: 25, height: 25 }} />
+                                </TouchableOpacity>
+                        </View>
                     </View>
                     <View
                         style={{
@@ -221,6 +240,37 @@ export default function CustomerOrderDetails({ navigation, route }) {
                             justifyContent: 'flex-end',
                             alignItems: 'center',
                         }}>
+                       
+                    </View>
+                    
+                </View>
+                {serviceOpen.find(a => a == String(item?.service?._id)) && (
+                    <View
+                        style={{
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'flex-start',
+                            borderBottomColor: COLORS.gray,
+                            borderBottomWidth: 1,
+                            marginBottom: 5,
+                        }}>
+                            
+                            <View style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            width: '100%',
+                            alignItems: 'center',
+                            borderBottomColor: COLORS.gray,
+                        }}>
+                            <Text
+                            style={{
+                                ...FONTS.body3,
+                                color: COLORS.black,
+                                marginLeft: 5,
+                                fontWeight: 'bold',
+                            }}>
+                            No. of Clothes 
+                        </Text>
                         <Text
                             style={{
                                 ...FONTS.body3,
@@ -228,58 +278,64 @@ export default function CustomerOrderDetails({ navigation, route }) {
                                 marginLeft: 5,
                                 fontWeight: 'bold',
                             }}>
-                            No. of Clothes
+                            Rate Per Clothes
                         </Text>
-                    </View>
-                </View>
-                {serviceOpen.find(a => a == String(item?.service?._id)) && (
-                    <View
-                        style={{
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            borderBottomColor: COLORS.gray,
-                            borderBottomWidth: 1,
-                            marginBottom: 5,
-                        }}>
+                        <Text
+                            style={{
+                                ...FONTS.body3,
+                                color: COLORS.black,
+                                marginLeft: 5,
+                                fontWeight: 'bold',
+                            }}>
+                           Total Price
+                        </Text>
+                            </View>
+                        
                         {item.cloths.map(a => {
                             return (
                                 <View
                                     key={a.cloth}
                                     style={{
                                         flexDirection: 'row',
-                                        justifyContent: 'space-between',
+                                        justifyContent:'flex-start',
                                         alignItems: 'center',
-                                        paddingLeft: SIZES.padding * 3,
+                                        padding: SIZES.padding
                                     }}>
-                                    <View style={{ flexGrow: 1 }}>
+                                    <View style={{
+                                     flexDirection:'row',
+                                      alignItems:'center',
+                                      justifyContent:'space-between',
+                                      width: '100%',
+                                      }}>
                                         <Text
                                             style={{
                                                 ...FONTS.body4,
                                                 color: COLORS.black,
                                                 fontWeight: 'bold'
                                             }}>
-                                            {a.name}
+                                         {a.qty} {a.name}
                                         </Text>
-                                    </View>
-                                    <View
-                                        style={{
-                                            flexDirection: 'row',
-                                            justifyContent: 'center',
-                                            marginRight: SIZES.padding
-                                        }}>
-                                        <Text
+                                   
+                                             <Text
                                             style={{
                                                 ...FONTS.body4,
                                                 color: COLORS.black,
-                                                width: 25,
-                                                textAlign: 'center',
+                                                fontWeight: 'bold'
                                             }}>
-                                            {a.qty}
+                                                 ({item.qty}) {item.pricing}
+                                        </Text>
+                                         <Text
+                                            style={{
+                                                ...FONTS.body4,
+                                                color: COLORS.black,
+                                                fontWeight: 'bold'
+                                            }}>
+                                                 {item.totalService}
                                         </Text>
                                     </View>
-
+                                   
                                 </View>
+                                
                             );
                         })}
                     </View>
@@ -291,6 +347,7 @@ export default function CustomerOrderDetails({ navigation, route }) {
                         alignItems: 'center',
                         width: '100%',
                     }}>
+                        
                     <View
                         style={{
                             width: '100%',
@@ -301,12 +358,10 @@ export default function CustomerOrderDetails({ navigation, route }) {
                         <Text
                             style={{
                                 ...FONTS.body3,
-                                marginLeft: SIZES.padding,
                                 color: COLORS.black,
                                 fontWeight: 'bold',
-                                marginRight: 10,
                             }}>
-                            ({item.qty}) {item.pricing}
+                           Sub Total Amount
                         </Text>
                         <Text
                             style={{
@@ -476,7 +531,7 @@ export default function CustomerOrderDetails({ navigation, route }) {
 
 
     return (
-
+        <ScrollView>
         <SafeAreaView style={styles.container}>
             {renderHeader()}
             {renderShop()}
@@ -487,7 +542,6 @@ export default function CustomerOrderDetails({ navigation, route }) {
                // marginTop: SIZES.padding,
                justifyContent: 'flex-start',
                alignItems: 'flex-start',
-
             }}>
                 <View  style={{ flexGrow: 1, padding: SIZES.semiRadius, flexDirection: 'column' }}>
                     <Text
@@ -495,11 +549,13 @@ export default function CustomerOrderDetails({ navigation, route }) {
                             ...FONTS.h3,
                             color: COLORS.secondary,
                             fontWeight: 'bold',
+                            paddingLeft: SIZES.padding
                         }}>
                        Selected Services
                     </Text>
                 </View>
                 <FlatList
+                    scrollEnabled={false}
                     data={ordersData.orders}
                     keyExtractor={item => `${item._id}`}
                     contentContainerStyle={{
@@ -524,6 +580,7 @@ export default function CustomerOrderDetails({ navigation, route }) {
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
+        </ScrollView>
 
     )
 }

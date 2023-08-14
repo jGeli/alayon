@@ -18,7 +18,7 @@ export default function CustomerReviewScreen({ navigation, route }) {
   const [details, setDetails] = useState({});
   const [rating, setRating] = useState(0);
 
-
+  console.log(shop, 'shop')
 
 
   const handleShopDetails = async (e) => {
@@ -56,11 +56,12 @@ export default function CustomerReviewScreen({ navigation, route }) {
       message: value
     }
     console.log(payload, "payload")
-    dispatch(createShopReview(shop, {message: value, ratings: rating }))
+    dispatch(createShopReview(shop._id, {message: value, ratings: rating }))
     .then(res => {
       console.log(res, 'REVIEW RESPONSE');
       navigation.goBack()
-    });
+    })
+    .catch(err => {console.log(err)})
 
   }
 
@@ -158,6 +159,7 @@ export default function CustomerReviewScreen({ navigation, route }) {
             alignItems: 'center',
             justifyContent: 'center',
             marginTop: 20,
+            color: COLORS.black
           }}
         >
           Please give us a feedback!
@@ -177,6 +179,7 @@ export default function CustomerReviewScreen({ navigation, route }) {
             borderColor: COLORS.darkGray,
             borderWidth: .5,
             borderRadius: SIZES.semiRadius,
+            color: COLORS.black
           }}
           value={value}
           onChangeText={e => setValue(e)}

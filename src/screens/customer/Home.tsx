@@ -47,15 +47,17 @@ export default function Home({ navigation }) {
       .then(a => {
         if (a && a.length !== 0) {
           setShops(a)
+        } else {
+          setShops([])
         }
         setTimeout(() => {
           setRefreshing(false)
         }, 2000);
       }).catch(err => {
         console.log(err)
-        // setTimeout(() => {
-        //   setRefreshing(false)
-        // }, 2000);
+        setTimeout(() => {
+          setRefreshing(false)
+        }, 2000);
       })
 
 
@@ -76,11 +78,11 @@ export default function Home({ navigation }) {
   const handleLocation = () => {
     console.log('IS ALLOW LOCATION', isLocationAllow)
     
-    if (!isLocationAllow ) {
-      dispatch({ type: SET_ALLOW_LOCATION_MODAL })
-    } else {
+    // if (!isLocationAllow ) {
+    //   dispatch({ type: SET_ALLOW_LOCATION_MODAL })
+    // } else {
       navigation.navigate('AreaLocations', {})
-    }
+    // }
   }
 
 

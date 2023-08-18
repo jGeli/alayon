@@ -6,12 +6,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { COLORS, FONTS, SIZES, icons, images } from '../../constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { LineDivider, TextButton, TextIconButton } from '../../components';
-import { useDispatch } from 'react-redux';
 import { getOrderById, markReviewed, receiveOrder } from '../../redux/actions/customer.actions';
+import { useDispatch, useSelector } from 'react-redux';
 import { statusIndexing } from '../../utils/helpers';
 import LoadingScreen from '../LoadingScreen';
 import socket from '../../utils/socket';
 import moment from 'moment';
+
 
 
 
@@ -88,10 +89,11 @@ const getStepIndicatorIconConfig = ({
 };
 
 export default function OrderStatus({navigation, route}) {
-  const { order, navType } = route.params;
+  const { order, navType, shopId } = route.params;
   const dispatch = useDispatch();
   const [orderData, setOrderData] = React.useState<Object>({})
   const [loading, setLoading] = React.useState(true)
+  const { selectedShop } = useSelector(({ data }) => data)
   
   const handleGetOrder = async (id) => {
   
@@ -113,19 +115,33 @@ export default function OrderStatus({navigation, route}) {
   
   function renderHeader() {
     return (
-        <View
-            style={styles.header}>
-         
-            <Text
-                style={{
-                    ...FONTS.body2,
-                    color: COLORS.black,
-                    fontWeight: 'bold',
-                }}>
-              DELIVERY STATUS
-            </Text>
-
-        </View>
+      <View
+      style={{
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          alignItems: 'center',
+          backgroundColor: COLORS.white,
+          elevation: 5,
+          width: '100%'
+          // height: 40,
+      }}>
+      <TouchableOpacity
+          style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
+          onPress={() => navigation.navigate('CustomerOrders')}>
+          <Image
+              source={icons.back}
+              style={{ height: 20, width: 20, tintColor: COLORS.primary }}
+          />
+      </TouchableOpacity>
+      <Text
+          style={{
+              ...FONTS.body2,
+              color: COLORS.black,
+              // fontWeight: 'bold',
+          }}>
+          Delivey Status
+      </Text>
+  </View>
     );
 }
 
@@ -285,9 +301,9 @@ export default function OrderStatus({navigation, route}) {
         labelStyle={{
         color: COLORS.primary
         }}
-        onPress={() => navigation.goBack()}
+        onPress={() => navigation.navigate('ShopServices', {shopId: selectedShop._id })}
     />  : 
-    
+   
     <TextButton
     buttonContainerStyle={{
         width: '40%',
@@ -409,7 +425,7 @@ export default function OrderStatus({navigation, route}) {
         marginRight: SIZES.padding,
         tintColor: COLORS.white
     }}
-    onPress={() => Alert.alert('RE-ORDER')}
+    onPress={() => ('RE-ORDER')}
 
 />
        }

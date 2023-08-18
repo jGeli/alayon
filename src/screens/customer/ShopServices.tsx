@@ -784,7 +784,7 @@ export default ShopServices = ({ navigation, route }) => {
             // borderTopLeftRadius: 30,
             // borderTopRightRadius: 30,
             // backgroundColor: COLORS.white,
-            elevation: 5,
+            // elevation: 5,
             flexGrow: 1
             // flex: 1
           }}
@@ -1155,7 +1155,7 @@ export default ShopServices = ({ navigation, route }) => {
                   </View>
               {/* </View> */}
             </View>
-            <View
+            {/* <View
               style={{
                 width: '100%',
                 // backgroundColor: COLORS.lightGray3,
@@ -1163,7 +1163,7 @@ export default ShopServices = ({ navigation, route }) => {
         {selectedShop.addons.length !== 0 &&
               renderAddons()
         }
-            </View>
+            </View> */}
             {renderInfo()}
           </>
         ) : (

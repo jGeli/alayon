@@ -89,11 +89,12 @@ export const getOrders = id => dispatch => {
 
 
 export const getOrderById = id => dispatch => {
+  console.log(`${varEnv.apiUrl}/customers/orders/${id}`)
   return axios
     .get(`${varEnv.apiUrl}/customers/orders/${id}`)
     .then(res => {
       // return dispatch(getCustomerShopBaskets(shop._id));
-      // dispatch(getCustomerData());
+      // dispatch(getOrders());
       return res.data
     })
     .catch(err => {

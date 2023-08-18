@@ -50,7 +50,9 @@ const CustomerOrders = ({ navigation, order }) => {
         <View style={styles.btnContainer}>
             <TouchableOpacity style={styles.button}>
                 <Text style={{...FONTS.body4, fontWeight: 'bold'}}
-                onPress={() => navigation.navigate("CustomerOrderDetails")}
+                onPress={() => {
+                    console.log("PRESS INE")
+                    navigation.navigate("CustomerOrderDetails", {order, orderId: order._id, shopId : shop._id})}}
                 >Order Details</Text>
             </TouchableOpacity>
         </View>

@@ -454,24 +454,7 @@ export default function OrderSummary({ navigation, route }) {
 
   useEffect(() => {
     handleSelectedBaskets()
-    const backAction = () => {
-      Alert.alert('Hold on!', 'Are you sure you want to exit the App?', [
-        {
-          text: 'Cancel',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        {text: 'YES', onPress: () => BackHandler.exitApp()},
-      ]);
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-
-    return () => backHandler.remove();
+   
 
   }, [selectedBaskets, baskets])
 

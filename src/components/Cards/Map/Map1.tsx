@@ -16,6 +16,8 @@ import { Svg } from "react-native-svg";
 import { COLORS, FONTS, GOOGLE_API_KEY, SIZES, constants, icons, images } from '../../../constants';
 import socket from '../../../utils/socket';
 import { computeHeading } from '../../../utils/helpers';
+import { useDispatch } from 'react-redux';
+import { getCurrentRiderLocation } from '../../../redux/actions/customer.actions';
 
 let initialRegion = {
   latitude: 11.231742101192534,
@@ -27,33 +29,9 @@ let initialRegion = {
 
 const Map1 = ({ navigation, route }) => {
   const { order } = route.params;
+  const dispatch = useDispatch()
   const mapView = useRef();
   const markerRef = useRef();
-  const [mapState, setMapState] = useState({
-    
-    watchCount: 0,
-    latitude: initialRegion.latitude,
-    longitude: initialRegion.longitude,
-    routeCoordinates: [],
-    distanceTravelled: 0,
-    prevLatLng: {},
-    coordinate: new AnimatedRegion({
-      latitude: initialRegion.latitude,
-      longitude: initialRegion.longitude,
-      latitudeDelta: 0,
-      longitudeDelta: 0
-    })
-  })
-  const [state, setState] = useState({
-      progress: [{latitude: initialRegion.latitude, longitude: initialRegion.longitude}],
-      nextLine: null,
-      coordinate: new AnimatedRegion({
-        latitude: initialRegion.latitude,
-        longitude: initialRegion.longitude,
-        latitudeDelta: 0,
-        longitudeDelta: 0
-      })
-  });
   const [region, setRegion] = useState(null);
   const [toLoc, setToLoc] = useState(null)
   const [fromLoc, setFromLoc] = useState(null)
@@ -62,14 +40,35 @@ const Map1 = ({ navigation, route }) => {
   const [isReady, setIsReady] = useState(false)
   const [duration, setDuration] = useState('')
 
+  const handleCurrentRiderLocation = async () => {
+  
+  let res = await dispatch(getCurrentRiderLocation(order._id))
+    // .then(res => {
+    //   console.log(res.track, 'RRR')
+    //   console.log(res.owner, 'BBB')
+    //   if(res && res.track) {
+    //     let { coordinate } = res.track;
+    //     console.log(res, 'RESPONSESS')
+    //     setRiderLoc(coordinate)
+    //   }
+    // })
+          if(res) {
+        let { coordinate } = res.track;
+        console.log(res, 'RESPONSESS')
+        if(coordinate){
+          setRiderLoc(coordinate)
+        }
+      }
+    console.log("RESS", res.track)
+  }
 
 
   useEffect(() => {
     // if (order) {
 
     let { shop: { location }, pickupDelivery } = order;
+    handleCurrentRiderLocation()
     setRegion(initialRegion)
-    setRiderLoc({latitude: 0, longitude: 0})
     setToLoc({ latitude: Number(location.latitude), longitude: Number(location.longitude) })
     setFromLoc({ latitude: Number(pickupDelivery.latitude), longitude: Number(pickupDelivery.longitude) })
 
@@ -136,7 +135,6 @@ const Map1 = ({ navigation, route }) => {
         }
       }
      
-      setState({...data, angle: data.actualAngle})
       setAngle(data.actualAngle)
      
       // if(liveData){
@@ -431,6 +429,9 @@ const Map1 = ({ navigation, route }) => {
   
   // console.log(state.progress, 'STATE PROGRESS')
 let RiderImage = images.rider;
+let WashingPin = icons.washingMachinePin;
+let pinIcon = icons.pinIcon;
+
   return (
     <View
       style={{
@@ -442,6 +443,18 @@ let RiderImage = images.rider;
       onLoadEnd={() => console.log('LOOOADED')}
                                     resizeMode='stretch'
                                     source={RiderImage}
+                                    style={{ height: 0, width: 0 }}
+                                />
+                                    <Image
+      onLoadEnd={() => console.log('LOOOADED')}
+                                    resizeMode='stretch'
+                                    source={WashingPin}
+                                    style={{ height: 0, width: 0 }}
+                                />
+                                    <Image
+      onLoadEnd={() => console.log('LOOOADED')}
+                                    resizeMode='stretch'
+                                    source={pinIcon}
                                     style={{ height: 0, width: 0 }}
                                 />
       {/* {renderMap()} */}
@@ -464,27 +477,32 @@ let RiderImage = images.rider;
             coordinate={fromLoc}
             tracksViewChanges={false}
             // icon={images.deliveryMan}
-            anchor={{ x: 0.5, y: 0.5 }}
+            anchor={{ x: 0.5, y: 0.6 }}
           >
-          
+            <View >
+            <Image source={pinIcon} style={{ height: 35, width: 40 }}
+            onLoadEnd={() => console.log('LOOOADEDINGG')}
+            />
+          </View>
           </Marker>
         }
-
-        {/* <Marker.Animated
-          ref={markerRef}
-          coordinate={mapState.coordinate}
-        /> */}
-     
         {
           toLoc &&
           <Marker
             key={'toloc'}
             coordinate={toLoc}
             tracksViewChanges={false}
-              // icon={RiderImage}
-            // icon={icons.myLocation}
-          // anchor={{ x: .4, y: 1.2 }}
-          >
+            anchor={{ x: 0.4, y: 0.5 }}
+            >
+             <View >
+
+          <Image
+            source={WashingPin}
+            style={{ height: 35, width: 25 }}
+            onLoadEnd={() => console.log('LOOOADEDINGG')}
+          />
+
+        </View>
           </Marker>
 
         }
@@ -590,7 +608,7 @@ let RiderImage = images.rider;
 
       {renderHeaderButtons()}
 
-      {renderInfo(state)}
+      {/* {renderInfo(state)} */}
 
     </View>
   )

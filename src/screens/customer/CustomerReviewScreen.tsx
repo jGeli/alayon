@@ -56,7 +56,7 @@ export default function CustomerReviewScreen({ navigation, route }) {
       message: value
     }
     console.log(payload, "payload")
-    dispatch(createShopReview(shop, {message: value, ratings: rating }))
+    dispatch(createShopReview(shop, payload))
     .then(res => {
       console.log(res, 'REVIEW RESPONSE');
       navigation.goBack()

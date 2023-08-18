@@ -105,8 +105,6 @@ export default function MerchantHomeScreen({ navigation }) {
   }
 
 
-  
-  console.log("CUSTOMER ORDER", orders)
 
   return (
     <SafeAreaView

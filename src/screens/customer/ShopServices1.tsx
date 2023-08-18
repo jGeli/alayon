@@ -13,7 +13,6 @@ import {
 import {
   COLORS,
   FONTS,
-  Icons,
   SIZES,
   constants,
   icons,
@@ -44,20 +43,17 @@ import Reviews from '../../components/Reviews';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCustomerBaskets, setCustomerBaskets } from '../../utils/AsyncStorage';
 import LoadingScreen from '../LoadingScreen';
-import { cutString } from '../../utils/helpers';
 
 // create a component
 export default ShopServices = ({ navigation, route }) => {
-  const { shopId, newAddress } = route.params;
+  const { shopId } = route.params;
   const dispatch = useDispatch();
-  const { location } = useSelector(({ auth }) => auth);
   const { isAuthenticated, user } = useSelector(({ auth }) => auth);
   const { order, baskets, basket, customer: { locations } } = useSelector(({ customer }) => customer);
   const { customerAddOns, basketModal } = useSelector(({ ui }) => ui);
   const [selectedShop, setSelectedShop] = useState({
     addons: []
   });
-  const [pickupLocation, setPickupLocation] = useState({});
   const [cloths, setCloths] = useState();
   const [isAddonEnabled, setAddonEnabled] = useState(false);
   const [tab, setTab] = useState('services');
@@ -240,34 +236,22 @@ export default ShopServices = ({ navigation, route }) => {
   }, [shopId]);
 
 
-  useEffect(() => {
-  
-  if(newAddress){
-    setPickupLocation(newAddress)
-  } else {
-    setPickupLocation({})
-  }
-
-  
-  }, [newAddress]);
-
-
   let totalItem = 0;
   order.cloths.forEach(a => (totalItem += a.qty));
 
-  console.log(pickupLocation, 'PICKUP LOCATION')
+
   function renderHeader() {
     return (
       <View
         style={{
           width: '100%',
           flexDirection: 'column',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
           alignItems: 'center',
-          // minHeight: '20%',
-          backgroundColor: COLORS.primary,
+          height: '25%',
+          backgroundColor: COLORS.darkBlue,
         }}>
-        {/* <Image
+        <Image
           resizeMode="stretch"
           source={{ uri: selectedShop.bannerUrl }}
           // resizeMode="cover"
@@ -281,29 +265,21 @@ export default ShopServices = ({ navigation, route }) => {
             height: '100%',
             position: 'absolute',
           }}
-        /> */}
+        />
 
         <View
           style={{
+            flex: 1,
             padding: 5,
             flexDirection: 'row',
             width: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
           }}>
-          <View
-            style={{
-              // flexGrow: 1
-              width: '20%',
-              alignItems: 'flex-start',
-              justifyContent: 'flex-start'
-            }}
-          >
           <TouchableOpacity
             style={{
               // backgroundColor: COLORS.darkGray2,
               padding: 5,
-              // width: 40
             }}
             onPress={() => {
               navigation.goBack()
@@ -313,48 +289,9 @@ export default ShopServices = ({ navigation, route }) => {
               style={{ height: 20, width: 20, tintColor: COLORS.white }}
             />
           </TouchableOpacity>
-          </View>
-          <View
-            style={{ width: '60%', marginTop: SIZES.padding, flexGrow: 1, justifyContent: 'center', alignItems: 'center'}}
-          >
-          <Text
-            style={{
-              ...FONTS.h4,
-              color: COLORS.white,
-              fontWeight: 'bold',
-              textAlign: 'center'
-            }}>
-            {selectedShop.shop_name}
-          </Text>
-          <Text
-            style={{
-              ...FONTS.body4,
-              color: COLORS.lightGray,
-              textAlign: 'center'
-              // fontWeight: 'bold',
-            }}>
-            {selectedShop?.location?.address}
-          </Text>
-          </View>
 
-          <View style={{  flexDirection: 'row', alignContent: 'center', justifyContent: 'flex-end', width: '20%' }}>
-          <TouchableOpacity
-              onPress={() => navigation.navigate('BasketsScreen', {})}
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 50,
-                height: 40,
-                padding: SIZES.padding,
-                marginRight: SIZES.padding
-                // width: 40,
-              }}>
-              <Image
-                source={icons.chat}
-                resizeMode="contain"
-                style={{ height: 25, width: 25, tintColor: COLORS.lightGray3 }}
-              />
-            </TouchableOpacity>         
+          <View style={{ flexDirection: 'row', marginRight: SIZES.padding }}>
+         
 
             <TouchableOpacity
               onPress={() => navigation.navigate('BasketsScreen', {})}
@@ -363,9 +300,7 @@ export default ShopServices = ({ navigation, route }) => {
                 justifyContent: 'center',
                 borderRadius: 50,
                 height: 40,
-                marginRight: SIZES.padding
-
-                // width: 40,
+                width: 40,
               }}>
               <Image
                 source={icons.basket}
@@ -375,54 +310,23 @@ export default ShopServices = ({ navigation, route }) => {
             </TouchableOpacity>
           </View>
         </View>
-     
-        <TouchableOpacity
+        <View
           style={{
-            // flex: 1,
-            borderRadius: SIZES.radius2,
-            flexGrow: 1,
-            margin: SIZES.padding,
-            marginVertical: SIZES.padding * 2,
-            // marginBottom: SIZES.padding,
-            width: '95%',
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            padding: SIZES.base,
-            paddingHorizontal: SIZES.padding,
-            backgroundColor: COLORS.lightGray1
-          }}
-              onPress={() => navigation.navigate('Map', { navType: 'addressLocation', ...route.params })}
-          >
-          <Image
-            
-            source={icons.location}
-            style={{width: 30, height: 30, tintColor: COLORS.primary, marginHorizontal: SIZES.padding, marginRight: SIZES.padding * 2}}
-            resizeMode='contain'
-          />
-          <View
-            style={{flexGrow: 1}}
-          >
+            flex: 1,
+            width: '100%',
+            justifyContent: 'flex-end',
+            alignItems: 'flex-start',
+            padding: SIZES.padding,
+          }}>
           <Text
             style={{
-              ...FONTS.body3,
-              color: COLORS.transparentBlack7,
-              overflow: 'hidden'
-              // fontWeight: 'bold',
+              ...FONTS.h4,
+              color: COLORS.white,
+              fontWeight: 'bold',
             }}>
-            {pickupLocation && pickupLocation.address ? cutString(pickupLocation.address, 35)
-            :
-            "Enter Pickup/Delivery Details"
-            }
-            
+            {selectedShop.shop_name}
           </Text>
-       
-          </View>
-          <Image
-            source={icons.arrow_right}
-            style={{height: 25, width: 25, tintColor: COLORS.darkBlue}}
-          />
-        </TouchableOpacity>
+        </View>
         <View
           style={{
             flexDirection: 'row',
@@ -511,7 +415,7 @@ export default ShopServices = ({ navigation, route }) => {
         style={{
           justifyContent: 'center',
           alignItems: 'flex-start',
-          height: 75,
+          height: 70,
         }}>
         <FlatList
           horizontal
@@ -528,24 +432,22 @@ export default ShopServices = ({ navigation, route }) => {
             <TouchableOpacity
               disabled={item.cloths.length === 0}
               style={{
-                marginTop: SIZES.padding,
                 marginLeft: SIZES.padding,
-                marginRight:SIZES.padding,
-                borderWidth: 2,
-                borderColor:
+                marginRight:
+                  index == selectedShop.services.length - 1 ? SIZES.padding : 0,
+                backgroundColor:
                   item.cloths.length === 0
                     ? COLORS.darkGray
                     : order.service == item.service
                       ? COLORS.primary
-                      : COLORS.lightGray4,
+                      : COLORS.lightGray3,
                 borderRadius: SIZES.semiRadius,
                 paddingLeft: SIZES.radius,
                 paddingRight: SIZES.radius,
-                backgroundColor: COLORS.white,
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
-                height: 60,
+                height: 45,
                 elevation: 5,
               }}
               onPress={() => {
@@ -557,7 +459,7 @@ export default ShopServices = ({ navigation, route }) => {
                   fontSize: SIZES.h4,
                   fontWeight: 'bold',
                   color:
-                    order.service == item.service ? COLORS.primary : COLORS.black,
+                    order.service == item.service ? COLORS.white : COLORS.black,
                 }}>
                 {item.name}
               </Text>
@@ -574,21 +476,16 @@ export default ShopServices = ({ navigation, route }) => {
       return (
         <View
           style={{
-          // flex: 1,
-            // flexGrow: 1,
             height: 50,
-            width: '100%',
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
             borderBottomColor: COLORS.gray,
             borderBottomWidth: 0.5,
             margin: 5,
-            paddingHorizontal: SIZES.padding
           }}>
           <View
             style={{
-              flexGrow: 1,
               flexDirection: 'row',
               justifyContent: 'flex-start',
               alignItems: 'center',
@@ -650,6 +547,7 @@ export default ShopServices = ({ navigation, route }) => {
         contentContainerStyle={{
           // justifyContent: 'center',
           // paddingTop: 20,
+          overflow: 'scroll',
           paddingBottom: SIZES.padding * 5,
         }}
         data={cloths}
@@ -761,269 +659,6 @@ export default ShopServices = ({ navigation, route }) => {
   }
 
 
-  const renderInfo = (mapVal) => {
-    return (
-      <View
-        style={{
-          // position: 'absolute',
-          bottom: 0,
-          width: '100%',
-          borderTopLeftRadius: 30,
-          borderTopRightRadius: 30,
-          backgroundColor: COLORS.white,
-          paddingVertical: SIZES.padding,
-          elevation: 5,
-          
-        }}
-      >
-        {/* Info Container */}
-        <View
-          style={{
-            marginTop: SIZES.padding,
-            padding: SIZES.padding,
-            // borderTopLeftRadius: 30,
-            // borderTopRightRadius: 30,
-            // backgroundColor: COLORS.white,
-            elevation: 5,
-            flexGrow: 1
-            // flex: 1
-          }}
-        >
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: COLORS.lightGray3,
-              paddingHorizontal: SIZES.padding,
-              marginHorizontal: SIZES.padding,
-              borderRadius: SIZES.semiRadius,
-              height: 45
-              // padding: SIZES.base
-            }}
-          >
-         
-            <View
-              style={{
-                flexDirection: 'row', 
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-              }}
-            >
-               <Image
-              source={icons.puzzle}
-              resizeMode='contain'
-              style={{
-                width: 25,
-                height: 25,
-                tintColor: COLORS.primary
-              }}
-            />
-            <View
-              style={{flexGrow: 1, paddingHorizontal: SIZES.padding}}
-            >
-              <Text
-                style={{ ...FONTS.body3, color: COLORS.darkBlue }}
-              >
-             DETAILS
-              </Text>
-              </View>
-              <Image
-            source={icons.arrow_right}
-            style={{height: 25, width: 25, tintColor: COLORS.darkBlue}}
-          />
-            </View>
-          </TouchableOpacity>
-          {/* Address */}
-          <View
-            style={{
-              // width: '100%',
-              flexGrow: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: SIZES.padding,
-              marginBottom: SIZES.padding
-            }}
-          >
-       <TouchableOpacity
-            style={{
-              flexGrow: 1,
-              // flex: 1,
-              // width: '100%',
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: COLORS.lightGray3,
-              paddingHorizontal: SIZES.padding,
-              marginHorizontal: SIZES.padding,
-              borderRadius: SIZES.semiRadius,
-              height: 45
-              // padding: SIZES.base
-            }}
-          >
-         
-
-    
-            <View
-              style={{
-              flexDirection: 'row',
-              flexGrow: 1,
-              }}
-            >
-                       <Image
-              source={icons.wallet}
-              resizeMode='contain'
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: COLORS.primary
-              }}
-            />
-              <Text
-                style={{ ...FONTS.body3, color: COLORS.darkBlue,
-                  paddingHorizontal: SIZES.padding}}
-              >
-             CASH
-              </Text>
-              </View>
-              <Image
-            source={icons.arrow_right}
-            style={{
-            height: 20,
-            width: 20,
-            tintColor: COLORS.darkBlue
-            }}
-          />
-
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={{
-              // flexGrow: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: COLORS.lightGray3,
-              paddingHorizontal: SIZES.padding,
-              marginHorizontal: SIZES.padding,
-              borderRadius: SIZES.semiRadius,
-              height: 45
-              // padding: SIZES.base
-            }}
-          >
-         
-
-               
-            <View
-              style={{
-              flexGrow: 1,
-              flexDirection: 'row',
-              paddingHorizontal: SIZES.padding
-              
-              }}
-            >
-            <Image
-              source={icons.calendar}
-              resizeMode='contain'
-              style={{
-                width: 20,
-                height: 20,
-                tintColor: COLORS.primary
-              }}
-            />
-              <Text
-                style={{ ...FONTS.body3, color: COLORS.darkBlue,    
-                  paddingHorizontal: SIZES.padding
-                }}
-              >
-             SCHEDULE
-              </Text>
-              </View>
-              <Image
-            source={icons.arrow_right}
-            style={{
-            height: 20,
-            width: 20,
-            tintColor: COLORS.darkBlue
-            }}
-          />
-
-          </TouchableOpacity>
-
-          </View>
-          {/* Delivery Man Details */}
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              height: 70,
-              marginTop: SIZES.padding,
-              borderRadius: SIZES.semiRadius,
-              paddingHorizontal: SIZES.padding * 2,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: COLORS.primary
-            }}
-          >
-            {/* <Image
-              source={images.profile}
-              resizeMode='contain'
-              style={{
-                height: 40,
-                width: 40,
-                borderRadius: 5
-              }}
-            /> */}
-            <View
-              style={{
-                flex: 1,
-                // marginLeft: SIZES.base
-              }}
-            >
-              <Text
-                style={{
-                  ...FONTS.h4,
-                  color: COLORS.white,
-                }}
-              >3 items | ₱300</Text>
-              <Text
-                style={{
-                  ...FONTS.body5s,
-                  color: COLORS.white
-                }}
-              >Extra charges might apply</Text>
-
-            </View>
-            <View
-              style={{
-                height: 40,
-                // width: 40,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {/* <Image
-                source={icons.chat}
-                resizeMode='contain'
-                style={{
-                  height: 25,
-                  width: 25,
-                  tintColor: COLORS.white
-                }}
-              /> */}
-                   <Text
-                style={{
-                  ...FONTS.h4,
-                  color: COLORS.white
-                }}
-              >Proceed to Cart</Text>
-            </View>
-
-          </TouchableOpacity>
-        </View>
-        {/* {renderFooter()} */}
-      </View>
-    )
-  }
-  
-
   function renderFooter() {
     return (
       <View
@@ -1112,7 +747,7 @@ export default ShopServices = ({ navigation, route }) => {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: COLORS.lightBlue,
+          backgroundColor: COLORS.white,
         }}>
         <CustomerBasket
           active={
@@ -1135,36 +770,38 @@ export default ShopServices = ({ navigation, route }) => {
         {renderHeader()}
         {tab === 'services' ? (
           <>
-              <View style={{ 
-                              ...styles.container,
-                      backgroundColor: COLORS.lightBlue,
-                      justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%' 
+            <View
+              style={{
+                ...styles.container,
+                width: '100%',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                zIndex: -10,
               }}>
+              <View style={{ flex: 1, width: '100%' }}>
                 {renderServicesTab()}
                 <View
                   style={{
-                    // backgroundColor: COLORS.lightGray3,
+                    backgroundColor: COLORS.lightGray3,
                     // height: 300,
                     flexGrow: 1,
                     // marginTop: SIZES.padding,
                     paddingBottom: SIZES.padding * 3,
                   }}>
                   {renderClothCountList()}
-                  </View>
-              {/* </View> */}
+                </View>
+              </View>
             </View>
             <View
               style={{
                 width: '100%',
-                // backgroundColor: COLORS.lightGray3,
+                backgroundColor: COLORS.lightGray3,
               }}>
         {selectedShop.addons.length !== 0 &&
               renderAddons()
         }
             </View>
-            {renderInfo()}
+            {renderFooter()}
           </>
         ) : (
           <Reviews shop={selectedShop._id} />
@@ -1244,10 +881,4 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  shopImage: {
-    height: 50,
-    width: 50,
-    borderRadius: 50,
-    marginHorizontal: SIZES.padding
-  }
 });

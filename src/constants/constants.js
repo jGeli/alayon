@@ -66,19 +66,19 @@ const deliveryOptions = [
 const varEnv = {
   //API URLS
   //Local
-  socket: 'http://192.168.1.100:42005',
-  host: 'http://192.168.1.100:42005',
-  apiUrl: 'http://192.168.1.100:42005/api/v1',
-  defaultToken:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTE1OTcyMWJhYmQwNGJlODc1ODhkZCIsImlhdCI6MTY4NzkxNDM4MiwiZXhwIjoxNjkwNTA2MzgyfQ.ri5Jm6-dbIdt_XFkY7zJSOjk8iBRzHtg8fU9JkvoPnk',
-  shopId: '6492af74fb498149c8c29d0a',
-  //Live
-  // socket: 'https://alayon.bugtech.solutions',
-  // host: 'https://alayon.bugtech.solutions',
-  // apiUrl: 'https://alayon.bugtech.solutions/api/v1',
+  // socket: 'http://192.168.1.100:42005',
+  // host: 'http://192.168.1.100:42005',
+  // apiUrl: 'http://192.168.1.100:42005/api/v1',
   // defaultToken:
-  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YWM3YTk3MzRjYWQ2MzU3ODc2OTk0YyIsImlhdCI6MTY4OTI1NjMyMSwiZXhwIjoxNjkxODQ4MzIxfQ.pnQdNMextZkCb19_OPcG_V0RxCiuTrm03xBLBoDwb2E',
-  // shopId: '649d90fc72f48c26a0e72ce2',
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTE1OTcyMWJhYmQwNGJlODc1ODhkZCIsImlhdCI6MTY4NzkxNDM4MiwiZXhwIjoxNjkwNTA2MzgyfQ.ri5Jm6-dbIdt_XFkY7zJSOjk8iBRzHtg8fU9JkvoPnk',
+  // shopId: '6492af74fb498149c8c29d0a',
+  //Live
+  socket: 'https://alayon.bugtech.solutions',
+  host: 'https://alayon.bugtech.solutions',
+  apiUrl: 'https://alayon.bugtech.solutions/api/v1',
+  defaultToken:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YWM3YTk3MzRjYWQ2MzU3ODc2OTk0YyIsImlhdCI6MTY4OTI1NjMyMSwiZXhwIjoxNjkxODQ4MzIxfQ.pnQdNMextZkCb19_OPcG_V0RxCiuTrm03xBLBoDwb2E',
+  shopId: '649d90fc72f48c26a0e72ce2',
   //STATIC FILES URL
 };
 
@@ -596,10 +596,120 @@ const orders = [
   },
 ];
 
+
+
 const featuredSkeleton = [1, 2, 3, 4, 5, 6];
+
+
 const ShopSkeleton = [1, 2, 3, 4, 5, 6];
 
+
+// image carousel data
+const imagesCarousel = [
+  "https://media.istockphoto.com/id/1247884083/vector/laundry-service-room-vector-illustration-washing-and-drying-machines-with-cleansers-on-shelf.jpg?s=612x612&w=0&k=20&c=myaNEKlqX7R--bzWGDoMI7PhdxG_zdQTKYEBlymJQGk=",
+  "https://images.pexels.com/photos/5591581/pexels-photo-5591581.jpeg?auto=compress&cs=tinysrgb&w=800",
+];
+
+// view prop types error -> code to paste
+// get ColorPropType(): $FlowFixMe {
+//     return require('deprecated-react-native-prop-types').ColorPropType;
+//   },
+
+//   get EdgeInsetsPropType(): $FlowFixMe {
+//     return require('deprecated-react-native-prop-types').EdgeInsetsPropType;
+//   },
+
+//   get PointPropType(): $FlowFixMe {
+//     return require('deprecated-react-native-prop-types').PointPropType;
+//   },
+
+//   get ViewPropTypes(): $FlowFixMe {
+//     return require('deprecated-react-native-prop-types').ViewPropTypes;
+//   },
+
+// services data code
+const services = [
+  {
+    id: "0",
+    image: "https://cdn-icons-png.flaticon.com/128/3003/3003984.png",
+    name: "Washing",
+  },
+  {
+    id: "11",
+    image: "https://cdn-icons-png.flaticon.com/128/2975/2975175.png",
+    name: "Laundry",
+  },
+  {
+    id: "12",
+    image: "https://cdn-icons-png.flaticon.com/128/9753/9753675.png",
+    name: "Wash & Iron",
+  },
+  {
+    id: "13",
+    image: "https://cdn-icons-png.flaticon.com/128/995/995016.png",
+    name: "Cleaning",
+  },
+];
+
+// products data 
+const services1 = [
+  {
+    id: "0",
+    image: "https://cdn-icons-png.flaticon.com/128/4643/4643574.png",
+    name: "shirt",
+    quantity: 0,
+    price: 10,
+  },
+  {
+    id: "11",
+    image: "https://cdn-icons-png.flaticon.com/128/892/892458.png",
+    name: "T-shirt",
+    quantity: 0,
+    price: 10,
+  },
+  {
+    id: "12",
+    image: "https://cdn-icons-png.flaticon.com/128/9609/9609161.png",
+    name: "dresses",
+    quantity: 0,
+    price: 10,
+  },
+  {
+    id: "13",
+    image: "https://cdn-icons-png.flaticon.com/128/599/599388.png",
+    name: "jeans",
+    quantity: 0,
+    price: 10,
+  },
+  {
+    id: "14",
+    image: "https://cdn-icons-png.flaticon.com/128/9431/9431166.png",
+    name: "Sweater",
+    quantity: 0,
+    price: 10,
+  },
+  {
+    id: "15",
+    image: "https://cdn-icons-png.flaticon.com/128/3345/3345397.png",
+    name: "shorts",
+    quantity: 0,
+    price: 10,
+  },
+  {
+    id: "16",
+    image: "https://cdn-icons-png.flaticon.com/128/293/293241.png",
+    name: "Sleeveless",
+    quantity: 0,
+    price: 10,
+  },
+];
+
+
+
 export default {
+  services,
+  services1,
+  imagesCarousel,
   onboarding_screens,
   varEnv,
   clothAndPricing,

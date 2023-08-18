@@ -6,6 +6,8 @@ import {
   SET_CUSTOMER_BASKETS,
   SET_CUSTOMER_DATA,
   SET_ERROR,
+  SET_LOADING,
+  STOP_LOADING,
 } from './type';
 import { removeData } from '../../utils/AsyncStorage';
 
@@ -299,6 +301,61 @@ export const sendLikeReact = (data) => dispatch => {
     })
     .catch(err => {
       console.log(err, 'RES ERROR')
+      return null;
+    });
+};
+
+export const receiveOrder = (id) => dispatch => {
+  console.log(id, "ID HA AXIOS")
+  dispatch({ type: SET_LOADING })
+
+  return axios.get(`${varEnv.apiUrl}/customers/complete/${id}`)
+    .then(res => {
+      console.log(res.data, 'RESSS DATA')
+      dispatch({ type: STOP_LOADING })
+      return res.data
+    })
+    .catch(err => {
+      console.log(err, 'ERRORRR')
+      dispatch({ type: STOP_LOADING })
+      console.log('ERR ACCEPTING ORDER', err.response)
+      return null;
+    });
+};
+
+
+export const markReviewed = (id) => dispatch => {
+  console.log(id, "ID HA AXIOS")
+  dispatch({ type: SET_LOADING })
+
+  return axios.get(`${varEnv.apiUrl}/customers/completeReview/${id}`)
+    .then(res => {
+      console.log(res.data, 'RESSS DATA')
+      dispatch({ type: STOP_LOADING })
+      return res.data
+    })
+    .catch(err => {
+      console.log(err, 'ERRORRR')
+      dispatch({ type: STOP_LOADING })
+      console.log('ERR ACCEPTING ORDER', err.response)
+      return null;
+    });
+};
+
+export const getCurrentRiderLocation = (id) => dispatch => {
+  // console.log(id, "ID HA AXIOS")
+  // dispatch({ type: SET_LOADING })
+
+  return axios.get(`${varEnv.apiUrl}/customers/riderLocation/${id}`)
+    .then(res => {
+      console.log(res.data, 'RESSS Rider Location')
+      // dispatch({ type: STOP_LOADING })
+      return res.data
+    })
+    .catch(err => {
+      console.log(err, 'ERRORRR')
+      // dispatch({ type: STOP_LOADING })
+      console.log('ERR ACCEPTING ORDER', err.response)
       return null;
     });
 };

@@ -44,7 +44,6 @@ const DeliveryOptionScreen = ({ navigation, route }) => {
             }
         })
 
-        console.log('NEW ORDER', newOrders)
         dispatch({ type: SET_CUSTOMER_BASKETS, payload: newOrders });
         dispatch({ type: CLEAR_ERROR });
         navigation.goBack()
@@ -61,7 +60,6 @@ const DeliveryOptionScreen = ({ navigation, route }) => {
             }
         })
         // console.log(orders, 'ORDsssR')
-        console.log(order, 'ORDERRRR')
         // console.log(baskets, 'BASSKETTSS')
         setSelected(newVal);
     }

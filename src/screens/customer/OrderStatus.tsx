@@ -7,7 +7,7 @@ import { COLORS, FONTS, SIZES, icons, images } from '../../constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { LineDivider, TextButton, TextIconButton } from '../../components';
 import { useDispatch } from 'react-redux';
-import { getOrderById } from '../../redux/actions/customer.actions';
+import { getOrderById, markReviewed, receiveOrder } from '../../redux/actions/customer.actions';
 import { statusIndexing } from '../../utils/helpers';
 import LoadingScreen from '../LoadingScreen';
 import socket from '../../utils/socket';
@@ -351,7 +351,13 @@ export default function OrderStatus({navigation, route}) {
             marginRight: SIZES.padding,
             tintColor: COLORS.white
         }}
-        onPress={() => Alert.alert('ORDER RECEIVED!')}
+        onPress={() => {
+        dispatch(receiveOrder(orderData._id))
+        .then(() => {
+          handleGetOrder(orderData._id)
+        })
+        
+        }}
 
     />
     :
@@ -376,9 +382,13 @@ export default function OrderStatus({navigation, route}) {
             marginRight: SIZES.padding,
             tintColor: COLORS.gold
         }}
-        onPress={() => {navigation.navigate("CustomerReview",{shop: orderData.shop, order: orderData._id})}}
-
-    />:
+        onPress={() => {
+        dispatch(markReviewed(orderData._id))
+        .then(() => {
+          navigation.navigate("CustomerReview",{shop: orderData.shop, order: orderData._id})
+          });
+      }}
+      />:
     <TextIconButton
     containerStyle={{
         flex: 1,
@@ -415,7 +425,6 @@ export default function OrderStatus({navigation, route}) {
     handleGetOrder(order._id);
 
      socket.on('updateOrder', (orderId) => {
-          console.log("UPDATE ORDER",orderId == order._id, orderId, order._id )
         if(orderId == order._id){
           handleGetOrder(orderId);
         }

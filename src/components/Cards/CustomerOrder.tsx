@@ -16,7 +16,6 @@ import moment from 'moment';
 
 const CustomerOrders = ({ navigation, order }) => {
     let { shop } = order;
-        console.log(order, 'ORDER')
     return (
         <View
             style={styles.cardContainer}

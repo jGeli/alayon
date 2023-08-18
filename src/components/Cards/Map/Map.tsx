@@ -7,8 +7,9 @@ import {
   Image,
   Dimensions,
   TouchableOpacity,
+  Platform
 } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, AnimatedRegion } from 'react-native-maps';
 // import Geolocation from '@react-native-community/geolocation';
 import { COLORS, FONTS, SIZES, icons, images } from '../../../constants';
 import Geolocation from 'react-native-geolocation-service';
@@ -35,21 +36,41 @@ export default function Map({ navigation, route }) {
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
   const [region, setRegion] = useState({
-    latitude: 11.2317012,
-    longitude: 125.0024682,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-  });
+      latitude: 11.2317012,
+      longitude: 125.0024682,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    });
+    
+    const [markerLocation, setMarkerLocation] = useState(
+      new AnimatedRegion( {
+        latitude: 11.2317012,
+        longitude: 125.0024682,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }));
   const [isDrag, setIsDrag] = useState(false);
 
   const mapRef = useRef();
+  const markerRef = useRef();
 
   const handleRegion = val => {
-  if(!isDrag){
-    setIsDrag(true);
-  }
-  setRegion(val);
+
+  // setRegion(val);
   
+          if (Platform.OS === "android") {
+          if (markerRef.current) {
+            markerRef.current?.animateMarkerToCoordinate(
+              val,
+              0
+            );
+          }
+        } else {
+          markerLocation.timing(val).start();
+        }
+  
+  // onCenter(val.latitude, val.longitude);
+
   
   };
 
@@ -91,11 +112,31 @@ export default function Map({ navigation, route }) {
             style={{
               height: 20,
               width: 20,
-              margin: SIZES.padding
+              margin: SIZES.padding,
+              tintColor: COLORS.white
             }}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => {
+        <Text
+          style={{
+            ...FONTS.h4,
+            color: COLORS.white,
+            textAlign: 'center'
+          }}
+        >
+        ADDRESS LOCATION
+        </Text>
+        <TouchableOpacity
+        style={{
+          height: 20,
+          width: 20,
+          margin: SIZES.padding,
+          tintColor: COLORS.white
+        }}
+        >
+         
+        </TouchableOpacity>
+        {/* <TouchableOpacity onPress={() => {
             navigation.navigate('Map2', { address, navType });
         }}>
           <Image
@@ -106,7 +147,7 @@ export default function Map({ navigation, route }) {
               margin: SIZES.padding
             }}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         {/* <Image source={icons.back} style={{height: 25, width: 25}} /> */}
       </View>
     );
@@ -182,6 +223,25 @@ export default function Map({ navigation, route }) {
       let newAddress = { ...address, ...region }
       navigation.navigate('AddressLocationForm', { address: newAddress, navType });
     }
+    
+    if (navType === 'addressLocation') {
+      // dispatch({
+      //   type: SET_MAP_LOCATION,
+      //   payload: newAddress,
+      // });
+      Geocoder.from(markerLocation.latitude, markerLocation.longitude)
+      .then(({ results }) => {
+        let newAddress = { ...markerLocation, address: results[0] ? results[0].formatted_address : address.address }
+        dispatch({
+          type: SET_MAP_LOCATION,
+          payload: newAddress,
+        });
+        navigation.navigate('ShopServices', { ...route.params, newAddress} )
+      })
+      .catch(error => console.log(error, 'ERRRORSSSS'));     
+    }
+    
+    
     if (navType === 'findLocation') {
       //GEOCODER
       // const { latitude, longitude } = region;
@@ -237,29 +297,16 @@ export default function Map({ navigation, route }) {
     result.then(res => {
       // console.log('res is:', res);
       if (res) {
-        Geolocation.getCurrentPosition(
-          position => {
-            let { coords } = position;
-            setRegion({ ...region, ...position.coords });
-            onCenter(coords.latitude, coords.longitude);
-            if(navType === 'current'){
-              Geocoder.from(coords.latitude, coords.longitude)
+              Geocoder.from(markerLocation.latitude, markerLocation.longitude)
               .then(({ results }) => {
-                let newAddress = { ...coords, address: results[0] ? results[0].formatted_address : address.address }
+                let newAddress = { ...markerLocation, address: results[0] ? results[0].formatted_address : address.address }
                 dispatch({
                   type: SET_MAP_LOCATION,
                   payload: newAddress,
                 });
+                console.log('LOCATION SET!')
               })
-              .catch(error => console.warn(error));         
-            }
-          },
-          error => {
-            // See error code charts below.
-            console.log(error.code, error.message);
-          },
-          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-        );
+              .catch(error => console.log(error, 'ERRRORSSSS'));         
       }
     });
   };
@@ -316,18 +363,21 @@ export default function Map({ navigation, route }) {
         style={styles.map}
         customMapStyle={mapStyle}
         initialRegion={region}
+        onTouchEnd={() => setIsDrag(false)}
+        onTouchStart={() => setIsDrag(true)}
+        onPress={() => console.log('PRESSED!')}
+        onPointerEnter={() => console.log('POOINTING')}
         onRegionChange={handleRegion}
         onRegionChangeComplete={e => {
-          setIsDrag(false);
+        console.log(e,'COORDS')
+        setMarkerLocation(e)
         }}
       // onPress={e => console.log(e)}
       >
         <Marker.Animated
           // draggable
-          coordinate={{
-            latitude: region.latitude,
-            longitude: region.longitude,
-          }}
+          ref={markerRef}
+          coordinate={markerLocation}
           // onDragEnd={e => setRegion({...region, ...e.nativeEvent.coordinate})}
           // image={icons.pinIcon} //uses relative file path.
           // title={'Test Marker'}
@@ -336,11 +386,11 @@ export default function Map({ navigation, route }) {
             <Image source={icons.pinIcon} style={{ height: 35, width: 40 }} />
           </View>
         </Marker.Animated>
-        {renderMarker}
+        {/* {renderMarker} */}
       </MapView>
       <View style={styles.topContainer}>
         {renderHeader()}
-        {renderSearch()}
+        {/* {renderSearch()} */}
       </View>
       {renderCurrentLocationButton()}
       <TouchableOpacity style={styles.saveButton} onPress={() => handleSave()}>
@@ -366,7 +416,7 @@ const mapStyle = [
     elementType: 'labels',
     stylers: [
       {
-        visibility: 'off',
+        visibility: 'on',
       },
     ],
   },
@@ -439,14 +489,14 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     top: 0,
-    paddingRight: SIZES.padding,
-    paddingLeft: SIZES.padding,
+    // paddingRight: SIZES.padding,
+    // paddingLeft: SIZES.padding,
     // backgroundColor: COLORS.black
     // left: 10
   },
 
   headerContainer: {
-    // backgroundColor: 'black',
+    backgroundColor: COLORS.primary,
     // flex: 1,
     // paddingTop: SIZES.padding,
     width: '100%',
@@ -492,7 +542,7 @@ const styles = StyleSheet.create({
     right: 20,
     // top: 130,
     bottom: 120,
-    backgroundColor: COLORS.white3,
+    // backgroundColor: COLORS.white3,
     padding: 2,
     borderRadius: 50,
   },

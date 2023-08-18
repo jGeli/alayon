@@ -65,6 +65,66 @@ export const groupShopOrders = (data) => {
   return group;
 };
 
+export const groupPricing = (data) => {
+  console.log(data, 'CLOTHSS')
+  let group = Object.entries(
+    data.reduce((group, item) => {
+
+      // if (item.pricePiece) {
+      group['Piece'] = group['Piece'] ?? {
+        name: 'Piece',
+        description: 'Price of laundry per piece.',
+        range: [],
+      };
+
+      group['Piece'].range.push(item.pricePiece)
+      // }
+
+
+      // if (item.priceKilo) {
+
+      group['Kilo'] = group['Kilo'] ?? {
+        name: 'Kilo',
+        description: 'Price of laundry per Kilo(1000g).',
+        range: [],
+      };
+
+      group['Kilo'].range.push(item.priceKilo)
+      // }
+
+      // if (item.priceBatch) {
+
+
+      group['Batch'] = group['Batch'] ?? {
+        name: 'Batch/Load',
+        description: 'Price of laundry per Batch or Load. Cannot be mix with blanket or carpet.',
+        range: [],
+      };
+
+      group['Batch'].range.push(item.priceBatch)
+      // }
+
+
+      // group[fld].length++;
+      // group[fld].data.push(item);
+      return group;
+    }, {})
+  ).map(([key, value]) => {
+    let price = '';
+    let { highest, lowest } = findHighestAndLowest(value.range)
+    if (highest === lowest || lowest === 0) {
+      price = `For ${highest > 0 ? `₱${highest}` : 'Free'}`;
+    } else {
+      price = `From ₱${lowest} - ₱${highest}`
+    }
+
+
+
+    return { ...value, price }
+  });
+  return group;
+};
+
 
 export const totalOrders = (values) => {
   let grandTotal = 0;
@@ -200,4 +260,24 @@ function toRadians(degrees) {
 // Helper function to convert radians to degrees
 function toDegrees(radians) {
   return radians * (180 / Math.PI);
+}
+
+function findHighestAndLowest(numbers) {
+  if (numbers.length === 0) {
+    return { highest: undefined, lowest: undefined };
+  }
+
+  let highest = numbers[0];
+  let lowest = numbers[0];
+
+  for (let i = 1; i < numbers.length; i++) {
+    if (numbers[i] > highest) {
+      highest = numbers[i];
+    }
+    if (numbers[i] < lowest) {
+      lowest = numbers[i];
+    }
+  }
+
+  return { highest, lowest };
 }

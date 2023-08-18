@@ -45,6 +45,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCustomerBaskets, setCustomerBaskets } from '../../utils/AsyncStorage';
 import LoadingScreen from '../LoadingScreen';
 import { cutString } from '../../utils/helpers';
+import CustomerPricing from '../../components/Modals/CustomerPricing';
 
 // create a component
 export default ShopServices = ({ navigation, route }) => {
@@ -58,8 +59,8 @@ export default ShopServices = ({ navigation, route }) => {
     addons: []
   });
   const [pickupLocation, setPickupLocation] = useState({});
-  const [cloths, setCloths] = useState();
-  const [isAddonEnabled, setAddonEnabled] = useState(false);
+  const [cloths, setCloths] = useState([]);
+  const [selectedService, setSelectedService] = useState(null);
   const [tab, setTab] = useState('services');
   const [loading, setLoading] = useState(true);
 
@@ -218,8 +219,10 @@ export default ShopServices = ({ navigation, route }) => {
   };
 
   const handleChangeService = val => {
-    dispatch({ type: SET_CUSTOMER_ORDER, payload: { service: val.service } });
+    dispatch({ type: SET_CUSTOMER_ORDER, payload: { service: val.service} });
+    setSelectedService(val)
     if (val) {
+      dispatch({ type: OPEN_BASKET_MODAL, payload: 'service_pricing' });
       setCloths(val.cloths);
     }
   };
@@ -255,7 +258,6 @@ export default ShopServices = ({ navigation, route }) => {
   let totalItem = 0;
   order.cloths.forEach(a => (totalItem += a.qty));
 
-  console.log(pickupLocation, 'PICKUP LOCATION')
   function renderHeader() {
     return (
       <View
@@ -439,8 +441,7 @@ export default ShopServices = ({ navigation, route }) => {
               alignItems: 'center',
               height: 40,
               // backgroundColor: COLORS.blue,
-              borderBottomColor:
-                tab === 'services' ? COLORS.primary : COLORS.darkGray,
+              borderBottomColor:COLORS.primary,
               borderBottomWidth: 5,
               // borderTopColor: COLORS.primary,
               // borderTopWidth: 5,
@@ -460,7 +461,7 @@ export default ShopServices = ({ navigation, route }) => {
                 ...FONTS.body4,
                 position: 'absolute',
                 fontWeight: tab === 'services' ? 'bold' : '600',
-                color: tab === 'services' ? COLORS.white : COLORS.gray2,
+                color: tab === 'services' ? COLORS.white : COLORS.gray3,
               }}>
               Services
             </Text>
@@ -472,8 +473,7 @@ export default ShopServices = ({ navigation, route }) => {
               alignItems: 'center',
               height: 40,
               // backgroundColor: COLORS.blue,
-              borderBottomColor:
-                tab === 'reviews' ? COLORS.primary : COLORS.darkGray,
+              borderBottomColor: COLORS.primary,
               borderBottomWidth: 5,
               // borderTopColor: COLORS.primary,
               // borderTopWidth: 5,
@@ -495,7 +495,7 @@ export default ShopServices = ({ navigation, route }) => {
                 ...FONTS.body4,
                 position: 'absolute',
                 fontWeight: tab === 'reviews' ? 'bold' : '600',
-                color: tab === 'reviews' ? COLORS.white : COLORS.gray2,
+                color: tab === 'reviews' ? COLORS.white : COLORS.gray3,
               }}>
               Reviews
             </Text>
@@ -542,7 +542,7 @@ export default ShopServices = ({ navigation, route }) => {
                 paddingLeft: SIZES.radius,
                 paddingRight: SIZES.radius,
                 backgroundColor: COLORS.white,
-                flexDirection: 'row',
+                flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: 60,
@@ -555,6 +555,16 @@ export default ShopServices = ({ navigation, route }) => {
                 style={{
                   // ...FONTS.h3,
                   fontSize: SIZES.h4,
+                  fontWeight: 'bold',
+                  color:
+                    order.service == item.service ? COLORS.primary : COLORS.black,
+                }}>
+                {item.name}
+              </Text>
+              <Text
+                style={{
+                  // ...FONTS.h3,
+                  fontSize: SIZES.body5,
                   fontWeight: 'bold',
                   color:
                     order.service == item.service ? COLORS.primary : COLORS.black,
@@ -649,8 +659,9 @@ export default ShopServices = ({ navigation, route }) => {
       <FlatList
         contentContainerStyle={{
           // justifyContent: 'center',
+          marginTop: SIZES.padding * 2,
           // paddingTop: 20,
-          paddingBottom: SIZES.padding * 5,
+          paddingBottom: SIZES.padding * 7,
         }}
         data={cloths}
         keyExtractor={(item, index) => `${index}-${Math.random()}`}
@@ -658,105 +669,6 @@ export default ShopServices = ({ navigation, route }) => {
         showsVerticalScrollIndicator
         renderItem={renderItem}
       />
-    );
-  }
-
-
-  function renderAddons() {
-    return (
-      <View
-        style={{
-          flexDirection: 'column',
-          height: 75,
-          backgroundColor: COLORS.lightGray4,
-          marginBottom: 5,
-          // marginTop: SIZES.padding,
-          padding: 8,
-          justifyContent: 'flex-start',
-          alignItems: 'flex-start',
-          elevation: 5,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            borderBottomColor: COLORS.gray,
-            borderBottomWidth: 1,
-            width: '100%',
-            marginBottom: 5,
-          }}>
-          <View
-            style={{
-              flexGrow: 1,
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
-              alignItems: 'center',
-            }}>
-            <Image
-              source={icons.puzzle}
-              style={{ height: 25, width: 25, tintColor: COLORS.primary }}
-            />
-            <Text
-              style={{
-                ...FONTS.body3,
-                color: COLORS.black,
-                marginLeft: 5,
-              }}>
-              ADD-ONS
-            </Text>
-          </View>
-          <Switch
-            trackColor={{ false: '#767577', true: COLORS.primary }}
-            thumbColor={isAddonEnabled ? COLORS.primary : '#f4f3f4'}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={order.hasAddons}
-            disabled={selectedShop.addons && selectedShop.addons.length === 0}
-          />
-        </View>
-        <TouchableOpacity
-          onPress={() => dispatch({ type: OPEN_CUSTOMER_ADDONS_MODAL })}
-          disabled={selectedShop.addons && selectedShop.addons.length === 0}
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '100%',
-          }}>
-          <Text
-            style={{
-              color: COLORS.black,
-              marginLeft: SIZES.padding,
-            }}>
-            {order.addons.map((a, index) => {
-              return `${a.name} (${a.qty})${index !== order.addons.length - 1 ? ', ' : ''
-                }`;
-            })}
-          </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-end',
-              alignItems: 'center',
-            }}>
-            <Text
-              style={{
-                ...FONTS.body3,
-                color: COLORS.darkGray,
-                marginLeft: 5,
-              }}>
-              {selectedShop.addons && selectedShop.addons.length === 0
-                ? 'No Add-ons available'
-                : 'Select'}
-            </Text>
-            <Image
-              source={icons.arrow_right}
-              style={{ height: 25, width: 25, tintColor: COLORS.darkGray }}
-            />
-          </View>
-        </TouchableOpacity>
-      </View>
     );
   }
 
@@ -1024,84 +936,6 @@ export default ShopServices = ({ navigation, route }) => {
   }
   
 
-  function renderFooter() {
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          // backgroundColor: COLORS.lightGray4,
-          height: 50,
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-        }}>
-
-        <TouchableOpacity
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexBasis: '25%',
-          }}
-          onPress={() => handleChat(
-          )}
-        >
-          <Image
-            source={icons.chat}
-            resizeMode="contain"
-            style={{ height: 25, width: 25 }}
-          />
-          <Text style={{ ...FONTS.body5, color: COLORS.black }}>Chat Now</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexBasis: '25%',
-            borderLeftColor: COLORS.gray,
-            borderRightColor: COLORS.gray,
-            // backgroundColor: COLORS.lightGray4,
-            borderLeftWidth: 1,
-            // padding: 3,
-          }}
-          onPress={() => handleAddToBasket()}>
-          <Image
-            source={icons.addBasket}
-            resizeMode="contain"
-            style={{
-              height: 20,
-              width: 20,
-              tintColor: COLORS.primary,
-            }}
-          />
-          <Text style={{ ...FONTS.body5, color: COLORS.black }}>
-            Add to Basket
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexBasis: '50%',
-            backgroundColor: COLORS.primary,
-            borderLeftColor: COLORS.gray,
-            borderLeftWidth: 1,
-            height: '100%',
-          }}
-          onPress={() => handleCheckout(baskets)}>
-          <Text
-            style={{
-              ...FONTS.body3,
-              color: COLORS.white,
-              // fontWeight: 'bold',
-              margin: SIZES.padding,
-            }}>
-            Checkout ({baskets.length})
-          </Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
 
   return (
     <Fragment>
@@ -1114,17 +948,16 @@ export default ShopServices = ({ navigation, route }) => {
           flex: 1,
           backgroundColor: COLORS.lightBlue,
         }}>
-        <CustomerBasket
-          active={
-            basketModal === 'addbasket' || basketModal === 'checkout_basket'
-          }
+        <CustomerPricing
+          service={selectedService}
+          active={basketModal === 'service_pricing'}
           onClose={e => {
-
-            if (basketModal === 'checkout_basket' && e) {
-              handleCheckout(e)
-            } else {
               dispatch({ type: CLOSE_MODALS });
-            }
+          }}
+          onSelect={(e) => {
+            console.log(e)
+            dispatch({ type: CLOSE_MODALS });
+
           }}
         />
           < CustomerAddOns
@@ -1164,7 +997,7 @@ export default ShopServices = ({ navigation, route }) => {
               renderAddons()
         }
             </View> */}
-            {renderInfo()}
+            {basketModal !== 'service_pricing' &&  renderInfo()}
           </>
         ) : (
           <Reviews shop={selectedShop._id} />

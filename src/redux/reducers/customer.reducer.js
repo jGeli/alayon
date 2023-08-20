@@ -1,4 +1,4 @@
-import { selectedShop } from '../../globals/data';
+import { isBetween8AMand10PM } from '../../utils/helpers';
 import {
   CLEAR_CUSTOMER_BASKET,
   CLEAR_CUSTOMER_BASKETS,
@@ -10,6 +10,7 @@ import {
   SET_CUSTOMER_ORDER,
   SET_USER,
 } from '../actions/type';
+import moment from 'moment-timezone';
 
 const initialOrder = {
   qty: 1,
@@ -19,6 +20,12 @@ const initialOrder = {
   cloths: [],
   addons: [],
   hasAddons: false,
+  hasTip: false,
+  note: '',
+  deliveryOption: 1,
+  tip: 0,
+  pickupDate: !isBetween8AMand10PM(new Date()) ? moment().add('day', 1) : moment().tz('Asia/Manila'),
+  deliveryDate: moment().tz('Asia/Manila')
 };
 
 const initialState = {
@@ -41,7 +48,12 @@ const initialState = {
     cloths: [],
     addons: [],
     hasAddons: false,
-    deliveryOption: null
+    hasTip: false,
+    tip: 0,
+    note: '',
+    deliveryOption: 1,
+    pickupDate: !isBetween8AMand10PM(new Date()) ? moment().tz('Asia/Manila').add('day', 1) : moment().tz('Asia/Manila'),
+    deliveryDate: moment().tz('Asia/Manila')
   },
   baskets: [],
   basket: {

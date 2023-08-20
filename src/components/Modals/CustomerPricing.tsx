@@ -59,6 +59,7 @@ const CustomerPricing = ({ active, onClose, service, onSelect }) => {
         return(
           <TouchableOpacity
           onPress={() => onSelect(a)}
+          disabled={a.price === 'Unavailable'}
           key={index}
           style={{
             flex: 1,

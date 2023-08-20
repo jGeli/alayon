@@ -163,6 +163,7 @@ export default {
   pinIcon,
   washingMachinePin,
   check,
+  edit_order2,
   currentLocation,
   back,
   add,

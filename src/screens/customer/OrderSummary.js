@@ -454,9 +454,11 @@ export default function OrderSummary({ navigation, route }) {
 
   useEffect(() => {
     handleSelectedBaskets()
-   
+
 
   }, [selectedBaskets, baskets])
+
+  console.log(baskets)
 
 
   return (

@@ -304,17 +304,37 @@ export default function Map({ navigation, route }) {
                   type: SET_MAP_LOCATION,
                   payload: newAddress,
                 });
-                console.log('LOCATION SET!')
               })
               .catch(error => console.log(error, 'ERRRORSSSS'));         
       }
     });
   };
+  
+    // function to check permissions and get Location
+    const getCurrentLocation = () => {
+      const result = requestLocationPermission();
+      result.then(res => {
+        if (res) {
+          Geolocation.getCurrentPosition(
+            position => {
+              let { coords } = position;
+              setMarkerLocation({ ...markerLocation, ...position.coords });
+              onCenter(coords.latitude, coords.longitude);
+            },
+            error => {
+              // See error code charts below.
+              console.log(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+          );
+        }
+      });
+    };
 
   function renderCurrentLocationButton() {
     return (
       <TouchableOpacity
-        onPress={() => getLocation()}
+        onPress={() => getCurrentLocation()}
         style={styles.currentLocationContainer}>
         <Image
           source={icons.currentLocation} //Change your icon image here
@@ -326,9 +346,7 @@ export default function Map({ navigation, route }) {
 
   useEffect(() => {
     dispatch(getShops());
-    if(navType === 'current'){
-      // getLocation();
-    }
+
   }, []);
 
   const renderMarker = shops.map((a, index) => {
@@ -392,12 +410,16 @@ export default function Map({ navigation, route }) {
         {renderHeader()}
         {/* {renderSearch()} */}
       </View>
+      {!isDrag &&
+      <>
       {renderCurrentLocationButton()}
       <TouchableOpacity style={styles.saveButton} onPress={() => handleSave()}>
         <Text style={{ ...FONTS.h4, color: COLORS.white, fontWeight: 'bold' }}>
           SAVE
         </Text>
       </TouchableOpacity>
+      </>
+      }
       <View
          style={styles.alayonLogo}
       >

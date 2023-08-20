@@ -39,7 +39,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerBasket, getCustomerLocation, getCustomerLocations } from './utils/AsyncStorage';
 import { SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, SET_USER, STOP_LOADING } from './redux/actions/type';
 import OrderStatus from './screens/customer/OrderStatus';
-import Map3 from './components/Cards/Map/Map3';
 import BasketsScreen from './screens/customer/BasketsScreen';
 import ProfileSetup from './screens/Authentication/ProfileSetup';
 import Maps from './components/Cards/Map/Map1';
@@ -50,6 +49,8 @@ import CustomerOrderDetails from './components/Cards/CustomerOrderDetails';
 import PermissionScreen from './screens/OnBoarding/PermissionScreen';
 import Notification from './screens/Notifications';
 import AreaLocations from './components/AreaLocations';
+import SchedulePickup from './screens/customer/SchedulePickup';
+import OrderDetails from './screens/customer/OrderDetails';
 
 
 const StackNavigator = () => {
@@ -308,6 +309,16 @@ const StackNavigator = () => {
               options={{ headerShown: false }}
             />
             <Stack.Screen
+              name="SchedulePickup"
+              component={SchedulePickup}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="OrderDetails"
+              component={OrderDetails}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
               name="Search"
               component={RecentSearch}
               options={{ headerShown: false }}
@@ -377,11 +388,7 @@ const StackNavigator = () => {
               component={Map1}
               options={{ headerShown: false }}
             />
-            <Stack.Screen
-              name="Map2"
-              component={Map3}
-              options={{ headerShown: false }}
-            />
+          
             <Stack.Screen
               name="CustomerReview"
               component={CustomerReviewScreen}

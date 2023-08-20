@@ -1,6 +1,7 @@
 import { constants } from '../constants';
 import { decode } from "@mapbox/polyline"; //please install this package before running!
 import { gapikey } from '../globals/env';
+import moment from "moment-timezone";
 import axios from 'axios';
 
 
@@ -69,7 +70,7 @@ export const groupPricing = (data) => {
   console.log(data, 'CLOTHSS')
   let group = Object.entries(
     data.reduce((group, item) => {
-
+      console.log(item, 'ITEM')
       // if (item.pricePiece) {
       group['Piece'] = group['Piece'] ?? {
         name: 'Piece',
@@ -96,7 +97,7 @@ export const groupPricing = (data) => {
 
 
       group['Batch'] = group['Batch'] ?? {
-        name: 'Batch/Load',
+        name: 'Batch',
         description: 'Price of laundry per Batch or Load. Cannot be mix with blanket or carpet.',
         range: [],
       };
@@ -113,7 +114,7 @@ export const groupPricing = (data) => {
     let price = '';
     let { highest, lowest } = findHighestAndLowest(value.range)
     if (highest === lowest || lowest === 0) {
-      price = `For ${highest > 0 ? `₱${highest}` : 'Free'}`;
+      price = `${highest > 0 ? `For ₱${highest}` : 'Unavailable'}`;
     } else {
       price = `From ₱${lowest} - ₱${highest}`
     }
@@ -280,4 +281,82 @@ function findHighestAndLowest(numbers) {
   }
 
   return { highest, lowest };
+}
+
+export function generateTimeRange(dateProp, add) {
+  const today = new Date();
+  const date = new Date(dateProp)
+  const startHour = date.toDateString() === today.toDateString() ? today.getHours() + (add ? add : 1) : 8;
+  const endHour = date.toDateString() === today.toDateString() ? 22 : 22;
+
+  const times = [];
+
+  for (let hour = startHour; hour <= endHour; hour++) {
+    times.push(`${hour.toString().padStart(2, '0')}`);
+  }
+
+  return times;
+}
+
+
+export function generateNext7Days(startDate) {
+  const dates = [];
+  const inputDate = moment.tz(startDate, 'Asia/Manila'); // Replace 'Your_Timezone' with the desired timezone
+
+  const daysArray = [];
+
+  for (let i = 2; i <= 7; i++) {
+    const nextDay = moment(inputDate).add(i, 'days');
+    daysArray.push(nextDay);
+  }
+
+  return daysArray;
+
+}
+
+export function generateChronologicalDates(inputDate) {
+  const today = new Date();
+  const dates = [];
+
+  // Calculate the number of days between inputDate and today
+  const timeDifference = Math.floor((inputDate - today) / (24 * 60 * 60 * 1000));
+
+  if (timeDifference <= 2) {
+    // Generate 5 dates starting from today
+    for (let i = 0; i < 5; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      dates.push(date);
+    }
+  } else {
+    // Generate 5 dates with inputDate in the middle
+    const daysBefore = 2;
+    const daysAfter = 2;
+
+    for (let i = daysBefore; i > 0; i--) {
+      const date = new Date(inputDate);
+      date.setDate(inputDate.getDate() - i);
+      dates.push(date);
+    }
+
+    dates.push(inputDate);
+
+    for (let i = 1; i <= daysAfter; i++) {
+      const date = new Date(inputDate);
+      date.setDate(inputDate.getDate() + i);
+      dates.push(date);
+    }
+  }
+
+  return dates;
+}
+
+export function isBetween8AMand10PM(dateProp) {
+  console.log(dateProp, 'DATE PROPS')
+  const inputDate = moment(dateProp).tz('Asia/Manila'); // Replace 'Your_Timezone' with the desired timezone
+
+  const startTime = inputDate.set({ hour: 8, minute: 0, second: 0, millisecond: 0 });
+  const endTime = inputDate.set({ hour: 22, minute: 0, second: 0, millisecond: 0 });
+
+  return inputDate.isBetween(startTime, endTime);
 }

@@ -27,6 +27,7 @@ import { getShopById } from '../../redux/actions/merchant.actions';
 import {
   CLEAR_CUSTOMER_BASKET,
   CLEAR_CUSTOMER_BASKETS,
+  CLEAR_CUSTOMER_ORDER,
   CLEAR_SELECTED_SHOP,
   CLOSE_MODALS,
   OPEN_BASKET_MODAL,
@@ -39,12 +40,12 @@ import {
 import CustomerAddOns from '../../components/Modals/CustomerAddOns';
 import CustomerBasket from '../../components/Modals/CustomerBasket';
 import { userData5 } from '../../globals/data';
-import { getCustomerShopBaskets, getCustomerShopById } from '../../redux/actions/customer.actions';
+import { createBasket, getCustomerShopBaskets, getCustomerShopById } from '../../redux/actions/customer.actions';
 import Reviews from '../../components/Reviews';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getCustomerBaskets, setCustomerBaskets } from '../../utils/AsyncStorage';
 import LoadingScreen from '../LoadingScreen';
-import { cutString } from '../../utils/helpers';
+import { cutString, groupPricing } from '../../utils/helpers';
 import CustomerPricing from '../../components/Modals/CustomerPricing';
 
 // create a component
@@ -58,9 +59,11 @@ export default ShopServices = ({ navigation, route }) => {
   const [selectedShop, setSelectedShop] = useState({
     addons: []
   });
-  const [pickupLocation, setPickupLocation] = useState({});
+  const [pickupLocation, setPickupLocation] = useState(null);
   const [cloths, setCloths] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
+  const [pricing, setPricing] = useState(null);
+
   const [tab, setTab] = useState('services');
   const [loading, setLoading] = useState(true);
 
@@ -91,40 +94,39 @@ export default ShopServices = ({ navigation, route }) => {
     // setAddonEnabled(previousState => !previousState)
   };
 
-  const handleCheckout = (val) => {
+  const handleCheckout = async () => {
+  
+    let val = [];
+    if (!isAuthenticated) {
+      val = await setCustomerBaskets({ ...order, shop: selectedShop, _id: Math.random() });
+      dispatch({ type: SET_CUSTOMER_BASKETS, payload: val })
+    } else {
+      val = await dispatch(createBasket({ ...order, shop: selectedShop }));
+    }
+
+
+
+  
+  
     if (val.length !== 0) {
       let pickupDelivery = null;
 
-      if (!basket.pickupDelivery) {
-        let defaultLocation = locations.find(a => a.isDefault)
-        pickupDelivery = defaultLocation ? defaultLocation : null;
-      } else {
-        pickupDelivery = basket.pickupDelivery;
-      }
-
+      if (pickupLocation) {
+        pickupDelivery = pickupLocation;
+      } 
 
       if (isAuthenticated) {
         navigation.navigate('OrderSummary', { shopId, rnd: Math.random(), selectedBaskets: val.map(a => a._id) });
       } else {
         navigation.navigate('SignIn', { redirection: 'OrderSummary', param: { shopId, rnd: Math.random(), baskets: val } });
       }
-      dispatch({ type: CLOSE_MODALS });
+      dispatch({ type: CLEAR_CUSTOMER_ORDER });
 
-      return
-    } else {
-      dispatch({ type: OPEN_BASKET_MODAL, payload: 'checkout_basket' });
       return
     }
   };
 
 
-  const handleAddToBasket = () => {
-
-
-
-    dispatch({ type: OPEN_BASKET_MODAL, payload: 'addbasket' });
-
-  }
 
   const handleShop = async () => {
     let shopData = await dispatch(getCustomerShopById(shopId));
@@ -143,6 +145,11 @@ export default ShopServices = ({ navigation, route }) => {
         let service = services[0];
         if (service) {
           setCloths(service.cloths);
+          let prices = groupPricing(service.cloths);
+          console.log('PRRRR', prices)
+          if(prices.length !== 0){
+              setPricing(prices[0])
+          }
         }
       }
       setSelectedShop(shopData)
@@ -207,7 +214,7 @@ export default ShopServices = ({ navigation, route }) => {
       } else {
         newCloths = orderCloths.map(a => {
           if (a.cloth === item.cloth) {
-            a.qty++;
+            a.qty = a.qty ? a.qty + 1 : 1;
             return a;
           }
           return a;
@@ -219,7 +226,6 @@ export default ShopServices = ({ navigation, route }) => {
   };
 
   const handleChangeService = val => {
-    dispatch({ type: SET_CUSTOMER_ORDER, payload: { service: val.service} });
     setSelectedService(val)
     if (val) {
       dispatch({ type: OPEN_BASKET_MODAL, payload: 'service_pricing' });
@@ -248,7 +254,7 @@ export default ShopServices = ({ navigation, route }) => {
   if(newAddress){
     setPickupLocation(newAddress)
   } else {
-    setPickupLocation({})
+    setPickupLocation(null)
   }
 
   
@@ -256,7 +262,13 @@ export default ShopServices = ({ navigation, route }) => {
 
 
   let totalItem = 0;
-  order.cloths.forEach(a => (totalItem += a.qty));
+  order.cloths.forEach(a => {
+    console.log('QTYY', typeof a.qty === 'number')
+    if(typeof a.qty === 'number'){
+      totalItem += a.qty 
+    }
+    console.log(totalItem)
+  });
 
   function renderHeader() {
     return (
@@ -358,7 +370,7 @@ export default ShopServices = ({ navigation, route }) => {
               />
             </TouchableOpacity>         
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => navigation.navigate('BasketsScreen', {})}
               style={{
                 alignItems: 'center',
@@ -374,7 +386,7 @@ export default ShopServices = ({ navigation, route }) => {
                 resizeMode="contain"
                 style={{ height: 25, width: 25, tintColor: COLORS.lightGray3 }}
               />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
      
@@ -557,20 +569,21 @@ export default ShopServices = ({ navigation, route }) => {
                   fontSize: SIZES.h4,
                   fontWeight: 'bold',
                   color:
-                    order.service == item.service ? COLORS.primary : COLORS.black,
+                    order.service == item.service ? COLORS.primary : COLORS.transparentBlack7,
                 }}>
                 {item.name}
               </Text>
+              {(order?.service === item.service && pricing) && 
               <Text
                 style={{
                   // ...FONTS.h3,
                   fontSize: SIZES.body5,
-                  fontWeight: 'bold',
-                  color:
-                    order.service == item.service ? COLORS.primary : COLORS.black,
+                  // fontWeight: 'bold',
+                  color: COLORS.transparentBlack7,
                 }}>
-                {item.name}
+                {pricing.price} / {pricing.name}
               </Text>
+          }
             </TouchableOpacity>
           )}
         />
@@ -672,7 +685,7 @@ export default ShopServices = ({ navigation, route }) => {
     );
   }
 
-
+  console.log('ADDONS LEN', order.addons.length)
   const renderInfo = (mapVal) => {
     return (
       <View
@@ -712,7 +725,8 @@ export default ShopServices = ({ navigation, route }) => {
               height: 45
               // padding: SIZES.base
             }}
-          >
+            onPress={() => navigation.navigate('OrderDetails', {})}
+            >
          
             <View
               style={{
@@ -736,9 +750,24 @@ export default ShopServices = ({ navigation, route }) => {
               <Text
                 style={{ ...FONTS.body3, color: COLORS.darkBlue }}
               >
-             DETAILS
+              More Details
               </Text>
               </View>
+              {(order.hasTip || order.hasAddons || order.note) &&
+              <View
+                style={{justifyContent: 'center', alignItems: 'center', height: 25, width: 25, borderRadius: 25,
+                backgroundColor: COLORS.primary
+                }}
+              >
+              <Text
+                style={{
+                  color: COLORS.white
+                }}
+              >
+              {order.addons.length + (order.tip ? 1 : 0) + (order.note ? 1 : 0)}
+
+              </Text>
+              </View>}
               <Image
             source={icons.arrow_right}
             style={{height: 25, width: 25, tintColor: COLORS.darkBlue}}
@@ -791,10 +820,10 @@ export default ShopServices = ({ navigation, route }) => {
               }}
             />
               <Text
-                style={{ ...FONTS.body3, color: COLORS.darkBlue,
+                style={{ ...FONTS.body4, color: COLORS.darkBlue,
                   paddingHorizontal: SIZES.padding}}
               >
-             CASH
+             Cash
               </Text>
               </View>
               <Image
@@ -809,6 +838,7 @@ export default ShopServices = ({ navigation, route }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
+          onPress={() => navigation.navigate('SchedulePickup', {})}
             style={{
               // flexGrow: 1,
               flexDirection: 'row',
@@ -833,11 +863,11 @@ export default ShopServices = ({ navigation, route }) => {
               }}
             >
             <Image
-              source={icons.calendar}
-              resizeMode='contain'
+              source={icons.delivery3}
+              resizeMode='stretch'
               style={{
-                width: 20,
-                height: 20,
+                width: 25,
+                height: 25,
                 tintColor: COLORS.primary
               }}
             />
@@ -846,7 +876,7 @@ export default ShopServices = ({ navigation, route }) => {
                   paddingHorizontal: SIZES.padding
                 }}
               >
-             SCHEDULE
+            {order.deliveryOption ? order.deliveryOption === 1 ? 'Standard' : order.deliveryOption === 2 && 'Express' : 'Delivery' }
               </Text>
               </View>
               <Image
@@ -873,16 +903,9 @@ export default ShopServices = ({ navigation, route }) => {
               justifyContent: 'center',
               backgroundColor: COLORS.primary
             }}
+            // onPress={() => handleCheckout()}
           >
-            {/* <Image
-              source={images.profile}
-              resizeMode='contain'
-              style={{
-                height: 40,
-                width: 40,
-                borderRadius: 5
-              }}
-            /> */}
+       
             <View
               style={{
                 flex: 1,
@@ -894,7 +917,7 @@ export default ShopServices = ({ navigation, route }) => {
                   ...FONTS.h4,
                   color: COLORS.white,
                 }}
-              >3 items | ₱300</Text>
+              >{totalItem} items | ₱300</Text>
               <Text
                 style={{
                   ...FONTS.body5s,
@@ -956,8 +979,11 @@ export default ShopServices = ({ navigation, route }) => {
           }}
           onSelect={(e) => {
             console.log(e)
+            setPricing(e);
+            dispatch({ type: SET_CUSTOMER_ORDER, payload: { qty: 1, pricing: e.name } });
+            dispatch({ type: SET_CUSTOMER_ORDER, payload: { service: selectedService.service} });
             dispatch({ type: CLOSE_MODALS });
-
+          
           }}
         />
           < CustomerAddOns

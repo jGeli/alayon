@@ -415,12 +415,15 @@ const Map1 = ({ navigation, route }) => {
               (fill) => (
               <View style={{
                 justifyContent: 'center',
-                alignItems: 'center'
+                alignItems: 'center',
+                padding: 2
               }}>
                 <Text
                   style={{
                     textAlign: 'center',
-                    color: COLORS.primary
+                    color: COLORS.primary,
+                    lineHeight: 20,
+                    marginBottom: 5
                   }}
                 >
                  {orderData.statusIndex?.index <= 1 && orderData.statusIndex?.status !== 'rider_pickup'  ? 'Pickup' : orderData.statusIndex?.index === 5 ? 'Delivered' : 'Delivery' }
@@ -429,7 +432,8 @@ const Map1 = ({ navigation, route }) => {
                 <Text
                   style={{
                     ...FONTS.body5,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    lineHeight: 15
                   }}
                 >
                  {orderData.statusIndex?.index <= 1 && orderData.statusIndex?.status !== 'rider_pickup'  ? moment().to(orderData.pickupDate) : moment().to(orderData.deliveryDate) } 

@@ -60,6 +60,9 @@ const initialState = {
     orders: [],
     pickupDelivery: null,
     returnDelivery: null,
+    shop: {
+      services: []
+    }
   },
 };
 

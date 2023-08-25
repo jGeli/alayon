@@ -4,9 +4,9 @@ import { View, Text, StyleSheet, RefreshControl, TouchableOpacity, SafeAreaView,
 import { COLORS, FONTS, SIZES, icons, constants } from '../../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { Alert } from 'react-native';
-import { CLEAR_CUSTOMER_BASKET, CLEAR_CUSTOMER_ORDER, SET_CUSTOMER_BASKET } from '../../redux/actions/type';
+import { CLEAR_CUSTOMER_BASKET, CLEAR_CUSTOMER_ORDER, SET_CUSTOMER_BASKET, SET_SELECTED_SHOP } from '../../redux/actions/type';
 import moment from 'moment-timezone'
-import { createOrder, getOrderById } from '../../redux/actions/customer.actions';
+import { createOrder, getCustomerShopById, getOrderById } from '../../redux/actions/customer.actions';
 import { useEffect } from 'react';
 import socket from '../../utils/socket';
 import { statusIndexing } from '../../utils/helpers';
@@ -21,7 +21,10 @@ export default function DefaultScreen({ navigation, route }) {
   const [orderData, setOrderData] = useState({
     orders: [],
     pickupDelivery: null,
-    returnDelivery: null
+    returnDelivery: null,
+    shop: {
+      services: []
+    }
   });
   const [refreshing, setRefreshing] = useState(false);
 
@@ -32,23 +35,24 @@ export default function DefaultScreen({ navigation, route }) {
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
   if(basket._id){
-    handleGetOrder(basket._id)
+    handleGetOrder()
   }
   setTimeout(() => {
     setRefreshing(false)
-  }, 30000);
+  }, 3000);
   }, []);
   
   
   
   const handleGetOrder = async (id) => {
   
-    let myOrder = await dispatch(getOrderById(basket._id));
+    let myOrder = await dispatch(getOrderById(id ? id : basket._id));
+    console.log(myOrder, 'MYDAAAA')
     if(myOrder){
       let statInd = statusIndexing(myOrder.activeStatus);
       console.log(statInd, myOrder, 'statind')
+      setOrderData( {...orderData, ...myOrder, statusIndex: statInd})
       dispatch({type: SET_CUSTOMER_BASKET, payload: {...myOrder, statusIndex: statInd} })
-      setOrderData( {...myOrder, statusIndex: statInd})
       setRefreshing(false)
     }
     
@@ -213,14 +217,16 @@ export default function DefaultScreen({ navigation, route }) {
     
     
     function renderServiceItems(order) {
-      let {shop} = orderData;
+      let { shop } = orderData;
       let { pricing, qty, service, addons, cloths} = order;
       let subTotal = 0;
       let totalService = 0;
       let totalAddons = 0;
 
-      let shopService = shop.services.find(a => a.service === service);
-      const orderService = shopService ?  shopService : service;
+      let shopService = shop.services.find(a =>  (a.service == service._id || a.service == service));
+      const orderService = shopService;
+      console.log(shopService, orderService, 'SERVVV', service, shop.services)
+      
       let price = 0
       if (orderService) {
 
@@ -1269,12 +1275,29 @@ export default function DefaultScreen({ navigation, route }) {
       )
     }
     
+    const handleShop = async (id) => {
+      let shopData = await dispatch(getCustomerShopById(id));
+
+  
+      if (shopData && shopData._id) {
+  
+        dispatch({
+          type: SET_SELECTED_SHOP,
+          payload: shopData,
+        });
+     
+      }
+    };
+    
     
     useEffect(() => {
       if(basket._id){
+        console.log('MERON', basket._id)
+        
         handleGetOrder(basket._id);
-      } else {
-        setOrderData(basket)
+      }  else {
+      console.log('WALAAA', basket)
+        setOrderData({...orderData, ...basket})
       }
 
       socket.on('updateOrder', (id) => {

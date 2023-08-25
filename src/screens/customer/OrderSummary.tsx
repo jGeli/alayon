@@ -1271,8 +1271,10 @@ export default function DefaultScreen({ navigation, route }) {
     
     
     useEffect(() => {
-      if(basket){
-        handleGetOrder(basket.id);
+      if(basket._id){
+        handleGetOrder(basket._id);
+      } else {
+        setOrderData(basket)
       }
 
       socket.on('updateOrder', (id) => {

@@ -15,23 +15,35 @@ export default function DefaultScreen({ navigation, route }) {
             <View
                 style={styles.header}>
                 <TouchableOpacity
-                    style={{ margin: SIZES.padding, marginRight: SIZES.padding * 2 }}
+                    style={{ margin: SIZES.padding }}
                     onPress={() => navigation.goBack()}>
                     <Image
                         source={icons.back}
-                        style={{ height: 20, width: 20, tintColor: COLORS.primary }}
+                        style={{ height: 20, width: 20, tintColor: COLORS.white }}
                     />
                 </TouchableOpacity>
-                <Text
+                <View
                     style={{
-                        ...FONTS.body2,
-                        color: COLORS.black,
-                        // fontWeight: 'bold',
-                    }}>
-                    Test Screen
-                </Text>
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        flexGrow: 1
+                    }}
+                >
+                    <Text
+                        style={{
+                            ...FONTS.body2,
+                            color: COLORS.white,
+                            letterSpacing: 0,
+                            marginTop: SIZES.base,
+                            // fontWeight: 'bold',
+                        }}>
+                        Default Screen
+                    </Text>
+                </View>
 
-                <View></View>
+                <View
+                    style={{ margin: SIZES.padding, height: 20, width: 20 }}
+                ></View>
             </View>
         );
     }
@@ -57,9 +69,9 @@ const styles = StyleSheet.create({
     header: {
         height: 50,
         flexDirection: 'row',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: COLORS.white,
+        backgroundColor: COLORS.primary,
         elevation: 5,
         width: '100%'
     },

@@ -52,7 +52,7 @@ const initialState = {
     tip: 0,
     note: '',
     deliveryOption: 1,
-    pickupDate: !isBetween8AMand10PM(new Date()) ? moment().tz('Asia/Manila').add('day', 1) : moment().tz('Asia/Manila'),
+    pickupDate: isBetween8AMand10PM(new Date()) ? moment().tz('Asia/Manila').add('day', 1) : moment().tz('Asia/Manila'),
     deliveryDate: moment().tz('Asia/Manila')
   },
   baskets: [],

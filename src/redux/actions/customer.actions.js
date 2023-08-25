@@ -56,11 +56,13 @@ export const createOrder = data => dispatch => {
   return axios
     .post(`${varEnv.apiUrl}/customers/orders`, data)
     .then(res => {
-      // return dispatch(getCustomerShopBaskets(shop._id));
+      console.log('RESS ORDER', res.data)
+      // return dispatch(getCust omerShopBaskets(shop._id));
       dispatch(getCustomerData());
       return res.data
     })
     .catch(err => {
+      console.log('RESS ERROR', err.response)
       dispatch({
         type: SET_ERROR,
         payload: err,

@@ -11,8 +11,6 @@ import { getOrders } from '../../redux/actions/customer.actions'
 
 export default function MerchantHomeScreen({ navigation }) {
   const dispatch = useDispatch()
-  const { customer: { orders } } = useSelector(({customer}) => customer) 
-  const [selectedTab, setSelectedTab] = useState(0);
   const [ordersData, setOrdersData] = useState([])
   const [refreshing, setRefreshing] = useState(false);
 
@@ -27,13 +25,7 @@ export default function MerchantHomeScreen({ navigation }) {
 
 
 
-  const handleChangeTab = (id) => {
-    // setMyList(selectedStatus)
-    setSelectedTab(id)
-    // console.log(serviceId)
-    // console.log(selectedCloth)
 
-  }
   
   const handleOrders = async () => {
      await dispatch(getOrders())
@@ -66,11 +58,12 @@ export default function MerchantHomeScreen({ navigation }) {
         </TouchableOpacity> */}
         <Text
           style={{
-            ...FONTS.body3,
-            color: COLORS.black,
-            fontWeight: 'bold',
+            ...FONTS.body2,
+            color: COLORS.white,
+            letterSpacing: 0,
+            marginTop: SIZES.base,
           }}>
-          MY ORDERS
+          Active Orders
         </Text>
 
         <View></View>
@@ -79,30 +72,6 @@ export default function MerchantHomeScreen({ navigation }) {
   }
 
 
-
-
-  function renderOrderTab() {
-    return (
-
-      <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', width: '100%' }}>
-      <TouchableOpacity
-        style={[styles.orderTabItem, selectedTab === 0 && { backgroundColor: COLORS.primary }]}
-        onPress={() => handleChangeTab(0)}
-      >
-        <Text style={styles.tabItemText}
-        style={[styles.tabItemText, selectedTab === 0 && { color: COLORS.white }]}
-        >Active Orders</Text>
-      </TouchableOpacity> 
-      <TouchableOpacity
-               style={[styles.orderTabItem, selectedTab === 1 && { backgroundColor: COLORS.primary }]}
-               onPress={() => handleChangeTab(1)}
-      >
-        <Text style={[styles.tabItemText, selectedTab === 1 && { color: COLORS.white }]}>Past Orders</Text>
-      </TouchableOpacity>
-     
-      </View>
-    )
-  }
 
 
 
@@ -119,7 +88,7 @@ export default function MerchantHomeScreen({ navigation }) {
     // }}
     >
       {renderHeader()}
-      {renderOrderTab()}
+      {/* {renderOrderTab()} */}
       <FlatList
         showsVerticalScrollIndicator={false}
        refreshControl={
@@ -153,7 +122,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    // backgroundColor: COLORS.white,
+    backgroundColor: COLORS.primary,
     // elevation: 5,
     width: '100%',
     marginBottom: SIZES.padding

@@ -40,10 +40,10 @@ export default function OrderDetails({ navigation, route }) {
                 >
                     <Text
                         style={{
-                            ...FONTS.h3,
+                            ...FONTS.body2,
                             color: COLORS.white,
-                            letterSpacing: 1,
-                            marginTop: SIZES.base
+                            letterSpacing: 0,
+                            marginTop: SIZES.base,
                             // fontWeight: 'bold',
                         }}>
                         MORE DETAILS

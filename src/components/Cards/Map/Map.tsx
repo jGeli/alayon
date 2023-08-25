@@ -119,12 +119,13 @@ export default function Map({ navigation, route }) {
         </TouchableOpacity>
         <Text
           style={{
-            ...FONTS.h4,
+            ...FONTS.body2,
             color: COLORS.white,
-            textAlign: 'center'
+            letterSpacing: 0,
+            marginTop: SIZES.base,
           }}
         >
-        ADDRESS LOCATION
+        Pickup Location
         </Text>
         <TouchableOpacity
         style={{
@@ -346,7 +347,7 @@ export default function Map({ navigation, route }) {
 
   useEffect(() => {
     dispatch(getShops());
-
+    // getCurrentLocation()
   }, []);
 
   const renderMarker = shops.map((a, index) => {

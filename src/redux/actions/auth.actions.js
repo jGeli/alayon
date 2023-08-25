@@ -29,7 +29,7 @@ export const requestSignin = (data, navigation, params) => dispatch => {
       if (redirection && params.redirection !== 'OrderSummary') {
         params.redirection = redirection;
       }
-
+      console.log(res.data, 'REQUEST SIGNIN')
       navigation && navigation.navigate('Otp', { ...res.data, ...params, user: { ...user, ...data } });
     })
     .catch(err => {

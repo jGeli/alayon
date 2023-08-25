@@ -54,12 +54,10 @@ const Map1 = ({ navigation, route }) => {
     // })
           if(res) {
         let { coordinate } = res.track;
-        console.log(res, 'RESPONSESS')
         if(coordinate){
           setRiderLoc(coordinate)
         }
       }
-    console.log("RESS", res.track)
   }
 
 

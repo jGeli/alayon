@@ -51,13 +51,13 @@ export default function SchedulePickup({ navigation }) {
         >
           <Text
             style={{
-              ...FONTS.h3,
+              ...FONTS.body2,
               color: COLORS.white,
-              letterSpacing: 1,
-              marginTop: SIZES.base
+              letterSpacing: 0,
+              marginTop: SIZES.base,
               // fontWeight: 'bold',
             }}>
-            DELIVERY
+            Delivery Schedule
           </Text>
         </View>
         <View
@@ -141,7 +141,10 @@ export default function SchedulePickup({ navigation }) {
           {next5Days.map((a, index) => {
           const now = moment(a).tz('Asia/Manila').format('YYYY-MM-DD');
           const dayOfMonth = moment(a).tz('Asia/Manila').date();
-          const isAvailableToday = moment(new Date()).isSame(moment(a), 'day') && !isBetween8AMand10PM(new Date())
+          const isAvailableToday = moment().isSame(now, 'day')
+        && isBetween8AMand10PM(new Date())
+          console.log('IS AV', isAvailableToday, moment().isSame(now, 'day'), isBetween8AMand10PM(new Date()))
+              
               return (
                 <TouchableOpacity
                   style={{
@@ -152,7 +155,7 @@ export default function SchedulePickup({ navigation }) {
                     marginVertical: SIZES.padding,
                     borderRadius: SIZES.semiRadius,
                     height: 35,
-                    backgroundColor: moment(now).isSame(moment(pickupDate).tz('Asia/Manila').format('YYYY-MM-DD'))  ? COLORS.primary :  isAvailableToday ? COLORS.gray : COLORS.gray3
+                    backgroundColor: moment(now).isSame(moment(pickupDate).tz('Asia/Manila').format('YYYY-MM-DD'), 'day')  ? COLORS.primary :  isAvailableToday ? COLORS.gray : COLORS.gray3
                   }}
                   disabled={isAvailableToday}
                   onPress={() => {
@@ -216,8 +219,8 @@ export default function SchedulePickup({ navigation }) {
                     ? COLORS.primary : COLORS.gray2
                     }}
                       onPress={() => {
-                      let newDate =  moment(pickupDate).set('hour', item);
-                        setPickupDate(moment(newDate).tz('Asia/Manila'))
+                      let newDate =  moment(pickupDate).tz('Asia/Manila').set('hour', item);
+                        setPickupDate(newDate)
                         }
                       }
                     

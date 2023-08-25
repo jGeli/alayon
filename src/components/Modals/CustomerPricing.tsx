@@ -98,7 +98,7 @@ const CustomerPricing = ({ active, onClose, service, onSelect }) => {
             // fontWeight: 'bold',
             textAlign: 'right'
             }}
-          >{a.price}</Text>
+          >{a.subTitle}</Text>
           </View>
 
         </TouchableOpacity>

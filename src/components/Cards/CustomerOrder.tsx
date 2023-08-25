@@ -9,6 +9,8 @@ import {
 import { COLORS, FONTS, SIZES, icons, images } from '../../constants';
 import StatusStep from '../StatusStep';
 import moment from 'moment';
+import { SET_CUSTOMER_BASKET, SET_SELECTED_SHOP } from '../../redux/actions/type';
+import { useDispatch } from 'react-redux';
 
 
 
@@ -16,6 +18,8 @@ import moment from 'moment';
 
 const CustomerOrders = ({ navigation, order }) => {
     let { shop } = order;
+        console.log('MY ORDER', order.orders)
+    const dispatch = useDispatch()    
     return (
         <View
             style={styles.cardContainer}
@@ -27,16 +31,24 @@ const CustomerOrders = ({ navigation, order }) => {
                 <Image source={{uri: shop.bannerUrl}} style={styles.profileImage}/>
                 <View style={{marginLeft: SIZES.padding}}>
                     <Text style={{...FONTS.h4, color: COLORS.darkBlue}}>{shop.shop_name}</Text>
-                    <Text style={{...FONTS.body4}}>{moment(order.createdAt).format('lll')}</Text>
+                    <Text style={{...FONTS.body4}}>
+                    {order.transaction_id}
+                    </Text>
 
                 </View>
             </View>
             <TouchableOpacity
                 // style={{padding: SIZES.semiRadius}}
-                onPress={() => navigation.navigate('OrderStatus', {order, navType: 'track'})}
+                onPress={() => navigation.navigate('TestScreen', {order, navType: 'track'})}
             >
             <Image source={icons.send} style={styles.sendIcon}/>
             </TouchableOpacity>
+            {/* <TouchableOpacity
+                // style={{padding: SIZES.semiRadius}}
+                onPress={() => navigation.navigate('OrderStatus', {order, navType: 'track'})}
+            >
+            <Image source={icons.send} style={styles.sendIcon}/>
+            </TouchableOpacity> */}
         </View>
         
         {/* STEPPER */}
@@ -48,12 +60,22 @@ const CustomerOrders = ({ navigation, order }) => {
             </View>
         {/* BUTTON */}
         <View style={styles.btnContainer}>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button}
+            onPress={() => {
+                console.log("PRESS INE")
+                dispatch({
+                    type: SET_SELECTED_SHOP,
+                    payload:  shop,
+                  });
+                  dispatch({
+                    type: SET_CUSTOMER_BASKET,
+                    payload:  order,
+                  });
+                navigation.navigate("OrderSummary", {orderId: order._id, shopId : shop._id})}}
+           
+            >
                 <Text style={{...FONTS.body4, fontWeight: 'bold'}}
-                onPress={() => {
-                    console.log("PRESS INE")
-                    navigation.navigate("CustomerOrderDetails", {order, orderId: order._id, shopId : shop._id})}}
-                >Order Details</Text>
+                 >Order Details</Text>
             </TouchableOpacity>
         </View>
         

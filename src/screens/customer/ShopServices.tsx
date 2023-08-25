@@ -28,6 +28,7 @@ import {
   CLEAR_CUSTOMER_BASKET,
   CLEAR_CUSTOMER_BASKETS,
   CLEAR_CUSTOMER_ORDER,
+  CLEAR_ERROR,
   CLEAR_SELECTED_SHOP,
   CLOSE_MODALS,
   OPEN_BASKET_MODAL,
@@ -35,6 +36,7 @@ import {
   SET_CUSTOMER_BASKET,
   SET_CUSTOMER_BASKETS,
   SET_CUSTOMER_ORDER,
+  SET_ERROR,
   SET_SELECTED_SHOP,
 } from '../../redux/actions/type';
 import CustomerAddOns from '../../components/Modals/CustomerAddOns';
@@ -52,10 +54,9 @@ import CustomerPricing from '../../components/Modals/CustomerPricing';
 export default ShopServices = ({ navigation, route }) => {
   const { shopId, newAddress } = route.params;
   const dispatch = useDispatch();
-  const { location } = useSelector(({ auth }) => auth);
   const { isAuthenticated, user } = useSelector(({ auth }) => auth);
-  const { order, baskets, basket, customer: { locations } } = useSelector(({ customer }) => customer);
-  const { customerAddOns, basketModal } = useSelector(({ ui }) => ui);
+  const { order, basket } = useSelector(({ customer }) => customer);
+  const { customerAddOns, basketModal, errors } = useSelector(({ ui }) => ui);
   const [selectedShop, setSelectedShop] = useState({
     addons: []
   });
@@ -63,7 +64,6 @@ export default ShopServices = ({ navigation, route }) => {
   const [cloths, setCloths] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
   const [pricing, setPricing] = useState(null);
-
   const [tab, setTab] = useState('services');
   const [loading, setLoading] = useState(true);
 
@@ -96,34 +96,62 @@ export default ShopServices = ({ navigation, route }) => {
 
   const handleCheckout = async () => {
   
-    let val = [];
-    if (!isAuthenticated) {
-      val = await setCustomerBaskets({ ...order, shop: selectedShop, _id: Math.random() });
-      dispatch({ type: SET_CUSTOMER_BASKETS, payload: val })
-    } else {
-      val = await dispatch(createBasket({ ...order, shop: selectedShop }));
+    if(!pickupLocation){
+      dispatch({type: SET_ERROR, payload: { pickupLocation: "Pickup Location is required!" }})
+      return;
     }
+  
+    // let val = [];
+    // if (!isAuthenticated) {
+    //   val = await setCustomerBaskets({ ...order, shop: selectedShop, _id: Math.random() });
+    //   dispatch({ type: SET_CUSTOMER_BASKETS, payload: val })
+    // } else {
+    //   val = await dispatch(createBasket({ ...order, shop: selectedShop }));
+    // }
 
 
 
   
   
-    if (val.length !== 0) {
-      let pickupDelivery = null;
+    // if (val.length !== 0) {
+    //   let pickupDelivery = null;
 
-      if (pickupLocation) {
-        pickupDelivery = pickupLocation;
-      } 
+    //   if (pickupLocation) {
+    //     pickupDelivery = pickupLocation;
+    //   } 
 
-      if (isAuthenticated) {
-        navigation.navigate('OrderSummary', { shopId, rnd: Math.random(), selectedBaskets: val.map(a => a._id) });
-      } else {
-        navigation.navigate('SignIn', { redirection: 'OrderSummary', param: { shopId, rnd: Math.random(), baskets: val } });
-      }
-      dispatch({ type: CLEAR_CUSTOMER_ORDER });
+      // if (isAuthenticated) {
+        let oldOrders = basket.orders;
+        let { deliveryOption, pickupDate, deliveryDate, tip, note, cloths, qty,
+          totalService,
+          totalAddons,
+          pricing,
+          service,
+          addons,
+          price
+          } = order;
+      
+      let orderId =  Math.random() 
+        oldOrders.push({ 
+          orderId,
+          cloths, qty,
+          totalService,
+          totalAddons,
+          pricing,
+          service,
+          addons,
+          price,
+          shop: selectedShop
+          })
+        dispatch({type: SET_CUSTOMER_BASKET, payload: { deliveryOption,  pickupDate, deliveryDate, tip, note, shop: selectedShop, pickupDelivery: pickupLocation, orders: oldOrders  }})
+        // dispatch({ type: CLEAR_CUSTOMER_ORDER });
+        navigation.navigate('OrderSummary', { shopId: selectedShop._id, orderId, navType: 'checkout' });
+      // } else {
+      //   navigation.navigate('SignIn', { redirection: 'OrderSummary', param: { shopId, rnd: Math.random() } });
+      // }
 
-      return
-    }
+    //   return
+    // }
   };
 
 
@@ -263,7 +291,6 @@ export default ShopServices = ({ navigation, route }) => {
 
   let totalItem = 0;
   order.cloths.forEach(a => {
-    console.log('QTYY', typeof a.qty === 'number')
     if(typeof a.qty === 'number'){
       totalItem += a.qty 
     }
@@ -404,14 +431,22 @@ export default ShopServices = ({ navigation, route }) => {
             alignItems: 'center',
             padding: SIZES.base,
             paddingHorizontal: SIZES.padding,
-            backgroundColor: COLORS.lightGray1
+            backgroundColor: COLORS.lightGray1,
+            borderColor: errors.pickupLocation ? COLORS.red : COLORS.primary,
+            borderWidth: 1.5
           }}
-              onPress={() => navigation.navigate('Map', { navType: 'addressLocation', ...route.params })}
+              onPress={() => {
+              dispatch({type: CLEAR_ERROR})
+              navigation.navigate('Map', { navType: 'addressLocation', ...route.params })
+              
+              }}
           >
           <Image
             
             source={icons.location}
-            style={{width: 30, height: 30, tintColor: COLORS.primary, marginHorizontal: SIZES.padding, marginRight: SIZES.padding * 2}}
+            style={{width: 30, height: 30, 
+            tintColor: errors.pickupLocation ? COLORS.red : COLORS.primary,
+            marginHorizontal: SIZES.padding, marginRight: SIZES.padding * 2}}
             resizeMode='contain'
           />
           <View
@@ -420,13 +455,13 @@ export default ShopServices = ({ navigation, route }) => {
           <Text
             style={{
               ...FONTS.body3,
-              color: COLORS.transparentBlack7,
+              color: errors.pickupLocation ? COLORS.red : COLORS.transparentBlack7,
               overflow: 'hidden'
               // fontWeight: 'bold',
             }}>
             {pickupLocation && pickupLocation.address ? cutString(pickupLocation.address, 35)
-            :
-            "Enter Pickup/Delivery Details"
+            : errors.pickupLocation ? "Pickup Location is required!" :
+            "Find Pickup Location"
             }
             
           </Text>
@@ -434,7 +469,9 @@ export default ShopServices = ({ navigation, route }) => {
           </View>
           <Image
             source={icons.arrow_right}
-            style={{height: 25, width: 25, tintColor: COLORS.darkBlue}}
+            style={{height: 25, width: 25, 
+              tintColor: errors.pickupLocation ? COLORS.red : COLORS.darkBlue,
+            }}
           />
         </TouchableOpacity>
         <View
@@ -581,7 +618,7 @@ export default ShopServices = ({ navigation, route }) => {
                   // fontWeight: 'bold',
                   color: COLORS.transparentBlack7,
                 }}>
-                {pricing.price} / {pricing.name}
+                {pricing.subTitle} / {pricing.name}
               </Text>
           }
             </TouchableOpacity>
@@ -685,7 +722,6 @@ export default ShopServices = ({ navigation, route }) => {
     );
   }
 
-  console.log('ADDONS LEN', order.addons.length)
   const renderInfo = (mapVal) => {
     return (
       <View
@@ -903,7 +939,7 @@ export default ShopServices = ({ navigation, route }) => {
               justifyContent: 'center',
               backgroundColor: COLORS.primary
             }}
-            // onPress={() => handleCheckout()}
+            onPress={() => handleCheckout()}
           >
        
             <View
@@ -917,7 +953,7 @@ export default ShopServices = ({ navigation, route }) => {
                   ...FONTS.h4,
                   color: COLORS.white,
                 }}
-              >{totalItem} items | ₱300</Text>
+              >{totalItem} items </Text>
               <Text
                 style={{
                   ...FONTS.body5s,
@@ -945,10 +981,10 @@ export default ShopServices = ({ navigation, route }) => {
               /> */}
                    <Text
                 style={{
-                  ...FONTS.h4,
+                  ...FONTS.body3,
                   color: COLORS.white
                 }}
-              >Proceed to Cart</Text>
+              >Checkout</Text>
             </View>
 
           </TouchableOpacity>
@@ -978,10 +1014,8 @@ export default ShopServices = ({ navigation, route }) => {
               dispatch({ type: CLOSE_MODALS });
           }}
           onSelect={(e) => {
-            console.log(e)
             setPricing(e);
-            dispatch({ type: SET_CUSTOMER_ORDER, payload: { qty: 1, pricing: e.name } });
-            dispatch({ type: SET_CUSTOMER_ORDER, payload: { service: selectedService.service} });
+            dispatch({ type: SET_CUSTOMER_ORDER, payload: { qty: 1, pricing: e.name, price: e.price, service: selectedService.service } });
             dispatch({ type: CLOSE_MODALS });
           
           }}

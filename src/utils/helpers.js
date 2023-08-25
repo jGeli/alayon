@@ -67,10 +67,8 @@ export const groupShopOrders = (data) => {
 };
 
 export const groupPricing = (data) => {
-  console.log(data, 'CLOTHSS')
   let group = Object.entries(
     data.reduce((group, item) => {
-      console.log(item, 'ITEM')
       // if (item.pricePiece) {
       group['Piece'] = group['Piece'] ?? {
         name: 'Piece',
@@ -114,14 +112,16 @@ export const groupPricing = (data) => {
     let price = '';
     let { highest, lowest } = findHighestAndLowest(value.range)
     if (highest === lowest || lowest === 0) {
-      price = `${highest > 0 ? `For ₱${highest}` : 'Unavailable'}`;
+      price = `${highest > 0 ? highest : 0}`;
+      subTitle = `${highest > 0 ? `For ₱${highest}` : 'Unavailable'}`
     } else {
-      price = `From ₱${lowest} - ₱${highest}`
+      price = highest
+      subTitle = `From ₱${lowest} - ₱${highest}`
     }
 
 
 
-    return { ...value, price }
+    return { ...value, price, subTitle }
   });
   return group;
 };
@@ -192,8 +192,9 @@ export const totalOrders = (values) => {
 
 export const statusIndexing = (status) => {
 
-  let ind = [{ status: "pending", index: 0 }, { status: "shop_confirmed", index: 0 }, { status: "rider_confirmed", index: 1 }, { status: "rider_pickup", index: 1 }, { status: "shop_processing", index: 2 }, { status: "ready_pickup", index: 2 }, { status: "rider_delivery", index: 3 }, { status: "customer_received", index: 4 }, { status: "cancelled", index: 0 }, { status: "completed", index: 6 }, { status: "rate", index: 5 }].find(a => a.status == status)?.index
-  return ind
+  let ind = [{ status: "pending", index: 0 }, { status: "shop_confirmed", index: 0 }, { status: "rider_confirmed", index: 1 }, { status: "rider_pickup", index: 1 }, { status: "shop_processing", index: 2 }, { status: "ready_pickup", index: 2 }, { status: "rider_delivery", index: 3 }, { status: "customer_received", index: 5 }, { status: "cancelled", index: 0 }, { status: "completed", index: 5 }];
+  let newInd = ind.map((a, index) => { a.count = index; a.length = ind.length - 1; return a; }).find(a => a.status == status)
+  return newInd
 
 }
 
@@ -286,7 +287,7 @@ function findHighestAndLowest(numbers) {
 export function generateTimeRange(dateProp, add) {
   const today = new Date();
   const date = new Date(dateProp)
-  const startHour = date.toDateString() === today.toDateString() ? today.getHours() + (add ? add : 1) : 8;
+  const startHour = date.toDateString() === today.toDateString() && add ? today.getHours() + (add ? add : 1) : 8;
   const endHour = date.toDateString() === today.toDateString() ? 22 : 22;
 
   const times = [];
@@ -355,8 +356,8 @@ export function isBetween8AMand10PM(dateProp) {
   console.log(dateProp, 'DATE PROPS')
   const inputDate = moment(dateProp).tz('Asia/Manila'); // Replace 'Your_Timezone' with the desired timezone
 
-  const startTime = inputDate.set({ hour: 8, minute: 0, second: 0, millisecond: 0 });
-  const endTime = inputDate.set({ hour: 22, minute: 0, second: 0, millisecond: 0 });
+  const startTime = inputDate.set({ hour: 22, minute: 0, second: 0, millisecond: 0 });
+  const endTime = inputDate.add(1, 'day').set({ hour: 8, minute: 0, second: 0, millisecond: 0 });
 
   return inputDate.isBetween(startTime, endTime);
 }

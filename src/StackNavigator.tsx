@@ -51,6 +51,7 @@ import Notification from './screens/Notifications';
 import AreaLocations from './components/AreaLocations';
 import SchedulePickup from './screens/customer/SchedulePickup';
 import OrderDetails from './screens/customer/OrderDetails';
+import OrderCompleteScreen from './screens/OrderCompleteScreen';
 
 
 const StackNavigator = () => {
@@ -392,6 +393,11 @@ const StackNavigator = () => {
             <Stack.Screen
               name="CustomerReview"
               component={CustomerReviewScreen}
+              options={{ headerShown: false }}
+            />
+              <Stack.Screen
+              name="OrderCompleteScreen"
+              component={OrderCompleteScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen

@@ -4,13 +4,9 @@ import { COLORS } from '../../constants';
 export default StyleSheet.create({
   root: {
     alignItems: 'stretch',
-    padding: 4,
+    // padding: 4,
     flex: 1,
     // backgroundColor: '#555',
-  },
-  slider: {
-  },
-  button: {
   },
   header: {
     alignItems: 'center',

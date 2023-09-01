@@ -72,6 +72,11 @@ export const onBoardingBackground_03 = require('../assets/icons/OnboardBackgroun
 export const onBoardingBackground_04 = require('../assets/icons/OnboardBackground-04.png');
 export const laundry_store = require('../assets/icons/laundry-store.png');
 export const more_vertical = require('../assets/icons/morevert.png');
+export const washing_time = require('../assets/icons/washing_time.png');
+export const list_completed = require('../assets/icons/list_completed.png');
+export const list_completed1 = require('../assets/icons/list_completed1.png');
+
+
 
 
 export const delivery_complete = require('../assets/icons/delivery_complete.png');
@@ -105,9 +110,6 @@ export const edit_order3 = require('../assets/icons/edit_order3.png');
 export const order_receive = require('../assets/icons/order_receive.png');
 
 
-export const shop_processing = require('../assets/icons/shop_processing.png');
-export const shop_processing1 = require('../assets/icons/shop_processing1.png');
-export const shop_processing2 = require('../assets/icons/shop_processing2.png');
 export const navigator1 = require('../assets/icons/navigator1.png');
 export const globe = require('../assets/icons/globe.png');
 export const focus = require('../assets/icons/focus.png');
@@ -125,6 +127,9 @@ export default {
   reorder,
   reorder1,
   reorder2,
+  list_completed,
+  list_completed1,
+  washing_time,
   delivery1,
   delivery2,
   delivery3,
@@ -137,9 +142,6 @@ export default {
   pickup,
   rateus,
   rateus1,
-  shop_processing,
-  shop_processing1,
-  shop_processing2,
   delivery_complete,
   more_vertical,
   laundry_store,

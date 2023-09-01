@@ -21,9 +21,6 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { statusIndexing } from '../utils/helpers';
 import moment from 'moment';
 
-const RiderImage = images.rider;
-const WashingPin = icons.washingMachinePin;
-const pinIcon = icons.pinIcon;
 
 
 let initialRegion = {
@@ -544,6 +541,11 @@ const Map1 = ({ navigation, route }) => {
   
   // console.log(state.progress, 'STATE PROGRESS')
 
+  let RiderImage = images.rider;
+  let WashingPin = icons.washingMachinePin;
+  let pinIcon = icons.red_pin;
+  
+
   return (
     <View
       style={{
@@ -592,7 +594,7 @@ const Map1 = ({ navigation, route }) => {
             anchor={{ x: 0.5, y: 0.6 }}
           >
             <View >
-            <Image source={pinIcon} style={{ height: 35, width: 40 }}
+            <Image source={pinIcon} style={{ height: 45, width: 40 }}
             onLoadEnd={() => console.log('LOOOADEDINGG')}
             />
           </View>

@@ -10,7 +10,9 @@ import {
   SET_CUSTOMER_ORDER,
   SET_USER,
 } from '../actions/type';
-import moment from 'moment-timezone';
+import momentTimezone from 'moment-timezone';
+import moment from 'moment';
+
 
 const initialOrder = {
   qty: 1,
@@ -24,8 +26,8 @@ const initialOrder = {
   note: '',
   deliveryOption: 1,
   tip: 0,
-  pickupDate: !isBetween8AMand10PM(new Date()) ? moment().add('day', 1) : moment().tz('Asia/Manila'),
-  deliveryDate: moment().tz('Asia/Manila')
+  pickupDate: !isBetween8AMand10PM(new Date()) ? moment().add(1, 'day') : momentTimezone().tz('Asia/Manila'),
+  deliveryDate: momentTimezone().tz('Asia/Manila')
 };
 
 const initialState = {

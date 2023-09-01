@@ -9,18 +9,14 @@ import { COLORS } from './src/constants';
 
 export default function App() {
 
-
-  useEffect(() => {
-    console.log('INIT APP')
-  })
-
   return (
-    <Provider store={store}>
-      <GeneralStatusBarColor backgroundColor={COLORS.primary}
-        barStyle="light-content" />
+    <>
       <PushController />
-
-      <StackNavigator />
-    </Provider>
+      <Provider store={store}>
+        <GeneralStatusBarColor backgroundColor={COLORS.primary}
+          barStyle="light-content" />
+        <StackNavigator />
+      </Provider>
+    </>
   );
 }

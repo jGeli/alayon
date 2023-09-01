@@ -180,7 +180,7 @@ const StackNavigator = () => {
               focused ? (
                 <Image
                   resizeMode="contain"
-                  source={icons.list}
+                  source={icons.list1}
                   style={{
                     height: 25,
                     width: 25,
@@ -190,7 +190,7 @@ const StackNavigator = () => {
               ) : (
                 <Image
                   resizeMode="contain"
-                  source={icons.list}
+                  source={icons.list1}
                   style={{
                     height: 25,
                     width: 25,

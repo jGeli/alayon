@@ -362,3 +362,33 @@ export const getCurrentRiderLocation = (id) => dispatch => {
       return null;
     });
 };
+
+export const getRecentSearches = () => dispatch => {
+  // console.log(id, "ID HA AXIOS")
+  // dispatch({ type: SET_LOADING })
+
+  return axios.get(`${varEnv.apiUrl}/customers/recentSearches`)
+    .then(res => {
+      // dispatch({ type: STOP_LOADING })
+      return res.data
+    })
+    .catch(err => {
+      console.log('ERR ACCEPTING ORDER', err.response)
+      return null;
+    });
+};
+
+export const addSearches = (shopId) => dispatch => {
+  // console.log(id, "ID HA AXIOS")
+  // dispatch({ type: SET_LOADING })
+
+  return axios.post(`${varEnv.apiUrl}/customers/recentSearches/${shopId}`)
+    .then(res => {
+      // dispatch({ type: STOP_LOADING })
+      return res.data
+    })
+    .catch(err => {
+      console.log('ERR ACCEPTING ORDER', err.response)
+      return null;
+    });
+};

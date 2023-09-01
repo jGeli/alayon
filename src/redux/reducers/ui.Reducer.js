@@ -1,5 +1,6 @@
 import {
   CLEAR_ERROR,
+  CLEAR_FILTER,
   CLOSE_ALLOW_LOCATION_MODAL,
   CLOSE_MODALS,
   OPEN_ADDONS_MODAL,
@@ -10,6 +11,7 @@ import {
   OPEN_SERVICE_PRICING_MODAL,
   SET_ALLOW_LOCATION_MODAL,
   SET_ERROR,
+  SET_FILTER,
   SET_LOADING,
   STOP_LOADING,
 } from '../actions/type';
@@ -23,7 +25,8 @@ const initialState = {
   customerAddOns: false,
   basketModal: null,
   servicePricingModal: false,
-  allowLocation: false
+  allowLocation: false,
+  filter: null
 };
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -37,6 +40,19 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: false,
+      };
+
+
+    case SET_FILTER:
+      return {
+        ...state,
+        filter: action.payload,
+      };
+
+    case CLEAR_FILTER:
+      return {
+        ...state,
+        filter: null,
       };
 
     case SET_ERROR:

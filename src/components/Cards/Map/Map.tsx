@@ -402,10 +402,10 @@ export default function Map({ navigation, route }) {
           // title={'Test Marker'}
           description={'This is a description of the marker'}>
           <View style={isDrag ? styles.markerDrag : styles.marker}>
-            <Image source={icons.pinIcon} style={{ height: 35, width: 40 }} />
+            <Image source={icons.red_pin} style={{ height: 40, width: 40 }} />
           </View>
         </Marker.Animated>
-        {/* {renderMarker} */}
+        {renderMarker}
       </MapView>
       <View style={styles.topContainer}>
         {renderHeader()}

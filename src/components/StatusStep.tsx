@@ -7,17 +7,17 @@ import { SafeAreaView } from 'react-native';
 
 const stepIndicatorStyles = {
     stepIndicatorSize: 20,
-    currentStepIndicatorSize: 25,
-    separatorStrokeWidth: 2,
-    currentStepStrokeWidth: 2,
+    currentStepIndicatorSize: 20,
+    separatorStrokeWidth: 3,
+    currentStepStrokeWidth: 5,
     stepStrokeCurrentColor: COLORS.primary,
     separatorFinishedColor: COLORS.primary,
     separatorUnFinishedColor: '#aaaaaa',
     stepIndicatorFinishedColor: COLORS.primary,
     stepIndicatorUnFinishedColor: '#aaaaaa',
-    stepIndicatorCurrentColor: '#ffffff',
-    stepIndicatorLabelFontSize: 5,
-    currentStepIndicatorLabelFontSize: 5,
+    stepIndicatorCurrentColor: COLORS.primary,
+    stepIndicatorLabelFontSize: 10,
+    currentStepIndicatorLabelFontSize: 10,
     stepIndicatorLabelCurrentColor: '#000000',
     stepIndicatorLabelFinishedColor: '#ffffff',
     stepIndicatorLabelUnFinishedColor: 'rgba(255,255,255,0.5)',
@@ -30,11 +30,6 @@ const stepIndicatorStyles = {
 
 export default function StatusStep({currentPage, stepInput, handleStepInput}) {
 
-    
-        const onStepPress = (position: number) => {
-                handleStepInput(position)
-          };
-          
           const renderStepIndicator = (params: any) => (
             <View
               style={{
@@ -63,11 +58,12 @@ export default function StatusStep({currentPage, stepInput, handleStepInput}) {
               return (
               <View
                   style={{ 
-                  flexGrow: 1,
-                  width: 500,
-                  marginLeft: SIZES.padding,
-                alignItems: 'center',
-                  justifyContent: 'center',
+                  // flexGrow: 1,
+                  width: 200,
+                  // margin: SIZES.padding,
+                  paddingLeft: SIZES.padding * 2,
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
                   paddingHorizontal: SIZES.padding
                 //   backgroundColor: COLORS.darkGray
                   }}
@@ -153,19 +149,19 @@ const styles = StyleSheet.create({
       },
       stepLabel: {
         fontSize: 12,
-        textAlign: 'left',
-        fontWeight: '500',
+        textAlign: 'center',
+        // fontWeight: '500',
         color: '#999999',
       },
       stepLabelDone: {
         fontSize: 12,
-        textAlign: 'left',
+        textAlign: 'center',
         fontWeight: '500',
         color: COLORS.black,
       },
       stepLabelSelected: {
         fontSize: 12,
-        textAlign: 'left',
+        textAlign: 'center',
         fontWeight: '500',
         color: COLORS.blue,
       },

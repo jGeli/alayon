@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getShops } from '../../redux/actions/data.actions';
 import moment from 'moment/moment';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { CLEAR_SELECTED_SHOP, CLOSE_MODALS, SET_ALLOW_LOCATION, SET_ALLOW_LOCATION_MODAL, SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, SET_LAUNDRY_SHOPS, SET_SELECTED_SHOP } from '../../redux/actions/type';
+import { CLEAR_FILTER, CLEAR_SELECTED_SHOP, CLOSE_MODALS, SET_ALLOW_LOCATION, SET_ALLOW_LOCATION_MODAL, SET_CUSTOMER_BASKET, SET_CUSTOMER_DATA, SET_LAUNDRY_SHOPS, SET_SELECTED_SHOP } from '../../redux/actions/type';
 import { distanceMultiplier } from '../../globals/env';
 import AllowLocationModal from '../../components/Modals/AllowLocationModal';
 import { ScrollView } from 'react-native';
@@ -27,28 +27,29 @@ const varEnv = constants.varEnv;
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
+  const { filter } = useSelector(({ui}) => ui)
   const { isLocationAllow, location: {cityMun, _id }} = useSelector(({ data }) => data);
-  const { isAuthenticated, user: { location, areaLocation } } = useSelector(({auth}) => auth)
+  const {user: { location} } = useSelector(({auth}) => auth)
   const [refreshing, setRefreshing] = useState(false);
   const [shops, setShops] = useState([])
   const onRefresh = React.useCallback(() => {
+    dispatch({type: CLEAR_FILTER})
     setRefreshing(true);
-    setShops([]);
-    handleGetShops()
+    handleGetShops();
+    
     setTimeout(() => {
       setRefreshing(false)
     }, 30000);
   }, []);
 
-  console.log(_id, 'AREA LOCATIONs')
 
   const handleGetShops = async () => {
-    await dispatch(getShops(_id))
+    setShops([])
+    let fltr = filter ? filter : {}
+    await dispatch(getShops({areaLocation: _id, ...fltr}))
       .then(a => {
         if (a && a.length !== 0) {
           setShops(a)
-        } else {
-          setShops([])
         }
         setTimeout(() => {
           setRefreshing(false)
@@ -90,19 +91,25 @@ export default function Home({ navigation }) {
   function renderHeader() {
     return (
       <View style={styles.headerContainer}>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'flex-start'
+        }}
+      >
         <TouchableOpacity
           onPress={() => handleLocation()}
           style={{
             flexDirection: 'row',
-            flex: 1,
             alignItems: 'center',
-            justifyContent: 'flex-start',
+            justifyContent: 'flex-start'
           }}>
           <View
             style={{
-              alignItems: 'center',
               justifyContent: 'center',
-              paddingRight: SIZES.padding * 1,
+              paddingHorizontal: SIZES.base,
             }}>
             <Image
               source={icons.nearby}
@@ -119,19 +126,21 @@ export default function Home({ navigation }) {
               alignItems: 'flex-start',
               justifyContent: 'flex-end',
               // backgroundColor: COLORS.black,
-              paddingRight: SIZES.padding,
-              flex: 1,
+              // paddingHorizontal: SIZES.base,
+              // flex: 1,
               // width: '80%',
             }}>
             <Text
               style={{
-                ...FONTS.h4,
-                color: COLORS.lightGray2
+                ...FONTS.body3,
+                color: COLORS.lightGray2,
+                marginTop: 5
               }}>
               {cityMun  ? cutString(cityMun, 25) : 'Find your location?'}
             </Text>
           </View>
         </TouchableOpacity>
+        </View>
         {/* {isAuthenticated &&
         <TouchableOpacity
           onPress={() => navigation.navigate("Chats", { shops })}
@@ -154,14 +163,15 @@ export default function Home({ navigation }) {
         <TouchableOpacity
           onPress={() => navigation.navigate('Search', {})}
           style={{
-            paddingRight: SIZES.padding * 2,
             justifyContent: 'center',
+            paddingHorizontal: SIZES.base,
           }}>
           <Image
             source={icons.search}
             resizeMode="contain"
             style={{
               width: 25,
+              margin: SIZES.base,
               height: 25,
               tintColor: COLORS.white
             }}
@@ -169,11 +179,13 @@ export default function Home({ navigation }) {
         </TouchableOpacity>
         <TouchableOpacity
          style={{
-          paddingRight: SIZES.padding * 2,
+          paddingHorizontal: SIZES.base,
           justifyContent: 'center',
         }}
         onPress={() => {navigation.navigate('Filter', {})}}>
-            <Image source={icons.filter} style={{ height: 25, width: 25, tintColor: COLORS.white }} />
+            <Image source={icons.filter} style={{ 
+            height: 25, width: 25, tintColor: COLORS.white, margin: SIZES.base
+            }} />
           </TouchableOpacity>
         {/* <TouchableOpacity
           onPress={() => navigation.navigate('Filter', {})}
@@ -285,6 +297,8 @@ export default function Home({ navigation }) {
       let itemLoc = item.location ? item.location : location && location?.latitude ? { latitude: location?.latitude, longitude: location?.longitude } : null;
       
       let distance = itemLoc && location ? haversine({ latitude: location?.latitude, longitude: location?.longitude }, { latitude: itemLoc?.latitude, longitude: itemLoc?.longitude }) || 0 : 0
+      console.log("DISTANCEC", distance)
+      
       return shops.length === 0 ? (
         <TouchableOpacity
           style={{
@@ -383,7 +397,7 @@ export default function Home({ navigation }) {
                 }}
               />
               <Text style={{ color: COLORS.primary, fontWeight: 'bold' }}>
-                {location?.address ? `${parseFloat(distance * distanceMultiplier).toFixed(2)} Km away` : 'Not in range'}
+                {location && (location.latitude && location.longitude) ? `${parseFloat(distance * distanceMultiplier).toFixed(2)} Km away` : 'Not in range'}
               </Text>
             </View>
             <View style={{ width: '90%' }}>
@@ -494,17 +508,263 @@ export default function Home({ navigation }) {
   }
 
 
+  function renderFilteredList() {
+    const renderItem = ({ item }) => {
+      let itemLoc = item.location ? item.location : location && location?.latitude ? { latitude: location?.latitude, longitude: location?.longitude } : null;
+      
+      let distance = itemLoc && location ? haversine({ latitude: location?.latitude, longitude: location?.longitude }, { latitude: itemLoc?.latitude, longitude: itemLoc?.longitude }) || 0 : 0
+      return shops.length === 0 ? (
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            height: 120,
+            borderRadius: SIZES.semiRadius,
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+            marginBottom: SIZES.padding * 1,
+            borderColor: COLORS.black,
+            borderWidth: 0.5,
+          }}
+        // onPress={() => console.log(item)}
+        >
+
+          <SkeletonPlaceholder>
+            <View
+              style={{
+                width: 100,
+                height: 120,
+                borderTopLeftRadius: SIZES.semiRadius,
+                borderBottomLeftRadius: SIZES.semiRadius,
+                // position: 'absolute',
+              }}></View>
+          </SkeletonPlaceholder>
+          <View style={styles.cardConatiner}>
+            <View style={{ width: '90%', margin: SIZES.semiRadius }}>
+              <SkeletonPlaceholder>
+                <Text
+                  style={{
+                    ...FONTS.h4,
+                    color: COLORS.black,
+                    fontWeight: 'bold',
+                  }}></Text>
+              </SkeletonPlaceholder>
+            </View>
+
+            <View style={{ width: '90%', margin: SIZES.semiRadius }}>
+              <SkeletonPlaceholder>
+                <Text
+                  style={{
+                    ...FONTS.h4,
+                    color: COLORS.black,
+                    fontWeight: 'bold',
+                  }}></Text>
+              </SkeletonPlaceholder>
+            </View>
+          </View>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            height: 120,
+            borderRadius: SIZES.semiRadius,
+            alignItems: 'flex-start',
+            justifyContent: 'flex-start',
+            marginBottom: SIZES.padding,
+            backgroundColor: COLORS.lightGray4,
+            elevation: 4,
+            // borderColor: COLORS.gray,
+            // borderWidth: 0.5,
+          }}
+          onPress={() => onShopSelect(item)}>
+          <Image
+            source={{ uri: `${item.bannerUrl}` }}
+            // source={ {/}`${varEnv.apiUrl}/static/banners/${item.bannerUrl}`}
+            resizeMode="cover"
+            style={{
+              width: 100,
+              height: 120,
+              borderTopLeftRadius: SIZES.semiRadius,
+              borderBottomLeftRadius: SIZES.semiRadius,
+              // position: 'absolute',
+            }}
+          />
+
+          <View style={styles.cardConatiner}>
+            <View style={styles.rateBadge}>
+              <Text style={{ color: COLORS.white, fontWeight: 'bold' }}>
+                {item.avgRate}
+              </Text>
+            </View>
+
+            <View style={styles.locationRange}>
+              <Image
+                source={icons.pin}
+                resizeMode="contain"
+                style={{
+                  width: 15,
+                  height: 20,
+                  tintColor: COLORS.primary,
+                  marginRight: SIZES.padding * 0.2,
+                }}
+              />
+              <Text style={{ color: COLORS.primary, fontWeight: 'bold' }}>
+              {location && (location.latitude && location.longitude) ? `${parseFloat(distance * distanceMultiplier).toFixed(2)} Km away` : 'Not in range'}
+              </Text>
+            </View>
+            <View style={{ width: '90%' }}>
+              <Text
+                style={{
+                  ...FONTS.h4,
+                  color: COLORS.black,
+                  fontWeight: 'bold',
+                }}>
+                {cutString(item.shop_name, 23)}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                width: '90%',
+              }}>
+              <Image
+                source={icons.pin}
+                resizeMode="contain"
+                style={{
+                  width: 15,
+                  height: 20,
+                  tintColor: COLORS.black,
+                  marginRight: SIZES.padding * 0.5,
+                }}
+              />
+              <Text style={{ color: COLORS.black, flex: 1 }}>
+                {cutString(item.location.address, 25)}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                width: '90%',
+              }}>
+              <Image
+                source={icons.washing}
+                resizeMode="contain"
+                style={{
+                  width: 15,
+                  height: 20,
+                  tintColor: COLORS.black,
+                  marginRight: SIZES.padding * 0.5,
+                }}
+              />
+              <Text style={{ color: COLORS.black }}>
+                {cutString(
+                  item.services
+                    .map(a => {
+                      return a.name;
+                    })
+                    .join(', '),
+                  25,
+                )}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                width: '90%',
+              }}>
+              <Text style={{ color: COLORS.danger, fontWeight: 'bold' }}>
+                Closed at {moment(item.closing).format('LT')}
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      );
+    };
+
+    return (
+      <View
+        style={{
+          flex: 1,
+          paddingTop: SIZES.padding * 1,
+          paddingRight: SIZES.padding * 0.5,
+          paddingLeft: SIZES.padding * 0.5,
+        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+        <Text
+          style={{
+            ...FONTS.h3,
+            color: COLORS.secondary,
+            fontWeight: 'bold',
+          }}>
+          Filtered
+        </Text>
+        <TouchableOpacity
+          onPress={() => {
+            dispatch({type: CLEAR_FILTER})
+          }}
+        >
+        <Text
+            style={{
+              ...FONTS.body3,
+              color: COLORS.darkBlue,
+              letterSpacing: 0,
+              marginTop: SIZES.base,
+              marginRight: SIZES.base,
+              // fontWeight: 'bold',
+            }}>
+            Clear
+          </Text>
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={shops.length !== 0 ? shops : constants.ShopSkeleton}
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={false}
+          keyExtractor={(item, index) => `${index}`}
+          renderItem={renderItem}
+          contentContainerStyle={{
+            // marginTop: 10,
+            paddingVertical: SIZES.padding * 1,
+          }}
+        />
+      </View>
+    );
+
+  }
+
+
 
 
 
   useEffect(() => {
-    handleGetShops()
+  
+  
+        handleGetShops()
+
 
     return () => {
       // dispatch({ type: SET_LAUNDRY_SHOPS, payload: [] });
       // dispatch({ type: CLOSE_MODALS });
+      // dispatch({ type: CLEAR_FILTER });
     };
-  }, [cityMun]);
+  }, [cityMun, filter]);
+
+  
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -516,9 +776,18 @@ export default function Home({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {renderFeaturedList()}
+      {!filter ?
+      <>
+      {renderFeaturedList()}
 
-        {renderNearbyList()}
+      {renderNearbyList()}
+      </>
+      : 
+      <>
+      {renderFilteredList()}
+      </>
+      }
+        
       </ScrollView>
 
     </SafeAreaView>

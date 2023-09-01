@@ -13,33 +13,47 @@ export default function MerchantHomeScreen({ navigation }) {
   const dispatch = useDispatch()
   const [ordersData, setOrdersData] = useState([])
   const [refreshing, setRefreshing] = useState(false);
+  const [listType, setListType] = useState('active');
 
   
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     // setShops([]);
     // handleGetShops()
-    handleOrders()    
+    handleOrders(listType)    
  
-  }, []);
+  }, [listType]);
 
 
 
 
   
-  const handleOrders = async () => {
+  const handleOrders = async (type) => {
      await dispatch(getOrders())
         .then((orders) => {
-          setOrdersData(orders);
-          setTimeout(() => {
-            setRefreshing(false)
-          }, 2000);
+          filterOrder(orders, type)
+          setRefreshing(false)
         })
+        setTimeout(() => {
+          setRefreshing(false)
+        }, 10000);
+  }
+
+  const filterOrder = (data, type) => {
+        
+    let filtered = data.filter(a => {
+      if(!type || type === 'active'){
+        return a.activeStatus !== 'completed' 
+      } else {
+        return a.activeStatus === 'completed' 
+      }
+    })   
+    setOrdersData(filtered);
   }
 
 
   useEffect(() => {
-    handleOrders()
+    handleOrders(listType)
   }, [])
 
 
@@ -56,6 +70,16 @@ export default function MerchantHomeScreen({ navigation }) {
             style={{ height: 20, width: 20, tintColor: COLORS.primary }}
           />
         </TouchableOpacity> */}
+        <View
+              style={{ 
+              width: 25,
+              marginHorizontal: SIZES.padding * 2,
+              padding: SIZES.padding,
+              marginTop: SIZES.padding,
+              // marginHorizontal: SIZES.padding 
+              }}
+        ></View>
+        
         <Text
           style={{
             ...FONTS.body2,
@@ -63,10 +87,28 @@ export default function MerchantHomeScreen({ navigation }) {
             letterSpacing: 0,
             marginTop: SIZES.base,
           }}>
-          Active Orders
+         {listType === 'active' ? 'Active Orders' : 'Recent Order' }
         </Text>
 
-        <View></View>
+          <TouchableOpacity
+         style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: SIZES.padding,
+          marginTop: SIZES.padding,
+          marginHorizontal: SIZES.padding 
+        }}
+        onPress={() => {
+          setRefreshing(true)
+          setListType(listType === 'active' ? 'recent' : 'active')
+          handleOrders(listType === 'active' ? 'recent' : 'active')
+        // navigation.navigate('Filter', {})
+        }
+        }>
+            <Image source={listType === 'active' ? icons.list : icons.washing_time} 
+            style={{ height: 25, width: 25, tintColor: COLORS.white }}
+            />
+          </TouchableOpacity>
       </View>
     );
   }
@@ -120,7 +162,7 @@ const styles = StyleSheet.create({
   header: {
     height: 50,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: COLORS.primary,
     // elevation: 5,

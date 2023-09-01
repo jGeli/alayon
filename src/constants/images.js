@@ -7,10 +7,7 @@ const logo_alayun = require('../assets/images/logo_alayun.png');
 const logo = require('../assets/images/logo.png');
 const animatedWashing = require('../assets/images/animated-washing.gif');
 const setLoading = require('../assets/images/setLoading.gif');
-const location = require('../assets/images/location1.gif');
-const location2 = require('../assets/images/location2.gif');
 const map = require('../assets/images/map.gif');
-const location3 = require('../assets/images/location3.gif');
 const starfilled = require('../assets/images/starfilled.png');
 const starcorner = require('../assets/images/starcorner.png');
 const rider = require('../assets/images/rider.png');
@@ -25,9 +22,6 @@ export default {
     locationIcon,
     rider,
     notification,
-    location,
-    location2,
-    location3,
     map,
     setLoading,
     animatedWashing,

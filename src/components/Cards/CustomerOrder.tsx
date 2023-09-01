@@ -11,6 +11,7 @@ import StatusStep from '../StatusStep';
 import moment from 'moment';
 import { SET_CUSTOMER_BASKET, SET_SELECTED_SHOP } from '../../redux/actions/type';
 import { useDispatch } from 'react-redux';
+import { statusIndexing } from '../../utils/helpers';
 
 
 
@@ -18,8 +19,12 @@ import { useDispatch } from 'react-redux';
 
 const CustomerOrders = ({ navigation, order }) => {
     let { shop } = order;
-        console.log('MY ORDER', order.orders)
     const dispatch = useDispatch()    
+        
+        console.log('MY ORDER', order.activeStatus)
+        
+        let orderStatus = order.order_status[statusIndexing(order.activeStatus).index].name;
+        console.log(orderStatus, 'ORDER STATUS')
     return (
         <View
             style={styles.cardContainer}
@@ -54,8 +59,8 @@ const CustomerOrders = ({ navigation, order }) => {
         {/* STEPPER */}
         <View style={{ marginTop: SIZES.padding * 2, justifyContent: 'center'}}>
             <StatusStep
-                currentPage={0}
-                stepInput={['Out for Delivery', 'Delivered']}
+                currentPage={order.activeStatus === 'completed' ? 1 : 0}
+                stepInput={[order.activeStatus === 'completed' ? '' : orderStatus  , 'Delivered']}
             />
             </View>
         {/* BUTTON */}
@@ -92,11 +97,11 @@ const styles = StyleSheet.create({
       flex: 1,
     borderRadius: SIZES.semiRadius,
     padding: SIZES.padding,
-    borderWidth: 1,
-    borderColor: COLORS.gray,
+    borderWidth: 1.5,
+    borderColor: COLORS.gray3,
       backgroundColor: COLORS.lightGray3,
       marginBottom: SIZES.padding * 2,
-      elevation: 3
+      elevation: 2
     //   alignItems: 'center'
     },
     headerContainer: {

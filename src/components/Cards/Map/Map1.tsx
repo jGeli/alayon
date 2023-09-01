@@ -262,173 +262,11 @@ const Map1 = ({ navigation, route }) => {
     )
   }
 
-
-  const renderInfo = (mapVal) => {
-    return (
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          width: '100%'
-        }}
-      >
-        {/* Info Container */}
-        <View
-          style={{
-            padding: SIZES.padding,
-            borderTopLeftRadius: 30,
-            borderTopRightRadius: 30,
-            backgroundColor: COLORS.white
-          }}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center'
-            }}
-          >
-            <Image
-              source={icons.clock}
-              resizeMode='contain'
-              style={{
-                width: 30,
-                height: 30,
-                tintColor: COLORS.black
-              }}
-            />
-            <View
-              style={{
-                marginLeft: SIZES.padding
-              }}
-            >
-              <Text
-                style={{
-                  color: COLORS.gray, ...FONTS.body4
-                }}
-              >Your Delivery Time</Text>
-              <Text
-                style={{ ...FONTS.h3 }}
-              >
-                {duration} minutes
-              </Text>
-
-            </View>
-
-          </View>
-          {/* Address */}
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginTop: SIZES.padding
-            }}
-          >
-            <Image
-              source={icons.focus}
-              resizeMode='contain'
-              style={{
-                width: 30,
-                height: 30,
-                tintColor: COLORS.black
-              }}
-            />
-
-            <View
-              style={{
-                marginLeft: SIZES.padding
-              }}
-            >
-              <Text
-                style={{
-                  color: COLORS.gray, ...FONTS.body4
-                }}
-              >Distance Travelled</Text>
-              <Text
-                style={{
-                  ...FONTS.h3
-                }}
-              >{parseFloat(mapVal.distanceTravelled).toFixed(2)} km
-              </Text>
-
-            </View>
-
-          </View>
-          {/* Delivery Man Details */}
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              height: 70,
-              marginTop: SIZES.padding,
-              borderRadius: 20,
-              paddingHorizontal: SIZES.radius,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: COLORS.primary
-            }}
-          >
-            <Image
-              source={images.profile}
-              resizeMode='contain'
-              style={{
-                height: 40,
-                width: 40,
-                borderRadius: 5
-              }}
-            />
-            <View
-              style={{
-                flex: 1,
-                marginLeft: SIZES.padding
-              }}
-            >
-              <Text
-                style={{
-                  ...FONTS.h3,
-                  color: COLORS.white,
-                }}
-              >Bugtech Systems</Text>
-              <Text
-                style={{
-                  ...FONTS.body4,
-                  color: COLORS.white
-                }}
-              >Delivery Man</Text>
-
-            </View>
-            <View
-              style={{
-                height: 40,
-                width: 40,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderWidth: 1,
-                borderRadius: 5,
-                borderColor: COLORS.white,
-                backgroundColor: COLORS.transparent
-              }}
-            >
-              <Image
-                source={icons.chat}
-                resizeMode='contain'
-                style={{
-                  height: 25,
-                  width: 25,
-                  tintColor: COLORS.white
-                }}
-              />
-            </View>
-
-          </TouchableOpacity>
-        </View>
-
-      </View>
-    )
-  }
   
   // console.log(state.progress, 'STATE PROGRESS')
 let RiderImage = images.rider;
 let WashingPin = icons.washingMachinePin;
-let pinIcon = icons.pinIcon;
+let pinIcon = icons.red_pin;
 
   return (
     <View
@@ -585,9 +423,10 @@ let pinIcon = icons.pinIcon;
               mapView.current.fitToCoordinates(result.coordinates, {
                 edgePending: {
                   right: SIZES.width * 0.5,
-                  bottom: 1000,
+                  bottom: SIZES.width * 0.5,
                   left: SIZES.width * 0.5,
                   top: SIZES.width * 0.5,
+                  
                 }
               })
 

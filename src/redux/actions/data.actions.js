@@ -33,10 +33,26 @@ export const createShopProfile = (data, navigation) => dispatch => {
     });
 };
 
-export const getShops = (props) => dispatch => {
+export const getShops = (props = {}) => dispatch => {
   console.log('GET LAUNDRY SHOPS', props)
+  let str = '';
+  Object.entries(props).forEach(([key, value], index) => {
+    let newVal = ''
+
+    if (key === 'services') {
+      if (value.length !== 0) {
+        newVal = value.join(',');
+        str += index ? `&searchString=${newVal}` : `searchString=${newVal}`
+      }
+
+    } else {
+      newVal = value;
+      str += index ? `&${key}=${newVal}` : `${key}=${newVal}`
+    }
+  })
+
   return axios
-    .get(`${varEnv.apiUrl}/alayon/shops?areaLocation=${props}`)
+    .get(`${varEnv.apiUrl}/alayon/shops?${str}`)
     .then(res => {
       dispatch({ type: SET_LAUNDRY_SHOPS, payload: res.data });
       return res.data

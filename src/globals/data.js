@@ -449,22 +449,22 @@ export const averageRatings = [
   {
     id: '1',
     value: '1',
-    label: '1.0 and Above',
+    label: '1.0 and below',
   },
   {
     id: '2',
     value: '2',
-    label: '2.0 and Above',
+    label: '2.0',
   },
   {
     id: '3',
     value: '3',
-    label: '3.0 and Above',
+    label: '3.0',
   },
   {
     id: '4',
     value: '4',
-    label: '4.0 and Above',
+    label: '4.0',
   },
   {
     id: '5',

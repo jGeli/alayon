@@ -40,35 +40,43 @@ const AreaLocations = ({navigation, route}) => {
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={{
-                paddingRight: SIZES.padding * 2,
-                justifyContent: 'center',
+                marginHorizontal: SIZES.padding,
+                justifyContent: 'flex-end',
+                alignItems: 'flex-end'
               }}>
               <Image
                 source={icons.arrow_back}
                 resizeMode="contain"
                 style={{
-                  width: 20,
+                  width: 25,
                   height: 25,
                   tintColor: COLORS.white
                 }}
               />
             </TouchableOpacity>
+            <View
+                style={{
+                    flexDirection: 'row',
+                    flexGrow: 1,
+                    justifyContent: 'space-between',
+                    margin: SIZES.base
+                }}
+            >
             <Text
-               style={{fontSize: 17, color: COLORS.white, flexGrow: 1}}
+               style={{fontSize: 17, color: COLORS.white}}
             >Select Your City</Text>
             <Text
-              style={{fontSize: 17, color: COLORS.white, fontWeight: 'bold'}}
+              style={{fontSize: 17, color: COLORS.white, fontWeight: 'bold', marginHorizontal: SIZES.padding * 2}}
             >
             Philippines
             </Text>
-           
+            </View>
           </View>
         );
     }
 
 
     function renderItem({item, index}){
-        console.log('ITEMM', item, index)
     
         return (
             <TouchableOpacity style={styles.listItem}
@@ -101,7 +109,6 @@ const AreaLocations = ({navigation, route}) => {
     
 
 
-console.log('LISTING HERE', list)
 
 
     return (
@@ -124,12 +131,14 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.white,
     },
       headerContainer: {
-        backgroundColor: COLORS.primary,
-        alignItems: 'center',
-        // justifyContent: 'center',
         flexDirection: 'row',
-        paddingHorizontal: SIZES.padding,
-        paddingVertical: SIZES.padding
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: SIZES.base,
+        backgroundColor: COLORS.primary,
+        elevation: 5,
+        width: '100%'
+        // paddingVertical: SIZES.padding
       },
       listItem: {
                 padding: SIZES.padding,

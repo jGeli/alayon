@@ -27,6 +27,7 @@ export default function DefaultScreen({ navigation, route }) {
     }
   });
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   let totalOrder = 0;
   let addonsTotal = 0;
@@ -47,7 +48,6 @@ export default function DefaultScreen({ navigation, route }) {
   const handleGetOrder = async (id) => {
   
     let myOrder = await dispatch(getOrderById(id ? id : basket._id));
-    console.log(myOrder, 'MYDAAAA')
     if(myOrder){
       let statInd = statusIndexing(myOrder.activeStatus);
       console.log(statInd, myOrder, 'statind')
@@ -61,6 +61,7 @@ export default function DefaultScreen({ navigation, route }) {
 
 
   const handleCheckout = async () => {
+    setLoading(true);
     // Alert.alert('CHECKOUT!')
     // let val = [];
     // if (!isAuthenticated) {
@@ -88,10 +89,11 @@ export default function DefaultScreen({ navigation, route }) {
             navigation.push('OrderCompleteScreen', {order: res, navType: 'track'})
             dispatch({type: CLEAR_CUSTOMER_ORDER})
             dispatch({type: CLEAR_CUSTOMER_BASKET})
-
+            setLoading(false)
         })
         // navigation.navigate('OrderSummary', { shopId, rnd: Math.random() });
       } else {
+        setLoading(false)
         navigation.navigate('SignIn', { redirection: 'OrderSummary', ...route.params });
       }
     //   dispatch({ type: CLEAR_CUSTOMER_ORDER });
@@ -1206,6 +1208,7 @@ export default function DefaultScreen({ navigation, route }) {
                   </TouchableOpacity>
             : 
             <TouchableOpacity
+              disabled={loading}
               style={{
                 margin: SIZES.padding,
                 elevation: 5,
@@ -1218,7 +1221,11 @@ export default function DefaultScreen({ navigation, route }) {
                 justifyContent: 'center',
                 backgroundColor: COLORS.primary
               }}
-              onPress={() => handleCheckout()}
+              onPress={() => {
+              setLoading(true);
+              handleCheckout()
+              
+              }}
             >
          
               <View
@@ -1274,21 +1281,7 @@ export default function DefaultScreen({ navigation, route }) {
           </View>
       )
     }
-    
-    const handleShop = async (id) => {
-      let shopData = await dispatch(getCustomerShopById(id));
 
-  
-      if (shopData && shopData._id) {
-  
-        dispatch({
-          type: SET_SELECTED_SHOP,
-          payload: shopData,
-        });
-     
-      }
-    };
-    
     
     useEffect(() => {
       if(basket._id){

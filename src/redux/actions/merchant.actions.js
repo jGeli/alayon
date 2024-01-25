@@ -139,7 +139,13 @@ export const createShopAddOns = data => dispatch => {
 };
 
 export const getShopById = id => dispatch => {
-  return axios.get(`${varEnv.apiUrl}/merchants/${id}`).catch(err => {
+  return axios.get(`${varEnv.apiUrl}/merchants/${id}`)
+  .then(res => {
+    console.log(res.data, "RESPONSE NAYAWAS SA REDUX")
+    return res
+  })
+  .catch(err => {
+    console.log(err, "ERROR SA REDUX")
     dispatch({
       type: SET_ERROR,
       payload: err,

@@ -11,9 +11,10 @@ import {
 
 } from 'react-native';
 import haversine from "haversine";
-import { icons, SIZES, COLORS, FONTS, constants, images } from '../../constants';
+import { icons, SIZES, COLORS, FONTS, constants, images, Icons } from '../../constants';
 import { cutString } from '../../utils/helpers';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { getShops } from '../../redux/actions/data.actions';
 import moment from 'moment/moment';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
@@ -22,11 +23,14 @@ import { distanceMultiplier } from '../../globals/env';
 import AllowLocationModal from '../../components/Modals/AllowLocationModal';
 import { ScrollView } from 'react-native';
 import { RefreshControl } from 'react-native';
+import Popover, { PopoverPlacement } from 'react-native-popover-view';
+
 
 const varEnv = constants.varEnv;
 
 export default function Home({ navigation }) {
   const dispatch = useDispatch();
+  // const useNavigate = useNavigation();  
   const { filter } = useSelector(({ui}) => ui)
   const { isLocationAllow, location: {cityMun, _id }} = useSelector(({ data }) => data);
   const {user: { location} } = useSelector(({auth}) => auth)
@@ -91,16 +95,19 @@ export default function Home({ navigation }) {
   function renderHeader() {
     return (
       <View style={styles.headerContainer}>
+        <>
       <View
         style={{
           flex: 1,
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'flex-start'
+          justifyContent: 'space-between',
+          // borderWidth: 1
         }}
       >
-        <TouchableOpacity
+      <TouchableOpacity
           onPress={() => handleLocation()}
+          // onPress={() => navigation.openDrawer()}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -108,58 +115,53 @@ export default function Home({ navigation }) {
           }}>
           <View
             style={{
-              justifyContent: 'center',
-              paddingHorizontal: SIZES.base,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+              // padding: 4,
+              // borderRadius: SIZES.radius,
+              // paddingHorizontal: SIZES.padding * 2,
+              // paddingLeft: SIZES.padding * 2,
+              // backgroundColor: COLORS.info400,
+              // marginVertical: 4,
+              paddingHorizontal: SIZES.base / 2,
+              // borderWidth: .5,
+              // borderColor: COLORS.info400,
+
+              // marginLeft: 10,
+              // flex: 1,
+              // width: '60%',
             }}>
-            <Image
-              source={icons.nearby}
+              <Image
+              source={icons.location}
               resizeMode="contain"
               style={{
                 width: 25,
+                marginRight: 8,
+
                 height: 25,
-                tintColor: COLORS.white,
+                tintColor: COLORS.lightOrange,
+                // marginRight: 10
               }}
             />
-          </View>
-          <View
-            style={{
-              alignItems: 'flex-start',
-              justifyContent: 'flex-end',
-              // backgroundColor: COLORS.black,
-              // paddingHorizontal: SIZES.base,
-              // flex: 1,
-              // width: '80%',
-            }}>
             <Text
               style={{
                 ...FONTS.body3,
-                color: COLORS.lightGray2,
-                marginTop: 5
+                color: COLORS.white,
+                fontSize: 16,
+                fontWeight: '500',
+                // marginTop: 8,
+                // marginLeft: 4,
+                paddingRight: 4,
+
+                
+                // paddingHorizontal: 10
               }}>
-              {cityMun  ? cutString(cityMun, 25) : 'Find your location?'}
+              {cityMun  ? ` ${cutString(cityMun, 25)}` : 'Select Location'}
             </Text>
           </View>
+         
         </TouchableOpacity>
-        </View>
-        {/* {isAuthenticated &&
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Chats", { shops })}
-          style={{
-            paddingRight: SIZES.padding * 2,
-            justifyContent: 'center',
-          }}
-        >
-          <Image
-            source={icons.chat}
-            resizeMode='contain'
-            style={{
-              height: 20,
-              width: 20,
-              tintColor: COLORS.black
-            }}
-          />
-        </TouchableOpacity>
-        } */}
         <TouchableOpacity
           onPress={() => navigation.navigate('Search', {})}
           style={{
@@ -171,39 +173,16 @@ export default function Home({ navigation }) {
             resizeMode="contain"
             style={{
               width: 25,
-              margin: SIZES.base,
+              // margin: SIZES.base,
               height: 25,
               tintColor: COLORS.white
             }}
           />
         </TouchableOpacity>
-        <TouchableOpacity
-         style={{
-          paddingHorizontal: SIZES.base,
-          justifyContent: 'center',
-        }}
-        onPress={() => {navigation.navigate('Filter', {})}}>
-            <Image source={icons.filter} style={{ 
-            height: 25, width: 25, tintColor: COLORS.white, margin: SIZES.base
-            }} />
-          </TouchableOpacity>
-        {/* <TouchableOpacity
-          onPress={() => navigation.navigate('Filter', {})}
-          style={{
-            justifyContent: 'center',
-            paddingRight: SIZES.padding * 1,
-          }}>
-          <Image
-            source={icons.filter}
-            resizeMode="contain"
-            style={{
-              width: 20,
-              height: 20,
-              tintColor: COLORS.black,
-            }}
-          />
-        </TouchableOpacity> */}
+        </View>
+    </>
       </View>
+
     );
   }
 
@@ -257,7 +236,7 @@ export default function Home({ navigation }) {
                 // ...FONTS.body5,
                 color: COLORS.white,
                 // position: 'absolute',
-                textAlign: 'left'
+                textAlign: 'left',
               }}>
               {cutString(item.shop_name, 25)}
             </Text>
@@ -290,6 +269,100 @@ export default function Home({ navigation }) {
       </View>
     );
   }
+  
+  // function renderAddIconButton() {
+  //   return (
+  //     <Popover
+  //       key={'left'} 
+  //       placement={PopoverPlacement.TOP} 
+  //       popoverStyle={{ 
+  //         backgroundColor: 'rgba(255,255,255, 0)', 
+  //         alignItems: 'center', 
+  //         justifyContent: 'center' 
+  //       }} 
+  //       backgroundStyle={{ backgroundColor: 'transparent' }}
+  //       from={(
+  //         <TouchableOpacity 
+  //           // onPress={() => { setShowPopover(true), setPressed('Popover')}} 
+  //           style={{ 
+  //             // elevation: 5, 
+  //             // backgroundColor: COLORS.white, 
+  //             // borderColor: COLORS.white, 
+  //             // borderWidth: 1, 
+  //             // borderRadius: 25, 
+  //             // paddingHorizontal: 10, 
+  //             alignItems: 'center', 
+  //             justifyContent: 'flex-end' 
+  //           }}>
+  //             <Image 
+  //               source={icons.dotsetting}
+  //               style={{
+  //                 height: 25,
+  //                 width: 45,
+  //                 tintColor: COLORS.primary
+  //               }}
+  //             />
+  //         </TouchableOpacity>
+  //       )}
+  //     >
+  //       <View style={{ width: '100%', flex: 1, justifyContent: 'space-around', alignItems: 'center' }}>
+  //         <View style={{ height: 60, width: 60, alignItems: 'center', justifyContent: 'center' }}>
+  //           <TouchableOpacity
+  //             style={{
+  //               borderColor: COLORS.white,
+  //               elevation: 3,
+  //               borderRadius: 30,
+  //               padding: 10,
+  //               alignItems: 'center',
+  //               justifyContent: 'center',
+  //               backgroundColor: COLORS.info500
+  //             }}>
+  //             {/* <Icon style={{ paddingTop: 10, height: 65, width: 35, flex: 1 }} name='barcode-scan' size={30}>
+  //             </Icon> */}
+  //             <Image
+  //               source={icons.star}
+  //               resizeMode='contain'
+  //               style={{
+  //                 height: 34,
+  //                 width: 34
+  //               }}
+  //             />
+  //           </TouchableOpacity>
+  //         </View>
+  //         <View style={{ height: 60, width: 60, alignItems: 'center', justifyContent: 'center', }}>
+  //           <TouchableOpacity
+  //             style={{ backgroundColor: COLORS.white, borderColor: COLORS.white, elevation: 3, borderRadius: 30, padding: 4, alignItems: 'center', justifyContent: 'center' }}>
+  //             <Image
+  //               source={icons.star}
+  //               resizeMode='contain'
+  //               style={{
+  //                 height: 46,
+  //                 width: 46
+  //               }}
+  //             />
+  //           </TouchableOpacity>
+  //         </View>
+  //         <View style={{ height: 60, width: 60, alignItems: 'center', justifyContent: 'center', }}>
+  //           <TouchableOpacity 
+  //             // onPress={() => {toggleModal(); setPressed('create')}} 
+  //             style={{ elevation: 3, borderRadius: 30, alignItems: 'center', justifyContent: 'center' }}>
+  //             {/* <IonIcons style={{ height: 30, width: 30, color: COLORS.white, }} name='create-outline' size={30}>
+
+  //             </IonIcons> */}
+  //             <Image
+  //               source={icons.star}
+  //               resizeMode='contain'
+  //               style={{
+  //                 height: 43,
+  //                 width: 43
+  //               }}
+  //             />
+  //           </TouchableOpacity>
+  //         </View>
+  //       </View>
+  //     </Popover >
+  //   )
+  // }
 
 
   function renderNearbyList() {
@@ -379,6 +452,29 @@ export default function Home({ navigation }) {
           />
 
           <View style={styles.cardConatiner}>
+            {
+            item.shop_name === 'Alayon' ? 
+              <View style={{
+                position: 'absolute',
+                left: '60%',
+                top: '30%'
+              }}>
+              <Image 
+                source={icons.certifiedBadge}
+                style={{
+                  height: 25,
+                  width: 25,
+                  tintColor: COLORS.primary,
+                  // backgroundColor: COLORS.primary,
+                  // borderRadius: 40
+                }}
+              />
+            </View>
+            :
+            null
+              
+            }
+            
             <View style={styles.rateBadge}>
               <Text style={{ color: COLORS.white, fontWeight: 'bold' }}>
                 {item.avgRate}
@@ -479,10 +575,25 @@ export default function Home({ navigation }) {
       <View
         style={{
           flex: 1,
-          paddingTop: SIZES.padding * 1,
+          // paddingTop: SIZES.padding * 1,
           paddingRight: SIZES.padding * 0.5,
           paddingLeft: SIZES.padding * 0.5,
         }}>
+        {/* <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        > */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
         <Text
           style={{
             ...FONTS.h3,
@@ -491,6 +602,39 @@ export default function Home({ navigation }) {
           }}>
           Nearby
         </Text>
+        <TouchableOpacity
+         style={{
+          // paddingHorizontal: SIZES.base,
+          // borderWidth: 1,
+          height: 'auto',
+          justifyContent: 'center',
+        }}
+        onPress={() => {navigation.navigate('Filter', {})}}>
+            <Image source={icons.filter} style={{ 
+            height: 22, width: 22, tintColor: COLORS.secondary, marginRight: 6
+            }} />
+          </TouchableOpacity>
+        </View>
+        {/* <View
+          style={{
+            flexDirection: 'row'
+          }}
+        >
+          <Image 
+            source={icons.location}
+            resizeMode='contain'
+            style={{
+              height: 25,
+              width: 25,
+            }}
+          />
+          <Text>
+            Find your location?
+          </Text>
+        </View> */}
+
+        {/* </View> */}
+        
         <FlatList
           data={shops.length !== 0 ? shops : constants.ShopSkeleton}
           showsVerticalScrollIndicator={false}

@@ -112,6 +112,7 @@ const getStepIndicatorIconConfig = ({
 
 const Map1 = ({ navigation, route }) => {
   const { order, navType } = route.params;
+  console.log(route, "PARARNANANANSDSD@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
   const dispatch = useDispatch()
   const mapView = useRef();
   const markerRef = useRef();
@@ -166,7 +167,7 @@ const Map1 = ({ navigation, route }) => {
 
 
   useEffect(() => {
-    // if (order) {
+    if (order) {
 
     let { shop: { location }, pickupDelivery } = order;
     handleGetOrder(order._id)
@@ -223,11 +224,13 @@ const Map1 = ({ navigation, route }) => {
     return () => {
       // Geolocation.clearWatch(this.watchID);
     }
-
+  }
 
   }, [])
   
 
+  
+  console.log(order, "ORDER DATA IN SUCCESSFUL SCREEN")
 
   // console.log("ORDER DATA", Object.keys(orderData), orderData.pickupDate, orderData.deliveryDate)
   function calculateAngle(coordinates) {

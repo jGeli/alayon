@@ -29,6 +29,9 @@ const stepIndicatorStyles = {
 
 
 export default function StatusStep({currentPage, stepInput, handleStepInput}) {
+  console.log(currentPage, stepInput, "STEP DOWN")
+  
+  console.log(handleStepInput, "HEEY")
 
           const renderStepIndicator = (params: any) => (
             <View
@@ -87,7 +90,13 @@ export default function StatusStep({currentPage, stepInput, handleStepInput}) {
     return (
             <SafeAreaView style={styles.stepIndicator}>
                 <StepIndicator
-                    customStyles={stepIndicatorStyles}
+                    customStyles={{
+                      ...stepIndicatorStyles, 
+                      stepStrokeCurrentColor: handleStepInput == 'rejected' ? COLORS.gray : COLORS.primary,
+                      separatorFinishedColor: handleStepInput == 'rejected' ? COLORS.gray : COLORS.primary,
+                      stepIndicatorFinishedColor: handleStepInput == 'rejected' ? COLORS.gray : COLORS.primary,
+                      stepIndicatorCurrentColor: handleStepInput == 'rejected' ? COLORS.redTransparent : COLORS.primary,
+                    }}
                     stepCount={stepInput.length}
                     direction="horizontal"
                     // onPress={onStepPress}

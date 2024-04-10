@@ -40,6 +40,7 @@ export const getCustomerShopById = id => dispatch => {
   return axios
     .get(`${varEnv.apiUrl}/alayon/shops/${id}`)
     .then(res => {
+      console.log(res.data, "RES INE GET CUSTOMER SHOPID")
       return res.data;
     })
     .catch(err => {
@@ -71,16 +72,16 @@ export const createOrder = data => dispatch => {
     });
 };
 
-export const getOrders = id => dispatch => {
+export const getOrders = () => dispatch => {
   return axios
     .get(`${varEnv.apiUrl}/customers/orders`)
     .then(res => {
       // return dispatch(getCustomerShopBaskets(shop._id));
-      // dispatch(getCustomerData());
+      dispatch(getCustomerData());
       return res.data
     })
     .catch(err => {
-      console.log(err.response, 'res error')
+      console.log(err.response, 'res error get orders')
       dispatch({
         type: SET_ERROR,
         payload: err,
@@ -89,6 +90,26 @@ export const getOrders = id => dispatch => {
     });
 };
 
+export const cancelOrder = data => dispatch => {
+  console.log(data, "DATA NATAWAWASS")
+
+  let { cancelReason, _id} = data
+  // const {cancelReason, id} = data;
+  console.log(cancelReason, _id, "CANCEL ORDER IN ACTIONS")
+  return axios
+    .put(`${varEnv.apiUrl}/customer/orders/${_id}`, cancelReason)
+    .then(res => {
+      console.log(res, "Success Cancel")
+      return res.data
+    })
+    .catch(err => {
+      console.log(err.response, 'ERR IN CANCEL')
+      dispatch({
+        type: SET_ERROR,
+        payload: err,
+      });
+    })
+}
 
 export const getOrderById = id => dispatch => {
   console.log(`${varEnv.apiUrl}/customers/orders/${id}`)
@@ -100,7 +121,7 @@ export const getOrderById = id => dispatch => {
       return res.data
     })
     .catch(err => {
-      console.log(err.response, 'res error')
+      console.log(err.response, 'res error get order by Id')
       dispatch({
         type: SET_ERROR,
         payload: err,
@@ -239,13 +260,16 @@ export const getCustomerBaskets = () => dispatch => {
 };
 
 export const getConversation = id => dispatch => {
+  // let {otherUser} = data;
+  // console.log(otherUser, "ID SA GET CONVO")
 
-  return axios.get(`${varEnv.apiUrl}/chats/${id}`)
+  return axios.get(`${varEnv.apiUrl}/chats/view/${id}`)
     .then(res => {
+      console.log(res, "CONSOLE INE NI CONVO!!!")
       return res.data
     })
     .catch(err => {
-      console.log('ERR ORDERS', err)
+      console.log('ERR ERROR VIEW MESSAGE DPOTA', err)
       return null;
     });
 };
@@ -257,7 +281,7 @@ export const getChatLists = id => dispatch => {
       return res.data
     })
     .catch(err => {
-      console.log('ERR ORDERS', err.response)
+      // console.log('ERR ORDERS', err.response)
       return null;
     });
 };
@@ -281,7 +305,7 @@ export const createShopReview = (id, data) => dispatch => {
       return res.data
     })
     .catch(err => {
-      console.log(err, 'RES ERROR')
+      console.log(err, 'RES ERROR in create review')
       return null;
     });
 };
@@ -292,7 +316,7 @@ export const getShopReviews = (id) => dispatch => {
       return res.data
     })
     .catch(err => {
-      console.log(err, 'RES ERROR')
+      console.log(err, 'RES ERROR in get review')
       return [];
     });
 };
@@ -303,7 +327,7 @@ export const sendLikeReact = (data) => dispatch => {
       return res.data
     })
     .catch(err => {
-      console.log(err, 'RES ERROR')
+      console.log(err, 'RES ERROR in send like react')
       return null;
     });
 };

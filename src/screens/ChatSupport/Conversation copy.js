@@ -153,7 +153,7 @@ import { FormInput } from '../../components';
             flex: 1,
             padding: SIZES.padding,
             width: '70%',
-            borderWidth: 1,
+            // borderWidth: 1,
             borderColor: COLORS.lightGray,
             backgroundColor: item.role === 'shop' ? COLORS.white : COLORS.primaryTransparent,
             borderBottomRightRadius: item.role === 'user' ? SIZES.radius : 0,
@@ -236,7 +236,7 @@ import { FormInput } from '../../components';
           // flex: 1,
           width: '100%',
           height: '10%',
-          borderWidth: 1,
+          // borderWidth: 1,
           borderColor: COLORS.lightGray3,
           justifyContent: 'center',
           paddingHorizontal: SIZES.base,
@@ -265,7 +265,7 @@ import { FormInput } from '../../components';
             <TouchableOpacity
               style={{
               padding: SIZES.base / 2,
-              borderWidth: 1,
+              // borderWidth: 1,
               borderRadius: SIZES.radius,
               tintColor: COLORS.darkGray
 

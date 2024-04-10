@@ -66,7 +66,8 @@ export default ShopServices = ({ navigation, route }) => {
   const [pricing, setPricing] = useState(null);
   const [tab, setTab] = useState('services');
   const [loading, setLoading] = useState(true);
-
+  const [tapLoading, setTapLoading] = useState(false);
+  
   const handleChat = async () => {
     // await AsyncStorage.removeItem('basket')
     // await AsyncStorage.removeItem('baskets')
@@ -75,7 +76,7 @@ export default ShopServices = ({ navigation, route }) => {
     console.log(selectedShop, 'SELECTED')
     let newChat = {
       sender: { _id: user._id},
-      receiver: { _id: selectedShop.user }
+      receiver: { _id: "65b41cd1f3d1473e9df79e5f" }
     }
      navigation.navigate('Conversation', { conversation: newChat })
   }
@@ -95,8 +96,9 @@ export default ShopServices = ({ navigation, route }) => {
   };
 
   const handleCheckout = async () => {
-  
+    setTapLoading(true)
     if(!pickupLocation){
+      setTapLoading(false)
       dispatch({type: SET_ERROR, payload: { pickupLocation: "Pickup Location is required!" }})
       return;
     }
@@ -130,6 +132,13 @@ export default ShopServices = ({ navigation, route }) => {
           addons,
           price
           } = order;
+          
+          console.log(order, service, "YOW")
+          
+          if (!service || pricing ) {
+             dispatch({type: SET_ERROR, payload: { service: "Service pricing is unavailable!" }})
+             return
+          }
       
       let orderId =  Math.random() 
         oldOrders.push({ 
@@ -145,13 +154,20 @@ export default ShopServices = ({ navigation, route }) => {
           })
         dispatch({type: SET_CUSTOMER_BASKET, payload: { deliveryOption,  pickupDate, deliveryDate, tip, note, shop: selectedShop, pickupDelivery: pickupLocation, orders: oldOrders  }})
         // dispatch({ type: CLEAR_CUSTOMER_ORDER });
-        navigation.navigate('OrderSummary', { shopId: selectedShop._id, orderId, navType: 'checkout' });
       // } else {
       //   navigation.navigate('SignIn', { redirection: 'OrderSummary', param: { shopId, rnd: Math.random() } });
       // }
 
     //   return
     // }
+    console.log('first')
+    setTimeout(() => {
+      // After the action is completed, set isLoading back to false
+      setTapLoading(false);
+      navigation.navigate('OrderSummary', { shopId: selectedShop._id, orderId, navType: 'checkout' });
+      
+    }, 1000)
+    
   };
 
 
@@ -380,7 +396,7 @@ export default ShopServices = ({ navigation, route }) => {
 
           <View style={{  flexDirection: 'row', alignContent: 'center', justifyContent: 'flex-end', width: '20%' }}>
           <TouchableOpacity
-              onPress={() => navigation.navigate('BasketsScreen', {})}
+              onPress={() => navigation.navigate('Conversation', selectedShop)}
               style={{
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -874,7 +890,7 @@ export default ShopServices = ({ navigation, route }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-          onPress={() => navigation.navigate('SchedulePickup', {})}
+          onPress={() => navigation.navigate('SchedulePickup', {shopId})}
             style={{
               // flexGrow: 1,
               flexDirection: 'row',
@@ -929,19 +945,48 @@ export default ShopServices = ({ navigation, route }) => {
           </View>
           {/* Delivery Man Details */}
           <TouchableOpacity
+            disabled={totalItem === 0 || tapLoading}
             style={{
               flexDirection: 'row',
               height: 70,
+              opacity: totalItem !== 0 ? 1 : .7,
               marginTop: SIZES.padding,
               borderRadius: SIZES.semiRadius,
               paddingHorizontal: SIZES.padding * 2,
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: COLORS.primary
+              backgroundColor: tapLoading ? COLORS.primaryDisabled : COLORS.primary
             }}
             onPress={() => handleCheckout()}
           >
-       
+
+            {/* {
+              tapLoading ? (
+                <Image 
+                  source={icons.loader}
+                  style={{ height: 25, width: 25, position: 'absolute'}}
+                />
+              )
+              :
+              ( */}
+              
+       <>
+       {tapLoading && 
+       <View
+        style={{
+          flex: 1,
+          alignItems: 'center', 
+          justifyContent: 'center',
+          position: 'absolute'
+        }}
+       >
+       <Image 
+       source={icons.loader}
+       style={{ height: 25, width: 25}}
+     />
+       </View>
+     
+       }
             <View
               style={{
                 flex: 1,
@@ -986,7 +1031,10 @@ export default ShopServices = ({ navigation, route }) => {
                 }}
               >Checkout</Text>
             </View>
-
+            </>
+              {/* ) */}
+            {/* } */}
+            
           </TouchableOpacity>
         </View>
         {/* {renderFooter()} */}
@@ -994,6 +1042,8 @@ export default ShopServices = ({ navigation, route }) => {
     )
   }
   
+  
+  console.log(route, "ROUTE INE")
 
 
   return (
@@ -1060,7 +1110,9 @@ export default ShopServices = ({ navigation, route }) => {
             {basketModal !== 'service_pricing' &&  renderInfo()}
           </>
         ) : (
+        <ScrollView style={{flex: 1,}} scrollEnabled={true}>
           <Reviews shop={selectedShop._id} />
+        </ScrollView>
         )}
 
       </SafeAreaView>

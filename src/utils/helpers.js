@@ -285,6 +285,7 @@ function findHighestAndLowest(numbers) {
 }
 
 export function generateTimeRange(dateProp, add) {
+  console.log(dateProp, add, "GENERETEER")
   const today = new Date();
   const date = new Date(dateProp)
   const startHour = date.toDateString() === today.toDateString() && add ? today.getHours() + (add ? add : 1) : 8;

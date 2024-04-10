@@ -93,7 +93,6 @@ export const CustomerMyAccount = [
   },
   {
     name: 'Terms And Condition',
-
   },
   {
     name: 'Privacy Policy',
@@ -103,12 +102,14 @@ export const CustomerMyAccount = [
   {
     name: 'Contact Us',
     screen: 'MerchantMyAccount',
-
   },
   {
     name: 'Logout',
     screen: 'Main',
-
+  },
+  {
+    name: 'TestingScreen',
+    screen: 'TestingScreen'
   },
 ];
 

@@ -32,12 +32,12 @@ jobs:
       - name: Deploy to Web Server
         uses: appleboy/ssh-action@master
         with:
-          host: bugtech.solutions
+          host: bugtech.online
           username: bugtech
           password: 420230
           port: 22
           script: |
-              cd /var/www/development/alayon/alayon-back
+              cd /var/www/apps/server/alayon-back
               git stash
               git pull
               export NVM_DIR=~/.nvm

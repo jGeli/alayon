@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import { FONTS, SIZES, COLORS, images, styles } from '../../constants';
 // import { TextButton } from '../../components';
 import TextButton from '../../components/TextButton.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { requestSignin, verifyOTP } from '../../redux/actions/auth.actions.js';
+import { requestOTP, requestSignin, verifyOTP } from '../../redux/actions/auth.actions.js';
 import { CLEAR_ERROR, SET_ERROR } from '../../redux/actions/type.js';
 
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -30,7 +30,8 @@ const Otp = ({ navigation, route }) => {
   const [timer, setTimer] = React.useState(300);
   const [otpCode, setCode] = React.useState('');
   const [hash, setHash] = React.useState('');
-  const [resend, setResend] = useState(3);
+  const [resend, setResend] = useState(0);
+  const [countdown, setCountdown] = useState(0);
 
   const handleVerify = code => {
     let { baskets } = param ? param : { baskets: [] }
@@ -58,7 +59,6 @@ const Otp = ({ navigation, route }) => {
     setCode(code);
     handleVerify(code);
 
-    // Alert.alert('OTP Code Received!', code);
   };
 
   // This is only needed once to get the Android Signature key for SMS body
@@ -91,26 +91,76 @@ const Otp = ({ navigation, route }) => {
         navigation, route.params
       ),
     );
-    // dispatch(verifyOTP({code, id: user.id}, navigation));
   };
-
-  React.useEffect(() => {
-    setCode('');
+  
+  const handleSendOTP = async () => {
     dispatch({ type: CLEAR_ERROR });
-    let interval = setInterval(() => {
-      setTimer(prevTimer => {
-        if (prevTimer > 0) {
-          return prevTimer - 1;
-        } else {
-          return prevTimer;
-        }
-      });
-    }, 1000);
+    if (resend > 5) {
+      dispatch({ type: SET_ERROR, payload: { otp: 'Maximum Attemp Reached!' } });
+      return;
+    }
+
+    let rsnd = resend;
+    rsnd++;
+    setResend(rsnd);
+    setCountdown(30)
+
+    dispatch(requestOTP({ providerId: user.providerId, providerType: user.type, hash }))
+  }
+
+  function renderSendOTPButton() {
+    return (
+      <View style={{ width: SIZES.width, alignItems: 'center', justifyContent: 'center' }}>
+        <TextButton
+          label={resend ? `RESEND ${countdown === 0 ? 'OTP' : `(${countdown})`}` : 'SEND OTP'}
+          buttonContainerStyle={{
+            height: 40,
+            width: '80%',
+            alignItems: 'center',
+            marginTop: SIZES.padding,
+            borderRadius: SIZES.radius2,
+            backgroundColor: countdown === 0 ? COLORS.primary : COLORS.info500,
+          }}
+          labelStyle={{
+            color: COLORS.white,
+            fontWeight: '600',
+          }}
+
+          onPress={() => {
+            if (countdown === 0) {
+              handleSendOTP();
+            }
+          }}
+        />
+      </View>
+    )
+  }
+
+  useEffect(() => {
+    let interval;
+      
+      interval = setInterval(() => {
+        // Update the countdown
+        setCountdown((prevCountdown) => {
+          if(prevCountdown > 0) {
+            return prevCountdown - 1;
+          } else {
+            return prevCountdown
+          }
+        });
+
+       console.log(resend, "RESEND COUNT:", resend)
+      }, 1000);
+    // Clean up the interval on component unmount
     return () => {
-      clearInterval(interval);
-    };
+    clearInterval(interval)
+    }
   }, []);
 
+  useEffect(() => {
+    setCode('');
+    dispatch({ type: CLEAR_ERROR });
+}, []);
 
 
   return (
@@ -124,40 +174,6 @@ const Otp = ({ navigation, route }) => {
         justifyContent: 'flex-start',
       }}>
       {/* OTP Inputs */}
-      <View
-        style={{
-          flexDirection: 'row',
-          position: 'absolute',
-          bottom: 0,
-          alignItems: 'center',
-          width: '100%',
-          // padding: SIZES.padding * 2,
-          justifyContent: 'space-between',
-        }}>
-        <TouchableOpacity
-          style={{
-            // margin: SIZES.padding * 2,
-            backgroundColor: COLORS.darkGray2,
-            padding: SIZES.padding,
-            borderRadius: SIZES.semiRadius,
-          }}
-          onPress={copyText}>
-          <Text>COPY OTP MESSAGE</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            setCode(user.code);
-            handleVerify(user.code);
-          }}
-          style={{
-            borderWidth: 1,
-            borderColor: COLORS.black,
-            padding: SIZES.padding,
-            borderRadius: SIZES.semiRadius,
-          }}>
-          <Text style={{ ...FONTS.body5, color: COLORS.black }}>{user.code}</Text>
-        </TouchableOpacity>
-      </View>
       <View
         style={{
           alignItems: 'center',
@@ -238,36 +254,7 @@ const Otp = ({ navigation, route }) => {
               }}
             />
             {/* Countdown Timer */}
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                marginTop: SIZES.padding,
-              }}>
-              <Text
-                style={{
-                  color: COLORS.darkGray,
-                  ...FONTS.body3,
-                }}>
-                Didn't get the code?
-              </Text>
-              <TextButton
-                label={`Resend (${timer}s)`}
-                disabled={timer < 290 ? false : true}
-                buttonContainerStyle={{
-                  marginLeft: SIZES.base,
-                  backgroundColor: null,
-                }}
-                labelStyle={{
-                  color: COLORS.primaryColor,
-                  ...FONTS.h3,
-                }}
-                onPress={() => {
-                  setTimer(300);
-                  handleResend();
-                }}
-              />
-            </View>
+
           </View>
           {errors.otp && (
             <Text
@@ -287,12 +274,14 @@ const Otp = ({ navigation, route }) => {
           // flex: 1,
           // flexGrow: 1,
           flexDirection: 'column',
-          justifyContent: 'space-around',
+          justifyContent: 'flex-end',
           alignItems: 'center',
+          padding: 15,
           height: 200,
         }}>
+      {renderSendOTPButton()}
+
         <View style={{ alignItems: 'center' }}>
-          <Text>Copyright @ Bugtech Solutions 2023.</Text>
         </View>
       </View>
     </SafeAreaView>

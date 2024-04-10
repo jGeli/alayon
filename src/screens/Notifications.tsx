@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -11,8 +11,33 @@ import {
 } from 'react-native';
 import { COLORS, FONTS, SIZES, icons } from '../constants';
 import { nearbyList, notifications } from '../globals/data';
+import { useSelector, useDispatch } from 'react-redux';
+import { getNotifications } from '../redux/actions/customer.actions';
 
 export default function Notification({ navigation }) {
+  const dispatch = useDispatch();
+  const { user, isAuthenticated } = useSelector(({ auth }) => auth);
+  const [notifData, setNotifData] = useState([]);
+    
+  const handleUserNotification = async () => {
+    let userNotifications = await dispatch(getNotifications())
+    
+    if(userNotifications.length != 0) {
+      setNotifData(userNotifications)
+    }
+
+  }
+
+
+  useEffect(() => {
+    setNotifData([])
+    handleUserNotification()
+    
+    
+  }, [])
+
+  console.log(notifData, "NOTIF IN NOTIF SCREEN!")
+  
 
   function renderHeader() {
     return (
@@ -62,10 +87,10 @@ export default function Notification({ navigation }) {
           <View style={styles.cardConatiner}>
             <View style={styles.rateBadge}>
               <Text style={{ color: COLORS.black, fontWeight: 'bold' }}>
-                {item.date}
+                {item.createdAt}
               </Text>
               <Text style={{ color: COLORS.black, fontWeight: 'bold' }}>
-                ID: {item.id}
+                ID: {item.transactionId}
               </Text>
             </View>
 
@@ -76,7 +101,7 @@ export default function Notification({ navigation }) {
                   color: COLORS.black,
                   fontWeight: 'bold',
                 }}>
-                {item.name}
+                {item.title}
               </Text>
             </View>
 
@@ -88,7 +113,7 @@ export default function Notification({ navigation }) {
                 width: '90%',
               }}>
               <Text style={{ color: COLORS.black, fontWeight: 'bold' }}>
-                Customer: {item.customerName}
+                {item.content}
               </Text>
             </View>
           </View>
@@ -104,8 +129,11 @@ export default function Notification({ navigation }) {
           paddingRight: SIZES.padding * 0.5,
           paddingLeft: SIZES.padding * 0.5,
         }}>
+          <Text
+            style={{ color: COLORS.black900, fontSize: 18, fontWeight: 'bold'}}
+          >{'Notification View?\nComing Soon..'}</Text>
         <FlatList
-          data={notifications}
+          data={notifData}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => `${index}`}
           renderItem={renderItem}

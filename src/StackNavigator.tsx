@@ -1,10 +1,11 @@
-import { StyleSheet, Image, TouchableOpacity, PermissionsAndroid } from 'react-native';
+import { StyleSheet, Image, TouchableOpacity, PermissionsAndroid, View, Text, Dimensions, useWindowDimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import axios from 'axios';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 
 
@@ -52,18 +53,24 @@ import AreaLocations from './components/AreaLocations';
 import SchedulePickup from './screens/customer/SchedulePickup';
 import OrderDetails from './screens/customer/OrderDetails';
 import OrderCompleteScreen from './screens/OrderCompleteScreen';
+import TestingScreen from './screens/TestingScreen';
+import OrderStepStatus from './screens/customer/OrderStepStatus';
+import CustomDrawerHeader from './screens/Navigation/CustomDrawerHeader';
+import { Layout } from 'react-native-reanimated';
 
 
 const StackNavigator = () => {
   const dispatch = useDispatch();
   const Tab = createBottomTabNavigator();
   const Stack = createNativeStackNavigator();
+  const Drawer = createDrawerNavigator();
   const { isAuthenticated, user } = useSelector(({ auth }) => auth);
   const [mainScreen, setMainScreen] = useState(null);
   const [loading, setLoading] = useState(true);
   // getting data
 
-
+  const dimensions = useWindowDimensions();
+  const isLargeScreen = dimensions.width >= 768;
 
 
   const initScreen = async () => {
@@ -80,7 +87,7 @@ const StackNavigator = () => {
       setMainScreen('MainCustomer');
 
     } else {
-      if(!locationPermission || !notificationPermission){
+      if (!locationPermission || !notificationPermission) {
         setMainScreen('PermissionScreen')
       } else {
         setMainScreen('OnBoarding')
@@ -201,7 +208,7 @@ const StackNavigator = () => {
           }}
         />
 
-      
+
 
         <Tab.Screen
           name="CustomerAccount"
@@ -254,17 +261,27 @@ const StackNavigator = () => {
           {/* CUSTOMER SCREENS */}
 
           <Stack.Navigator initialRouteName={mainScreen}>
-          <Stack.Screen
+            <Stack.Screen
               name="TestScreen"
               component={TestScreen}
               options={{ headerShown: false }}
             />
-                     <Stack.Screen
+            <Stack.Screen
+              name="OrderStepStatus"
+              component={OrderStepStatus}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="TestingScreen"
+              component={TestingScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
               name="AreaLocations"
               component={AreaLocations}
               options={{ headerShown: false }}
             />
-                 <Stack.Screen
+            <Stack.Screen
               name="NotificationScreen"
               component={Notification}
               options={{ headerShown: false }}
@@ -334,7 +351,7 @@ const StackNavigator = () => {
               component={OrderSummary}
               options={{ headerShown: false }}
             />
-              <Stack.Screen
+            <Stack.Screen
               name="CustomerOrderDetails"
               component={CustomerOrderDetails}
               options={{ headerShown: false }}
@@ -389,13 +406,13 @@ const StackNavigator = () => {
               component={Map1}
               options={{ headerShown: false }}
             />
-          
+
             <Stack.Screen
               name="CustomerReview"
               component={CustomerReviewScreen}
               options={{ headerShown: false }}
             />
-              <Stack.Screen
+            <Stack.Screen
               name="OrderCompleteScreen"
               component={OrderCompleteScreen}
               options={{ headerShown: false }}
@@ -415,8 +432,8 @@ const StackNavigator = () => {
               component={CustomerSettings}
               options={{ headerShown: false }}
             />
-            
-           
+
+
           </Stack.Navigator>
         </NavigationContainer>
       }

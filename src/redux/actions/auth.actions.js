@@ -68,7 +68,7 @@ export const getAuthUser = navigation => dispatch => {
       if (user.type === 'customer') {
         dispatch(getCustomerData())
       }
-
+      return res.data
       // navigation && navigation.navigate(screen, {});
     })
     .catch(err => {
@@ -104,3 +104,23 @@ export const logoutUser = navigation => dispatch => {
   dispatch({ type: CLEAR_MERCHANT_PROFILE });
   navigation && navigation.navigate('CustomerHome', {});
 };
+
+export const requestOTP = ( data ) => dispatch => {
+  return axios
+  .post(`${varEnv.apiUrl}/auth/sendOtp`, data)
+    .then((res) => {
+      console.log("Request Sent:", res)
+      let userType = res.data.providerType;
+      let user = res.data.user;
+      console.log(user, userType)
+      dispatch({ type: SET_USER, payload: { ...user, ...data } });
+      dispatch({ type: SET_USERTYPE, payload: userType });
+    })
+    .catch((err) => {
+      console.log("Request Error:", err.response)
+      dispatch({
+        type: SET_ERROR,
+        payload: err,
+      });
+    })
+}

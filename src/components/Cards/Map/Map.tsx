@@ -34,7 +34,8 @@ export default function Map({ navigation, route }) {
   const ASPECT_RATIO = width / height;
   const LATITUDE_DELTA = 0.01;
   const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-
+  const [tapLoading, setTapLoading] = useState(false);
+  const [placed, rePlaced] = useState(false);
   const [region, setRegion] = useState({
       latitude: 11.2317012,
       longitude: 125.0024682,
@@ -55,7 +56,7 @@ export default function Map({ navigation, route }) {
   const markerRef = useRef();
 
   const handleRegion = val => {
-
+    rePlaced(true)
   // setRegion(val);
   
           if (Platform.OS === "android") {
@@ -218,7 +219,7 @@ export default function Map({ navigation, route }) {
   };
 
   const handleSave = async () => {
-
+  setTapLoading(true)
 
     if (navType === 'pickupDelivery' || navType === 'returnDelivery') {
       let newAddress = { ...address, ...region }
@@ -286,7 +287,7 @@ export default function Map({ navigation, route }) {
           navigation.navigate('CustomerHome', {});
         
         }
-        
+        setTapLoading(false)
         // })
         // .catch(error => console.warn(error));
     }
@@ -414,11 +415,40 @@ export default function Map({ navigation, route }) {
       {!isDrag &&
       <>
       {renderCurrentLocationButton()}
-      <TouchableOpacity style={styles.saveButton} onPress={() => handleSave()}>
+      {
+        !placed ? 
+        null
+        :
+      <TouchableOpacity 
+        style={{
+          ...styles.saveButton, 
+          backgroundColor: tapLoading ? COLORS.primaryDisabled : COLORS.primary, 
+          // opacity: tapLoading ? .8 : 1,
+        }} 
+        onPress={() => handleSave()}
+        disabled={tapLoading}
+        >
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center', 
+          justifyContent: 'center',
+          position: 'absolute'
+        }}
+      >
+        {tapLoading && 
+          <Image 
+            source={icons.loader}
+            style={{ height: 25, width: 25}}
+          />
+        }
+      </View>
         <Text style={{ ...FONTS.h4, color: COLORS.white, fontWeight: 'bold' }}>
           SAVE
         </Text>
       </TouchableOpacity>
+      }
+
       </>
       }
       <View

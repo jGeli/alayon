@@ -29,7 +29,7 @@ import socket from '../../utils/socket';
 import { createChat, getConversation } from '../../redux/actions/customer.actions';
 
 export default function Conversation({ route, navigation: { goBack } }) {
-  const { conversation } = route.params;
+  const { _id, shop_name, conversation } = route.params;
   console.log(route.params)
   // console.log(conversation.sender.bannerUrl, "SESSION")
   const dispatch = useDispatch();
@@ -58,16 +58,23 @@ export default function Conversation({ route, navigation: { goBack } }) {
   }
 
 
-  const handleGetConvoSummary = async () => {
-    const otherUser = conversation.receiver
+  const handleGetConvoSummary = async (data) => {
+    const {otherUser} = data
+    
     console.log('OTHER USER', otherUser)
-    console.log(convo)
-    let newConvo = await dispatch(getConversation(otherUser._id))
-    console.log('INIT CONVO', newConvo)
-    if (newConvo) {
-      setConversations(newConvo.threads)
-      setConvo(newConvo)
-    }
+    await dispatch(getConversation(otherUser))
+      .then(res => {
+      console.log(res, "RESPONSE SA SCREEN STATE")
+        setConversations(res.d.threads)
+        return res
+      })
+      .catch(err => {
+        return err
+      })
+    // if (newConvo) {
+      // setConversations(newConvo.threads)
+      // setConvo(newConvo)
+    // }
 
 
   }
@@ -77,9 +84,9 @@ export default function Conversation({ route, navigation: { goBack } }) {
 
 
   useEffect(() => {
+    handleGetConvoSummary({otherUser: _id})
 
     if (conversation) {
-      handleGetConvoSummary(conversation)
 
 
       socket.on('newMessage', (data) => {
@@ -96,6 +103,8 @@ export default function Conversation({ route, navigation: { goBack } }) {
 
 
   }, [conversation])
+  
+  
 
   function renderHeader() {
     return (
@@ -105,9 +114,23 @@ export default function Conversation({ route, navigation: { goBack } }) {
           alignItems: 'center',
           justifyContent: 'flex-start',
           width: '100%',
-          borderBottomWidth: 1,
-          borderColor: COLORS.lightGray3,
-          padding: SIZES.padding
+          // borderBottomWidth: 1,
+          backgroundColor: COLORS.info100
+        }}
+      >
+      <View
+        style={{ 
+          flex: 1, 
+          width: '100%',
+          flexDirection: 'row',
+          alignItems: 'center', 
+          borderWidth: .5,
+          backgroundColor: COLORS.info200,
+          borderColor: COLORS.info400,
+          elevation: 2,
+          padding: SIZES.padding,
+          margin: 6,
+          borderRadius: 12,
         }}
       >
         <TouchableOpacity
@@ -119,7 +142,9 @@ export default function Conversation({ route, navigation: { goBack } }) {
             style={{
               height: 20,
               width: 20,
-              marginRight: SIZES.padding2
+              marginRight: SIZES.padding2,
+              tintColor: COLORS.primary
+
             }}
           />
         </TouchableOpacity>
@@ -130,23 +155,24 @@ export default function Conversation({ route, navigation: { goBack } }) {
           }}
         >
           <Image
-            source={{ uri: convo.receiver.bannerUrl ? convo.receiver.bannerUrl : convo.receiver.imgUrl }}
+            // source={{ uri: convo.receiver.bannerUrl ? convo.receiver.bannerUrl : convo.receiver.imgUrl }}
+            source={{uri: route.params.bannerUrl}}
             resizeMode='contain'
             style={{
-              height: 40,
-              width: 40,
-              marginRight: SIZES.padding2,
+              height: 50,
+              width: 50,
+              // marginRight: SIZES.padding2,
               borderRadius: SIZES.radius
             }}
           />
-          <View>
+          <View style={{ paddingHorizontal: 10}}>
             <Text
               style={{
                 ...FONTS.body2,
-                color: COLORS.black,
+                color: COLORS.primary,
                 fontWeight: 'bold'
               }}
-            >{convo.name}</Text>
+            >{route.params.shop_name}</Text>
             <Text
               style={{
                 color: COLORS.gray
@@ -167,12 +193,15 @@ export default function Conversation({ route, navigation: { goBack } }) {
               resizeMode='contain'
               style={{
                 height: 25,
-                width: 25
+                width: 25,
+                tintColor: COLORS.primary
               }}
             />
           </TouchableOpacity>
         </View>
       </View>
+      </View>
+      
     )
   }
 
@@ -196,11 +225,12 @@ export default function Conversation({ route, navigation: { goBack } }) {
               width: item.message?.length <= 5 ? '15%' : 'auto',
               paddingHorizontal: SIZES.padding,
               borderWidth: 1,
-              borderColor: COLORS.lightGray,
+              borderColor: item.sender == user._id ? COLORS.primaryTransparent : COLORS.white,
               backgroundColor: item.sender == user._id ? COLORS.primaryTransparent : COLORS.white,
               borderBottomRightRadius: item.sender == user._id ? 0 : SIZES.radius,
               borderBottomLeftRadius: item.sender == user._id ? SIZES.radius : 0,
               borderTopLeftRadius: SIZES.radius,
+              elevation: 4,
               borderTopRightRadius: SIZES.radius,
               margin: SIZES.padding2,
               justifyContent: 'space-between',
@@ -228,7 +258,7 @@ export default function Conversation({ route, navigation: { goBack } }) {
                 }}
               >
                 <Text
-                  style={{ ...FONTS.body3, color: item.sender == user._id ? COLORS.white : COLORS.black }}
+                  style={{ ...FONTS.body3, color: item.sender == user._id ? COLORS.white : COLORS.primary }}
                 >
                   {item.message}
                 </Text>
@@ -250,7 +280,7 @@ export default function Conversation({ route, navigation: { goBack } }) {
       <View
         style={{
           flex: 1,
-          backgroundColor: COLORS.lightGray3,
+          backgroundColor: COLORS.info100,
           width: SIZES.width,
         }}
       >
@@ -264,30 +294,32 @@ export default function Conversation({ route, navigation: { goBack } }) {
       </View>
     )
   }
-
-  return (
-    <SafeAreaView
-      style={styles.container}
-    >
-      {renderHeader()}
-
-
-      {renderConversation()}
+  
+  function renderFooterInput() {
+    return (
       <View
-        style={{
-          paddingVertical: SIZES.base,
-          // height: '10%',
-          flexDirection: 'column'
-        }}
-      >
-        <View
           style={{
             flexDirection: 'row',
-            justifyContent: 'space-around'
+            alignItems: 'center',
+            justifyContent: 'center',
+            // paddingHorizontal: 6,
+            backgroundColor: COLORS.info100,
+            width: '100%',
+            // borderWidth: .3,
+            // borderWidth: .5,
+            borderColor: COLORS.primaryTransparent
+            
+            // justifyContent: 'space-around',
+            // alignItems: 'flex-start',
+            // justifyContent: 'flex-start',
+            // width: '100%', borderWidth: 1,
+            
+            // margin: 20
+
 
           }}
         >
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{
               padding: SIZES.base,
               borderColor: COLORS.lightGray,
@@ -325,20 +357,24 @@ export default function Conversation({ route, navigation: { goBack } }) {
             <Text>
               THANK YOU!
             </Text>
-          </TouchableOpacity>
-        </View>
+          </TouchableOpacity> */}
         <View
           style={{
             // flex: 1,
-            width: '100%',
-            justifyContent: 'flex-end'
+            width: '85%',
+            justifyContent: 'space-between',
+            borderTopWidth: 1, 
+            borderColor: COLORS.gray900
+            
+            
+            // borderWidth: 1,
           }}
         >
           <FormInput
             containerStyle={{
               bottom: 10,
-              borderColor: COLORS.lightGray,
-              width: '90%',
+              // borderColor: COLORS.primary,
+              // width: '80%',
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -354,7 +390,7 @@ export default function Conversation({ route, navigation: { goBack } }) {
                 }}
               >
                 <Image
-                  source={icons.emojis}
+                  source={icons.send}
                   resizeMode='contain'
                   style={{
                     height: 25,
@@ -365,7 +401,45 @@ export default function Conversation({ route, navigation: { goBack } }) {
             }
           />
         </View>
-      </View>
+        <View
+          style={{
+            // borderWidth: 1,
+            // borderRadius: SIZES.radius,
+            padding: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
+            // width: '10%',
+          }}
+        >
+        <TouchableOpacity>
+          <Image 
+            source={icons.attachPhoto}
+            style={{ height: 30, width: 30, tintColor: COLORS.primary}}
+          />
+        </TouchableOpacity>
+        </View>
+        </View>
+    )
+    
+  }
+
+  return (
+    <SafeAreaView
+      style={{...styles.container, backgroundColor: COLORS.gray400}}
+    >
+      {/* Header */}
+      {renderHeader()}
+
+
+      {/* Body */}
+      {/* Conversation */}
+      {renderConversation()}
+      
+
+      {/* Footer */} 
+      {renderFooterInput()}
+
+        
     </SafeAreaView>
   )
 }

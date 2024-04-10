@@ -14,7 +14,8 @@ const rider = require('../assets/images/rider.png');
 const notification = require('../assets/images/bell.png');
 const locationIcon = require('../assets/images/location.png');
 const featureOverlay = require('../assets/images/featureOverlay.png');
-
+const drawerBeat = require('../assets/images/DrawerBeat.gif');
+const drawerSkipper = require('../assets/images/DrawerSkipper.gif');
 
 
 export default {
@@ -34,5 +35,7 @@ export default {
     chariot,
     logo_alayun,
     starfilled,
-    starcorner
+    starcorner,
+    drawerSkipper,
+    drawerBeat
 };

@@ -75,7 +75,7 @@ export const more_vertical = require('../assets/icons/morevert.png');
 export const washing_time = require('../assets/icons/washing_time.png');
 export const list_completed = require('../assets/icons/list_completed.png');
 export const list_completed1 = require('../assets/icons/list_completed1.png');
-
+export const attachPhoto = require('../assets/icons/add_image.png');
 
 
 
@@ -115,10 +115,22 @@ export const globe = require('../assets/icons/globe.png');
 export const focus = require('../assets/icons/focus.png');
 export const send = require('../assets/icons/send.png');
 
+export const loader = require('../assets/icons/loader.gif')
+export const moveUp = require('../assets/icons/move_up.png')
+export const moveDown = require('../assets/icons/move_down.png')
+export const closeSign = require('../assets/icons/close_sign.png')
+export const laundry_basket = require('../assets/icons/laundry-basket.png');
+export const sendIcon = require('../assets/icons/sendStraight.png');
 
-
+export const certifiedBadge = require('../assets/icons/detail_qualification.png')
+export const drawer = require('../assets/icons/drawer.png');
+export const drawerBordered = require('../assets/icons/drawerBordered.png');
+export const userProfilePH = require('../assets/icons/user_gfx2.png');
+export const uploadImage = require('../assets/icons/upload_image.png');
 
 export default {
+  userProfilePH,
+  uploadImage,
   send,
   focus,
   globe,
@@ -219,4 +231,14 @@ export default {
   dotsetting,
   likes,
   stars,
-};
+  loader,
+  moveUp,
+  moveDown,
+  closeSign,
+  laundry_basket,
+  sendIcon,
+  certifiedBadge,
+  drawerBordered,
+  drawer,
+  attachPhoto
+  };

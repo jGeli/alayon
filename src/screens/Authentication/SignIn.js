@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 
 import {
@@ -30,6 +31,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAuthUser, requestSignin } from '../../redux/actions/auth.actions.js';
 import { getFormattedPhone, validatePhone } from '../../utils/helpers.js';
 import { getToken } from '../../redux/auth-header';
+import TextButtonLoader from '../../components/TextButtonLoader';
+import { useFocusEffect } from '@react-navigation/native';
 
 const SignIn = ({ navigation, route }) => {
   const { redirection, param } = route.params ? route.params : {};
@@ -38,14 +41,17 @@ const SignIn = ({ navigation, route }) => {
   const [phone, setPhone] = React.useState('');
   const [hash, setHash] = React.useState('');
   const [phoneError, setPhoneError] = React.useState('');
+  const [disable, setDisable] = useState(false)
 
   const handleSignInRequest = (e) => {
     e && e.preventDefault();
+    setDisable(true)
 
     let { isValid, errorMsg } = validatePhone(phone);
     if (!isValid) {
       console.log(errorMsg);
       setPhoneError(errorMsg);
+      setDisable(false)
       return;
     }
     dispatch(
@@ -83,6 +89,13 @@ const SignIn = ({ navigation, route }) => {
       .catch(console.log);
 
   }
+  
+  useFocusEffect(
+    useCallback(() => {
+      setDisable(false)
+    }, [])
+  )
+  
 
   useEffect(() => {
     getHash()
@@ -188,19 +201,23 @@ const SignIn = ({ navigation, route }) => {
         >
           <Text style={{ textAlign: 'right', margin: SIZES.padding, marginBottom: SIZES.padding * 2, color: COLORS.danger }}> This Device Phone Number?</Text>
         </TouchableOpacity>
-        <TextButton
+        <TextButtonLoader
           label="Sign In"
+          disabled={disable}
           buttonContainerStyle={{
             height: 40,
             alignItems: 'center',
             marginTop: SIZES.padding,
             borderRadius: SIZES.radius2,
-            backgroundColor: COLORS.primary,
+            backgroundColor: !disable ? COLORS.primary : COLORS.info500, 
           }}
           labelStyle={{
             color: COLORS.white,
             fontWeight: '700',
           }}
+          loaderComponent={
+            <ActivityIndicator size="small" color="#0000ff" />
+          }
           onPress={() => handleSignInRequest()}
         />
         <View>

@@ -66,16 +66,16 @@ const deliveryOptions = [
 const varEnv = {
   //API URLS
   //Local
-  // socket: 'http://192.168.1.100:42005',
-  // host: 'http://192.168.1.100:42005',
-  // apiUrl: 'http://192.168.1.100:42005/api/v1',
+  // socket: 'http://192.168.1.7:5100',
+  // host: 'http://192.168.1.7:5100',
+  // apiUrl: 'http://192.168.1.7:5100/api/v1',
   // defaultToken:
-  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTE1OTcyMWJhYmQwNGJlODc1ODhkZCIsImlhdCI6MTY4NzkxNDM4MiwiZXhwIjoxNjkwNTA2MzgyfQ.ri5Jm6-dbIdt_XFkY7zJSOjk8iBRzHtg8fU9JkvoPnk',
+    // 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0OTE1OTcyMWJhYmQwNGJlODc1ODhkZCIsImlhdCI6MTY4NzkxNDM4MiwiZXhwIjoxNjkwNTA2MzgyfQ.ri5Jm6-dbIdt_XFkY7zJSOjk8iBRzHtg8fU9JkvoPnk',
   // shopId: '6492af74fb498149c8c29d0a',
-  //Live
-  socket: 'https://alayon.bugtech.solutions',
-  host: 'https://alayon.bugtech.solutions',
-  apiUrl: 'https://alayon.bugtech.solutions/api/v1',
+  // Live
+  socket: 'https://alayon.bugtech.online',
+  host: 'https://alayon.bugtech.online',
+  apiUrl: 'https://alayon.bugtech.online/api/v1',
   defaultToken:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YWM3YTk3MzRjYWQ2MzU3ODc2OTk0YyIsImlhdCI6MTY4OTI1NjMyMSwiZXhwIjoxNjkxODQ4MzIxfQ.pnQdNMextZkCb19_OPcG_V0RxCiuTrm03xBLBoDwb2E',
   shopId: '649d90fc72f48c26a0e72ce2',
@@ -596,15 +596,8 @@ const orders = [
   },
 ];
 
-
-
 const featuredSkeleton = [1, 2, 3, 4, 5, 6];
-
-
 const ShopSkeleton = [1, 2, 3, 4, 5, 6];
-
-
-
 
 // image carousel data
 const imagesCarousel = [
@@ -705,8 +698,6 @@ const services1 = [
     price: 10,
   },
 ];
-
-
 
 export default {
   services,

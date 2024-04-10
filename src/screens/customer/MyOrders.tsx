@@ -7,10 +7,13 @@ import CustomerOrders from '../../components/Cards/CustomerOrder'
 import { useDispatch, useSelector } from 'react-redux'
 import { ScrollView } from 'react-native'
 import { getOrders } from '../../redux/actions/customer.actions'
+import axios from 'axios'
+import {constants} from '../../constants'
 
 
-export default function MerchantHomeScreen({ navigation }) {
+export default function MyOrderScreen({ navigation }) {
   const dispatch = useDispatch()
+  const varEnv = constants.varEnv;
   const [ordersData, setOrdersData] = useState([])
   const [refreshing, setRefreshing] = useState(false);
   const [listType, setListType] = useState('active');
@@ -27,21 +30,29 @@ export default function MerchantHomeScreen({ navigation }) {
 
 
 
+  /* const hanldeOrders = async (type) => {
+    let request = await axios.get(`${varEnv.apiUrl}/customers/orders`).then(res => console.log(res, "RESPONSE NA"))
+    
+  } */
   
   const handleOrders = async (type) => {
-     await dispatch(getOrders())
-        .then((orders) => {
-          filterOrder(orders, type)
+     let myOrders = await dispatch(getOrders())
+        .then(res => {
+          filterOrder(res, type)
+          console.log(res, "RESPONSE INE")
           setRefreshing(false)
+          return res.d
         })
-        setTimeout(() => {
-          setRefreshing(false)
-        }, 10000);
+        .catch(err => {
+          console.log(err, "ERROR")
+        })
+        // console.log(myOrders, "ORDERS")
+          
   }
 
   const filterOrder = (data, type) => {
         
-    let filtered = data.filter(a => {
+    let filtered = data?.filter(a => {
       if(!type || type === 'active'){
         return a.activeStatus !== 'completed' 
       } else {
@@ -54,7 +65,7 @@ export default function MerchantHomeScreen({ navigation }) {
 
   useEffect(() => {
     handleOrders(listType)
-  }, [])
+  }, [listType])
 
 
 
@@ -114,6 +125,68 @@ export default function MerchantHomeScreen({ navigation }) {
   }
 
 
+  function renderOrderDetails() {
+    return (
+      <FlatList
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+        data={ordersList}
+        contentContainerStyle={{
+          marginBottom: SIZES.padding * 2,
+          marginHorizontal: SIZES.padding
+
+        }}
+        keyExtractor={item => `${item._id}`}
+        scrollEnabled={true}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item, index }) => (
+          <OrderDetailsCard
+            item={item}
+            handleClick={e => handleClick(item, e)}
+          />
+        )}
+        ListFooterComponent={<View style={{ height: 10 }} />}
+        ListEmptyComponent={
+          <View style={{ flex: 1, marginTop: '60%', justifyContent: 'center', alignItems: 'center'}}>
+              <Image 
+                source={icons.emptyBasketSVG}
+                style={{height: 170, width: 170}}
+              />
+              <Text style={{ fontSize: 14, fontWeight: '500', color: COLORS.gray700, padding: 6, textAlign: 'center'}}>
+              {loading ? '' : `No ${listType} Orders at \nthe moment`}
+              </Text>
+              
+          </View>
+        }
+      />
+    );
+  }
+
+  function renderCompletedOrders() {
+    return (
+      <FlatList
+        showsVerticalScrollIndicator={false}
+       refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+        data={ordersData}
+        contentContainerStyle={{
+          margin: SIZES.padding,
+        }}
+        scrollEnabled={false}
+        keyExtractor={item => `${item?.id}`}
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item, index }) => (
+
+          <CustomerOrders key={index} navigation={navigation} order={item}/>
+        )}
+        keyExtractor={(item) => item}
+      />
+    )
+  }
 
 
 
@@ -131,7 +204,7 @@ export default function MerchantHomeScreen({ navigation }) {
     >
       {renderHeader()}
       {/* {renderOrderTab()} */}
-      <FlatList
+      {/* <FlatList
         showsVerticalScrollIndicator={false}
        refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -144,7 +217,8 @@ export default function MerchantHomeScreen({ navigation }) {
             )
           }}
           keyExtractor={(item) => item._id}
-        />
+        /> */}
+        {renderCompletedOrders()}
     </SafeAreaView>
   )
 }

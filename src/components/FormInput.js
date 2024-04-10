@@ -42,9 +42,10 @@ const FormInput = ({
           marginTop: SIZES.base,
           borderRadius: SIZES.radius2,
           // borderBottomWidth: 2,
-          borderWidth: 1,
-          borderColor: COLORS.black,
-          backgroundColor: COLORS.lightGray2,
+          borderWidth: .5,
+          borderColor: COLORS.primary,
+          elevation: 2,
+          backgroundColor: COLORS.white2,
         }}>
         {prependComponent}
         {/* <LinearGradient colors={['#c3c3c3']} style={styles.LinearGradientStyle} > */}

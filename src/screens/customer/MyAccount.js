@@ -165,6 +165,9 @@ export default function MyAccount({ navigation }) {
                 // onPress={() => handleOpenModal()}
                 onPress = handleOpenModal()
               }
+              else if (item.name === 'TestingScreen') {
+                navigation.navigate(item.screen);
+              }
               else if (item.name === '') {
                 navigation.navigate(item.screen);
               }

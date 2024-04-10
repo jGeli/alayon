@@ -280,8 +280,8 @@ export default function CustomerSettings({ navigation, route }) {
         }}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => handleSubmit()}
-          // onPress={() => navigation.goBack()}
+          onPress={() => console.log('TAPAWAS')}
+          // onPress={() => handleSubmit()}
         >
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>

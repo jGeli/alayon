@@ -68,7 +68,8 @@ export default function ProfileScreen({ navigation, route }) {
 
   const handleSubmit = async () => {
     // console.log(await getData('token'));
-   let res = await dispatch(updateUserById(user._id, values))
+    console.log('pressed')
+   let res = dispatch(updateUserById(user._id, values))
     if(res){
         if(redirection){
         

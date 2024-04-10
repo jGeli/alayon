@@ -23,7 +23,7 @@ const MapPlaces = ({ handlePlace }) => {
       }}
       //   currentLocation={true}
       query={{
-        key: 'AIzaSyD5ibcRV6uhLjLQgcSpt6GySfrzsXZkVkE',
+        key: 'AIzaSyDPrjF6BhygS3aEUmn58R9ZNLz_XBMRTG4',
         language: 'en',
       }}
       styles={{

@@ -370,7 +370,7 @@ export default function Home({ navigation }) {
       let itemLoc = item.location ? item.location : location && location?.latitude ? { latitude: location?.latitude, longitude: location?.longitude } : null;
       
       let distance = itemLoc && location ? haversine({ latitude: location?.latitude, longitude: location?.longitude }, { latitude: itemLoc?.latitude, longitude: itemLoc?.longitude }) || 0 : 0
-      console.log("DISTANCEC", distance)
+      // console.log("DISTANCEC", distance)
       
       return shops.length === 0 ? (
         <TouchableOpacity

@@ -72,3 +72,5 @@ ios/Podfile.lock
 /package-lock.json
 src/globals/env.js
 src/constants/constants.js
+
+package-lock.json

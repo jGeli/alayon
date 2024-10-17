@@ -25,7 +25,7 @@ package="com.alayon"
       android:theme="@style/AppTheme">
           <meta-data
      android:name="com.google.android.geo.API_KEY"
-     android:value="AIzaSyDPrjF6BhygS3aEUmn58R9ZNLz_XBMRTG4"/> 
+     android:value="AIzaSyD5ibcRV6uhLjLQgcSpt6GySfrzsXZkVkE"/> 
      <activity
         android:name=".SplashActivity"
         android:theme="@style/SplashTheme"

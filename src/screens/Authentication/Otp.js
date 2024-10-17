@@ -229,6 +229,8 @@ const Otp = ({ navigation, route }) => {
                 width: '90%',
                 height: 50,
               }}
+              keyboardType={'number-pad'}
+              autoFocusOnLoad={true}
               secureTextEntry={false}
               codeInputFieldStyle={{
                 width: 45,
